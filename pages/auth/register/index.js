@@ -1,8 +1,13 @@
 import styled from 'styled-components';
+import { AuthLayout } from '../../../src/components/layout';
 import { Breakpoints } from '../../../src/utils';
 
 const RegisterPage = () => {
-  return <StyledRegisterPage>Register Page</StyledRegisterPage>;
+  return (
+    <StyledRegisterPage>
+      <AuthLayout></AuthLayout>
+    </StyledRegisterPage>
+  );
 };
 
 export default RegisterPage;

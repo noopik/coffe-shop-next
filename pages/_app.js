@@ -1,6 +1,22 @@
 import '../styles/globals.css';
 import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { Breakpoints } from '../src/utils';
+
+const GlobalStyle = createGlobalStyle`
+  .container {
+    width: 1600px;
+    margin: 0 auto;
+    ${Breakpoints.lessThan('2xl')`
+      width: 90%;
+    `}
+    ${Breakpoints.lessThan('md')`
+      width: 100%;
+      padding: 0 24px;
+    `}
+  }
+`;
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -17,6 +33,7 @@ function MyApp({ Component, pageProps }) {
         />
         {/* END = CUSTOME FONTS */}
       </Head>
+      <GlobalStyle />
       <Component {...pageProps} />
       <ToastContainer
         position="top-center"
