@@ -84,11 +84,11 @@ const StyledFooter = styled.footer`
       width: 380px;
       ${Breakpoints.lessThan('md')`
         width: 100%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
       `}
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
       .logo {
         margin-bottom: 22px;
       }

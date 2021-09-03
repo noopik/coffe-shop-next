@@ -2,28 +2,32 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { IC_GoogleIcon } from '../../../assets/icons';
 
-const Button = ({ theme, onClick, title, className, icon }) => {
+const Button = ({ theme, onClick, children, className, icon, ...props }) => {
   const Icons = {
     google: IC_GoogleIcon,
   };
 
   return (
-    <StyledButton theme={theme} onClick={onClick} className={className}>
+    <StyledButton
+      theme={theme}
+      onClick={onClick}
+      className={className}
+      {...props}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {icon && <img alt="icon" src={Icons[icon]} />}
-      {title}
+      {children}
     </StyledButton>
   );
 };
 Button.propTypes = {
-  type: PropTypes.string.isRequired,
   onClick: PropTypes.func,
-  title: PropTypes.string.isRequired,
+  children: PropTypes.string.isRequired,
   className: PropTypes.string,
   icon: PropTypes.string,
 };
 Button.defaultProps = {
-  title: 'Title Button',
+  children: 'Title Button',
 };
 
 export default Button;

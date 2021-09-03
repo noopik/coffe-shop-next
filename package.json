@@ -17,7 +17,8 @@
     "react-dom": "17.0.2",
     "react-toastify": "^8.0.2",
     "styled-components": "^5.3.1",
-    "styled-media-query": "^2.1.2"
+    "styled-media-query": "^2.1.2",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "eslint": "7.32.0",
