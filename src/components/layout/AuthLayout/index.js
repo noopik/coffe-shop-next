@@ -13,7 +13,7 @@ const AuthLayout = ({ children, titlePage }) => {
       <Head>
         <title>Coffee Shop | {titlePage}</title>
       </Head>
-      <div className="content">
+      <div className="content cla2">
         <aside className="aside">
           <Image src={IMG_BGAuth} alt="bg" layout="fill" />
         </aside>
