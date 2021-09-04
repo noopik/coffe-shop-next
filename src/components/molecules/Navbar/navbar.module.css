@@ -1,0 +1,89 @@
+.navbar {
+  @apply shadow-md fixed w-full bg-white top-0 z-50;
+}
+
+.btn-navbar {
+  @apply border border-black rounded-md py-1 px-3;
+}
+
+.navbar-container {
+  @apply flex flex-wrap justify-between content-center items-center !py-5;
+}
+
+.navbar-menu-left {
+  @apply md:w-1/4 flex items-center;
+}
+
+.navbar-text-brand {
+  @apply ml-2 font-bold text-lg;
+}
+
+.navbar-menu-right {
+  transition: opacity 400ms, height 400ms ease-in-out;
+  @apply w-full md:w-9/12 opacity-0 md:opacity-100 h-0 md:h-auto block md:flex md:flex-row md:flex-wrap md:justify-end;
+  @apply md:transition-none;
+}
+
+.navbar-menu-right-section-1 {
+  @apply flex w-1/2;
+}
+
+.navbar-menu-right-section-2 {
+  @apply flex w-1/2;
+}
+
+.navbar-menu {
+  transition: margin-top 400ms ease-in-out;
+  @apply block md:flex flex-row flex-wrap items-center md:mt-0 -mt-96;
+}
+
+.li-menu {
+  @apply md:px-3 py-1 md:py-0;
+}
+
+.li-menu-a {
+  font-size: 16px;
+  color: #b8becd;
+  @apply font-semibold;
+}
+
+.li-menu-a:hover {
+  color: #614234;
+}
+
+.li-menu-a-active {
+  color: #614234 !important;
+}
+
+.button-show-hide-navbar {
+  @apply block md:hidden;
+}
+
+.navbar-menu-right.show-navbar {
+  transition: opacity 400ms, height 400ms ease-in-out;
+  border-color: #614234;
+  @apply opacity-100 h-full md:border-0 md:mt-0 border-t mt-4;
+  @apply md:transition-none;
+}
+
+.navbar-menu-right.show-navbar > .navbar-menu {
+  transition: margin-top 400ms ease-in-out;
+  @apply mt-0;
+}
+
+@media (min-width: 768px) {
+  .navbar-menu-right.show-navbar {
+    @apply flex;
+  }
+}
+
+.btn-white {
+  color: #614234;
+  @apply px-6 bg-white py-2 shadow-lg md:shadow-none rounded-full;
+}
+
+.btn-orange {
+  background-color: #ffba33;
+  color: #614234;
+  @apply px-6 py-2 rounded-full shadow-lg;
+}
