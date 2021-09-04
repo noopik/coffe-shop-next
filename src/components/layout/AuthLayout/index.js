@@ -48,11 +48,14 @@ export default AuthLayout;
 const StyledAuthLayout = styled.div`
   .content {
     display: flex;
-    height: 100vh;
+    height: max-content;
+    ${Breakpoints.lessThan('lg')`
+      flex-direction: column;
+    `}
     .aside {
       position: relative;
       width: 50%;
-      height: 100vh;
+      flex: 1;
       img {
         object-fit: cover;
       }
@@ -60,6 +63,10 @@ const StyledAuthLayout = styled.div`
     .main {
       background-color: #ffffff;
       width: 50%;
+      margin-bottom: 6rem;
+      ${Breakpoints.lessThan('lg')`
+        width: 100%;
+      `}
     }
   }
 
@@ -124,5 +131,24 @@ const StyledAuthLayout = styled.div`
         }
       }
     }
+  }
+
+  form {
+    margin: 50px auto;
+    width: 70%;
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+  }
+
+  footer {
+    padding-top: 8rem;
+    ${Breakpoints.lessThan('sm')`
+      padding-top: 12rem;
+    `}
+    ${Breakpoints.lessThan('xsm')`
+      padding-top: 16rem;
+
+    `}
   }
 `;

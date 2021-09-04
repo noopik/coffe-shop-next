@@ -4,6 +4,7 @@ import { AuthLayout } from '../../../src/components/layout';
 import { Breakpoints } from '../../../src/utils';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import router from 'next/router';
 
 const RegisterPage = () => {
   const validate = Yup.object({
@@ -11,9 +12,7 @@ const RegisterPage = () => {
     password: Yup.string()
       .min(6, 'Password must be at least 6 charaters')
       .required('Password is required'),
-    phone: Yup.number()
-      .min(10, 'Password must be at least 10 charaters')
-      .required('Password is required'),
+    phone: Yup.number().required('Password is required'),
   });
 
   return (
@@ -21,23 +20,24 @@ const RegisterPage = () => {
       <AuthLayout titlePage="Sign Up">
         <div className="header">
           <LogoBrand />
-          <Button className="btn">Login</Button>
+          <Button className="btn" onClick={() => router.push('/auth/login')}>
+            Login
+          </Button>
         </div>
         <Formik
           initialValues={{
-            firstName: '',
-            lastName: '',
             email: '',
             password: '',
-            confirmPassword: '',
+            phone: '',
           }}
           validationSchema={validate}
-          onSubmit={(values) => {
+          onSubmit={(values, { resetForm }) => {
             console.log(values);
+            resetForm();
           }}
         >
           {(formik) => (
-            <div>
+            <>
               <h1 className="heading-page">Sign Up</h1>
               <Form>
                 <TextField
@@ -49,7 +49,7 @@ const RegisterPage = () => {
                 <TextField
                   label="Password :"
                   name="password"
-                  type="text"
+                  type="password"
                   placeholder="Enter your password"
                 />
                 <TextField
@@ -59,11 +59,11 @@ const RegisterPage = () => {
                   placeholder="Enter your phone number"
                 />
                 <Button>Sign Up</Button>
-                <Button icon="google" disabled={true}>
+                <Button icon="google" disabled={true} theme="white">
                   Sign Up With Google
                 </Button>
               </Form>
-            </div>
+            </>
           )}
         </Formik>
       </AuthLayout>
@@ -77,24 +77,6 @@ export default RegisterPage;
 
 const StyledRegisterPage = styled.div`
   /* START == BREAKPOINT */
-  /* ${Breakpoints.lessThan('2xl')`
-      background-color: yellow;
-    `}
-  ${Breakpoints.lessThan('xl')`
-      background-color: blue;
-    `}
-    ${Breakpoints.lessThan('lg')`
-      background-color: cyan;
-    `}
-    ${Breakpoints.lessThan('md')`
-      background-color: pink;
-    `}
-    ${Breakpoints.lessThan('sm')`
-      background-color: green;
-    `}
-    ${Breakpoints.lessThan('xsm')`
-      background-color: pink;
-    `} */
   .header {
     display: flex;
     justify-content: space-between;
