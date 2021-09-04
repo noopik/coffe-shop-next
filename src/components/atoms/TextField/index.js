@@ -13,9 +13,7 @@ const TextField = ({ label, ...props }) => {
         {label}
       </label>
       <input
-        className={`form-control shadow-none ${
-          meta.touched && meta.error && 'is-invalid'
-        }`}
+        className={` ${meta.touched && meta.error && 'is-invalid'}`}
         {...field}
         {...props}
         // autoComplete="off"

@@ -8,6 +8,9 @@ const GlobalStyle = createGlobalStyle`
   .container {
     width: 1600px;
     margin: 0 auto;
+    &.main {
+    margin-top: 120px;
+    }
     ${Breakpoints.lessThan('2xl')`
       width: 90%;
     `}
