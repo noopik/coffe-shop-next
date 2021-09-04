@@ -42,28 +42,10 @@ function MyApp({ Component, pageProps }) {
         />
         {/* END = CUSTOME FONTS */}
       </Head>
-      <GlobalStyle />
-      <Component {...pageProps} />
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <NextNProgress
-            color="#ffce65"
-            startPosition={0.3}
-            stopDelayMs={200}
-            height={4}
-            showOnShallow={true}
-          />
+          <NextNProgress color="#614234" startPosition={0.3} stopDelayMs={200} height={4} showOnShallow={true} />
+          <GlobalStyle />
           <Component {...pageProps} />
           <ToastContainer
             position="top-center"
