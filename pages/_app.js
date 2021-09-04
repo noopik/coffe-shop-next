@@ -44,7 +44,13 @@ function MyApp({ Component, pageProps }) {
       </Head>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <NextNProgress color="#614234" startPosition={0.3} stopDelayMs={200} height={4} showOnShallow={true} />
+          <NextNProgress
+            color="#FFBA33"
+            startPosition={0.3}
+            stopDelayMs={200}
+            height={4}
+            showOnShallow={true}
+          />
           <GlobalStyle />
           <Component {...pageProps} />
           <ToastContainer

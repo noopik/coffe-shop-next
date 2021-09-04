@@ -29,7 +29,7 @@
     "socket.io-client": "^4.2.0",
     "styled-components": "^5.3.1",
     "styled-media-query": "^2.1.2",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
     "sweetalert": "^2.1.2"
   },
   "devDependencies": {

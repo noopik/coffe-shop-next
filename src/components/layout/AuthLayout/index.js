@@ -6,6 +6,7 @@ import Footer from '../../molecules/Footer';
 import { Button, CardWraper } from '../../atoms';
 import { Breakpoints } from '../../../utils';
 import Head from 'next/head';
+import router from 'next/router';
 
 const AuthLayout = ({ children, titlePage }) => {
   return (
@@ -28,7 +29,9 @@ const AuthLayout = ({ children, titlePage }) => {
             </p>
           </div>
           <div className="button-wrapper">
-            <Button>Create Now</Button>
+            <Button onClick={() => router.push('/auth/register')}>
+              Create Now
+            </Button>
           </div>
         </CardWraper>
       </div>
