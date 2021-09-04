@@ -9,7 +9,7 @@ const Button = ({ theme, onClick, children, className, icon, ...props }) => {
     google: <img alt="icon" src={IC_CircleFb} />,
   };
 
-  // console.log('disabled', disabled);
+  console.log('disabled', disabled);
 
   return (
     <StyledButton
@@ -37,32 +37,22 @@ export default Button;
 
 const StyledButton = styled.button`
   background: ${({ theme, disabled }) => {
-    switch ((theme, disabled)) {
-      case 'orange':
-        return '#FFBA33';
-      case 'brown':
-        return '#6A4029';
-      case 'white':
-        return '#FFFFFF';
-      case disabled === true:
-        return '#a3a3a3';
-      default:
-        return '#FFBA33';
-    }
+    if (theme === 'orange') return '#FFBA33';
+    if (theme === 'brown') return '#6A4029';
+    if (theme === 'white') return '#FFFFFF';
+    if (theme === 'black') return '#0B132A';
+    if (theme === 'gray') return 'rgba(186, 186, 186, 0.35)';
+    if (disabled) return '#a3a3a3';
+    return '#FFBA33';
   }};
   color: ${({ theme, disabled }) => {
-    switch ((theme, disabled)) {
-      case 'orange':
-        return '#6A4029';
-      case 'brown':
-        return '#FFFFFF';
-      case 'white':
-        return '#000000';
-      case disabled === true:
-        return '#555555';
-      default:
-        return '#6A4029';
-    }
+    if (theme === 'orange') return '#6A4029';
+    if (theme === 'brown') return '#FFFFFF';
+    if (theme === 'white') return '#000000';
+    if (theme === 'black') return '#FFFFFF';
+    if (theme === 'gray') return '#4F5665';
+    if (disabled) return '#555555';
+    return '#6A4029';
   }};
   border-radius: 10px;
   padding: 25px 0;
@@ -74,16 +64,10 @@ const StyledButton = styled.button`
   border: 0;
   width: 100%;
   box-shadow: ${({ theme }) => {
-    switch (theme) {
-      case 'orange':
-        return '0px 6px 20px rgba(196, 196, 196, 0.67)';
-      case 'brown':
-        return '0px 6px 20px rgba(106, 64, 41, 0.46);';
-      case 'white':
-        return 'box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67)';
-      default:
-        return 'box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67)';
-    }
+    if (theme === 'orange') return '0px 6px 20px rgba(196, 196, 196, 0.67)';
+    if (theme === 'brown') return '0px 6px 20px rgba(106, 64, 41, 0.46);';
+    if (theme === 'white') 'box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67)';
+    return 'box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67)';
   }};
   &:hover {
     cursor: ${({ disabled }) => {
