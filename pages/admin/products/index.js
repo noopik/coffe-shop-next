@@ -1,11 +1,12 @@
 import styled from 'styled-components';
 import { Breakpoints } from '../../../src/utils';
+import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
 
 const AddProducts = () => {
   return <StyledAddProducts>Admin Add Product</StyledAddProducts>;
 };
 
-export default AddProducts;
+export default PrivateRoute(AddProducts);
 
 // START === STYLING CURRENT PAGE
 
