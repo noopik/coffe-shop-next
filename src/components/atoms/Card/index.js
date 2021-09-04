@@ -7,7 +7,7 @@ const CardWraper = ({ children, className }) => {
   );
 };
 CardWraper.propTypes = {
-  children: PropTypes.element,
+  children: PropTypes.array,
   className: PropTypes.string,
 };
 
@@ -16,4 +16,5 @@ export default CardWraper;
 const StyledCardWrapper = styled.div`
   background: #ffffff;
   border-radius: 10px;
+  box-shadow: 0px 10px 23px rgba(0, 0, 0, 0.07);
 `;
