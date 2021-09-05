@@ -50,7 +50,9 @@ const resetPasswordPage = () => {
                   type="password"
                   placeholder="Confirmation new password"
                 />
-                <Button>Submit</Button>
+                <Button disabled={!(formik.isValid && formik.dirty)}>
+                  Submit
+                </Button>
               </Form>
             </>
           )}

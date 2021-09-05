@@ -12,7 +12,10 @@ const RegisterPage = () => {
     password: Yup.string()
       .min(6, 'Password must be at least 6 charaters')
       .required('Password is required'),
-    phone: Yup.number().required('Password is required'),
+    phone: Yup.string()
+      .required('Phone number is required')
+      .min(11, 'Password must be at least 11 charaters')
+      .max(13, 'Password must be less than 13 charaters'),
   });
 
   return (
@@ -58,7 +61,9 @@ const RegisterPage = () => {
                   type="text"
                   placeholder="Enter your phone number"
                 />
-                <Button>Sign Up</Button>
+                <Button disabled={!(formik.isValid && formik.dirty)}>
+                  Sign Up
+                </Button>
                 <Button icon="google" disabled={true} theme="white">
                   Sign Up With Google
                 </Button>

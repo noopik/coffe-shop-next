@@ -58,11 +58,15 @@ const ForgotPasswordPage = () => {
                   type="email"
                   onChange={formik.handleChange}
                   value={formik.values.email}
+                  className={` ${formik.errors.email && 'is-invalid'}`}
                 />
+                {formik.errors.email && (
+                  <p className="text-error">Email Invalid</p>
+                )}
                 <Button
-                  theme="orange"
+                  // theme="orange"
                   className="button"
-                  // type="submit"
+                  disabled={!(formik.isValid && formik.dirty)}
                   onClick={() => router.push('/auth/reset-password')}
                 >
                   Send
@@ -119,6 +123,7 @@ const StyledForgotPasswordPage = styled.div`
       font-weight: bold;
     }
     .action-wrapper {
+      position: relative;
       margin: 126px 0;
       display: flex;
       gap: 2rem;
@@ -141,6 +146,19 @@ const StyledForgotPasswordPage = styled.div`
         &:valid {
           color: #000000;
         }
+        &.is-invalid {
+          /* background-color: red !important; */
+          border: 2px solid red !important;
+          color: red;
+        }
+      }
+      .text-error {
+        font-family: Poppins;
+        position: absolute;
+        bottom: -40px;
+        color: red;
+        font-size: 20px;
+        font-weight: 600;
       }
     }
     .button {
