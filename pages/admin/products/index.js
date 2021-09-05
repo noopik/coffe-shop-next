@@ -1,29 +1,79 @@
 import styled from 'styled-components';
-import { Breakpoints } from '../../../src/utils';
+import {Breakpoints} from '../../../src/utils';
 import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
 import Link from 'next/link';
-import { Breadcrumb, Breadcrumbs, Button } from '../../../src/components/atoms';
-import { IL_IMGDefaultCamera } from '../../../src/assets';
+import {Breadcrumb, Breadcrumbs, Button} from '../../../src/components/atoms';
+import {IL_IMGDefaultCamera} from '../../../src/assets';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
-import { Formik, Form } from 'formik';
+import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 
 import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
 
-const AddProducts = () => {
+export const getServerSideProps = async () => {
+  try {
+    const resultSizes = await axios.get('http://localhost:4000/sizes/getsizes?pagination=off');
+    const resultDeliveries = await axios.get('http://localhost:4000/deliveries/getdeliveries?pagination=off');
+    const resultCategories = await axios.get('http://localhost:4000/categories/getcategory?pagination=off');
+    const sizes = resultSizes.data.data;
+    const deliveries = resultDeliveries.data.data;
+    const categories = resultCategories.data.data;
+    return {
+      props: {
+        sizes,
+        deliveries,
+        categories,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      props: {},
+    };
+  }
+};
+
+const AddProducts = (props) => {
+  const sizes = props.sizes;
+  const deliveries = props.deliveries;
+  const categories = props.categories;
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [image, setImage] = useState();
 
   const validate = Yup.object({
     image: Yup.string().required('Image is required'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
-      .required('Password is required'),
+    password: Yup.string().min(6, 'Password must be at least 6 charaters').required('Password is required'),
     phone: Yup.number().required('Password is required'),
   });
+
+  const handleSize = (e, formik) => {
+    let arrSize = formik.values.sizes;
+    if (e.target.checked) {
+      arrSize.push(+e.target.value);
+      document.getElementById(`itemSize${e.target.value}`).className += ' select';
+    } else {
+      const index = arrSize.indexOf(+e.target.value);
+      arrSize.splice(index, 1);
+      document.getElementById(`itemSize${e.target.value}`).className = 'size-item';
+    }
+    // console.log(e);
+  };
+
+  const handleDelivery = (e, formik) => {
+    let arrDeliveries = formik.values.deliveries;
+    if (e.target.checked) {
+      arrDeliveries.push(+e.target.value);
+      document.getElementById(`methodItem${e.target.value}`).className += ' select';
+    } else {
+      const index = arrDeliveries.indexOf(+e.target.value);
+      arrDeliveries.splice(index, 1);
+      document.getElementById(`methodItem${e.target.value}`).className = 'method-item';
+    }
+  };
 
   return (
     <StyledAddProducts>
@@ -41,9 +91,12 @@ const AddProducts = () => {
             name: '',
             price: '',
             description: '',
+            sizes: [],
+            deliveries: [],
+            category: '',
           }}
           // validationSchema={validate}
-          onSubmit={(values, { resetForm }) => {
+          onSubmit={(values, {resetForm}) => {
             console.log('values submit', values);
             console.log('images', image);
             console.log('startDate', startDate);
@@ -58,11 +111,7 @@ const AddProducts = () => {
                   <div className="image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {/* <img src={IL_IMGDefaultCamera} alt="image product" /> */}
-                    <Image
-                      src={IL_IMGDefaultCamera}
-                      alt="image"
-                      layout="fill"
-                    />
+                    <Image src={IL_IMGDefaultCamera} alt="image" layout="fill" />
                   </div>
                 </div>
                 <Button className="btn" theme="black">
@@ -167,45 +216,64 @@ const AddProducts = () => {
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input product size :</label>
-                  <p className="paragraph">
-                    Click size you want to use for this product
-                  </p>
+                  <p className="paragraph">Click size you want to use for this product</p>
                   <div className="select-group">
-                    <div className="size-item select">
-                      <p>R</p>
-                    </div>
-                    <div className="size-item select">
-                      <p>L</p>
-                    </div>
-                    <div className="size-item">
-                      <p>XL</p>
-                    </div>
-                    <div className="size-item">
-                      <p>250 gr</p>
-                    </div>
-                    <div className="size-item">
-                      <p>300 gr</p>
-                    </div>
-                    <div className="size-item">
-                      <p>500 gr</p>
-                    </div>
+                    {sizes &&
+                      sizes.map((size) => (
+                        <>
+                          <label htmlFor={`size${size.size_id}`}>
+                            <div className="size-item" id={`itemSize${size.size_id}`}>
+                              <p>{size.size_name}</p>
+                            </div>
+                          </label>
+                          <Checkbox
+                            type="checkbox"
+                            name="size"
+                            id={`size${size.size_id}`}
+                            value={size.size_id}
+                            onChange={(e) => handleSize(e, formik)}
+                          />
+                        </>
+                      ))}
                   </div>
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
-                  <p className="paragraph">
-                    Click methods you want to use for this product
-                  </p>
+                  <p className="paragraph">Click methods you want to use for this product</p>
                   <div className="select-group">
-                    <div className="method-item select">
-                      <p>Home Delivery</p>
-                    </div>
-                    <div className="method-item select">
-                      <p>Dine in</p>
-                    </div>
-                    <div className="method-item">
-                      <p>Take away</p>
-                    </div>
+                    {deliveries &&
+                      deliveries.map((delivery) => (
+                        <>
+                          <label htmlFor={`delivery${delivery.delivery_id}`}>
+                            <div className="method-item" id={`methodItem${delivery.delivery_id}`}>
+                              <p>{delivery.delivery_name}</p>
+                            </div>
+                          </label>
+                          <Checkbox
+                            type="checkbox"
+                            id={`delivery${delivery.delivery_id}`}
+                            value={delivery.delivery_id}
+                            onChange={(e) => handleDelivery(e, formik)}
+                          />
+                        </>
+                      ))}
+                  </div>
+                </div>
+                <div className="input-wrapper">
+                  <label className="heading">Input category :</label>
+                  <p className="paragraph">Select category you want to use for this product</p>
+                  <div className="input-wrapper">
+                    <StyledSelect name="category" id="" onChange={formik.handleChange}>
+                      <option value="" selected>
+                        select category
+                      </option>
+                      {categories &&
+                        categories.map((category, index) => (
+                          <option key={index} value={category.category_id}>
+                            {category.category_name}
+                          </option>
+                        ))}
+                    </StyledSelect>
                   </div>
                 </div>
                 <div className="button-action">
@@ -349,10 +417,16 @@ const StyledAddProducts = styled.div`
             margin-bottom: 20px;
           }
           .select-group {
+            width: 415px;
+            overflow: auto;
             display: flex;
             gap: 1rem;
             ${Breakpoints.lessThan('lg')`
               flex-wrap: wrap;
+            `}
+            ${Breakpoints.lessThan('sm')`
+              flex-wrap: wrap;
+              width: 100%;
             `}
             .size-item {
               width: 70px;
@@ -437,4 +511,28 @@ const StyledAddProducts = styled.div`
     ${Breakpoints.lessThan('xsm')`
       background-color: pink;
     `} */
+`;
+
+const Checkbox = styled.input`
+  display: none;
+`;
+
+const StyledSelect = styled.select`
+  background-color: rgba(186, 186, 186, 0.35);
+  color: #4f5665;
+  width: 100%;
+  height: 64px;
+  border-radius: 10px;
+  padding-left: 25px;
+  font-size: 18px;
+  -moz-appearance: none; /* Firefox */
+  -webkit-appearance: none; /* Safari and Chrome */
+  appearance: none;
+  @media (min-width: 768px) {
+    width: 100%;
+  }
+
+  @media (min-width: 992px) {
+    width: 50%;
+  }
 `;
