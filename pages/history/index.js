@@ -1,15 +1,11 @@
-import styled from 'styled-components';
-import PrivateRoute from '../../src/components/hoc/PrivateRoute';
-import { Breakpoints } from '../../src/utils';
-import Image from 'next/image';
-import {
-  IMG_BGHistoryPage,
-  IMG_DummyProduct,
-  IMG_DummyProductCard,
-} from '../../src/assets';
-import { useState } from 'react';
 import Pagination from '@material-ui/lab/Pagination';
+import Image from 'next/image';
+import { useState } from 'react';
+import styled from 'styled-components';
+import { IMG_BGHistoryPage, IMG_DummyProductCard } from '../../src/assets';
+import PrivateRoute from '../../src/components/hoc/PrivateRoute';
 import { ModalAlertValidation } from '../../src/components/molecules';
+import { Breakpoints } from '../../src/utils';
 
 const HistoryPage = () => {
   const [page, setPage] = useState(1);
