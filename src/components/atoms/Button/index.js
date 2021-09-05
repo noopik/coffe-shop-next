@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import { IC_GoogleIcon, IC_CircleFb } from '../../../assets/icons';
 
 const Button = ({ theme, onClick, children, className, icon, ...props }) => {
-  const { disabled } = props;
+  // const { disabled } = props;
   const Icons = {
     //  eslint-disable-next-line @next/next/no-img-element
     google: <img alt="icon" src={IC_CircleFb} />,
   };
 
-  console.log('disabled', disabled);
+  // console.log('disabled', disabled);
 
   return (
     <StyledButton

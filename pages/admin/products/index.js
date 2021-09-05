@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 const AddProducts = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [image, setImage] = useState();
 
   const validate = Yup.object({
     image: Yup.string().required('Image is required'),
@@ -41,9 +42,12 @@ const AddProducts = () => {
             price: '',
             description: '',
           }}
-          validationSchema={validate}
+          // validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            console.log(values);
+            console.log('values submit', values);
+            console.log('images', image);
+            console.log('startDate', startDate);
+            console.log('endDate', endDate);
             resetForm();
           }}
         >
@@ -66,7 +70,16 @@ const AddProducts = () => {
                 </Button>
                 <div className="btn-upload-image">
                   <Button className="">Choose from Gallery</Button>
-                  <input type="file" className="input-file" />
+                  <input
+                    type="file"
+                    className="input-file"
+                    onChange={(e) => {
+                      // console.log(e.target.files);
+                      setImage(e.target.files);
+                    }}
+                    // value={image}
+                    name="image"
+                  />
                 </div>
                 <div className="select-section">
                   <h3 className="heading">Delivery Hour :</h3>
@@ -77,6 +90,8 @@ const AddProducts = () => {
                       name="startDate"
                       selected={startDate}
                       onChange={(date) => setStartDate(date)}
+                      // onChange={formik.handleChange}
+                      // value={formik.values.startDate}
                       showTimeSelect
                       timeFormat="HH:mm"
                       timeIntervals={15}
@@ -90,6 +105,8 @@ const AddProducts = () => {
                       id="endDate"
                       name="endDate"
                       selected={endDate}
+                      // onChange={formik.handleChange}
+                      // value={formik.values.endDate}
                       onChange={(date) => setEndDate(date)}
                       showTimeSelect
                       timeFormat="HH:mm"
@@ -101,7 +118,14 @@ const AddProducts = () => {
                 </div>
                 <div className="select-section">
                   <h3 className="heading">Input stock :</h3>
-                  <input className="select-custom" placeholder="Input stock" />
+                  <input
+                    type="text"
+                    name="stock"
+                    className="select-custom"
+                    placeholder="Input stock"
+                    onChange={formik.handleChange}
+                    value={formik.values.stock}
+                  />
                 </div>
               </div>
               <div className="right-side">
@@ -185,7 +209,11 @@ const AddProducts = () => {
                   </div>
                 </div>
                 <div className="button-action">
-                  <Button theme="brown">Save Product</Button>
+                  {/* <input type="submit" placeholder="submit" /> */}
+                  {/* <button type="submit">Submit</button> */}
+                  <Button theme="brown" type="submit">
+                    Save Product
+                  </Button>
                   <Button theme="gray">Cancel</Button>
                 </div>
               </div>
