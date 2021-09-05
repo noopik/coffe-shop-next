@@ -1,23 +1,28 @@
 import styled from 'styled-components';
-import {Breakpoints} from '../../../src/utils';
+import { Breakpoints } from '../../../src/utils';
 import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
 import Link from 'next/link';
-import {Breadcrumb, Breadcrumbs, Button} from '../../../src/components/atoms';
-import {IL_IMGDefaultCamera} from '../../../src/assets';
+import { Breadcrumb, Breadcrumbs, Button } from '../../../src/components/atoms';
+import { IL_IMGDefaultCamera } from '../../../src/assets';
 import Image from 'next/image';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
-import {Formik, Form} from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 
 export const getServerSideProps = async () => {
   try {
-    const resultSizes = await axios.get('http://localhost:4000/sizes/getsizes?pagination=off');
-    const resultDeliveries = await axios.get('http://localhost:4000/deliveries/getdeliveries?pagination=off');
-    const resultCategories = await axios.get('http://localhost:4000/categories/getcategory?pagination=off');
+    const resultSizes = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
+    );
+    const resultDeliveries = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
+    );
+    const resultCategories = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
+    );
     const sizes = resultSizes.data.data;
     const deliveries = resultDeliveries.data.data;
     const categories = resultCategories.data.data;
@@ -46,7 +51,9 @@ const AddProducts = (props) => {
 
   const validate = Yup.object({
     image: Yup.string().required('Image is required'),
-    password: Yup.string().min(6, 'Password must be at least 6 charaters').required('Password is required'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 charaters')
+      .required('Password is required'),
     phone: Yup.number().required('Password is required'),
   });
 
@@ -54,11 +61,13 @@ const AddProducts = (props) => {
     let arrSize = formik.values.sizes;
     if (e.target.checked) {
       arrSize.push(+e.target.value);
-      document.getElementById(`itemSize${e.target.value}`).className += ' select';
+      document.getElementById(`itemSize${e.target.value}`).className +=
+        ' select';
     } else {
       const index = arrSize.indexOf(+e.target.value);
       arrSize.splice(index, 1);
-      document.getElementById(`itemSize${e.target.value}`).className = 'size-item';
+      document.getElementById(`itemSize${e.target.value}`).className =
+        'size-item';
     }
     // console.log(e);
   };
@@ -67,11 +76,13 @@ const AddProducts = (props) => {
     let arrDeliveries = formik.values.deliveries;
     if (e.target.checked) {
       arrDeliveries.push(+e.target.value);
-      document.getElementById(`methodItem${e.target.value}`).className += ' select';
+      document.getElementById(`methodItem${e.target.value}`).className +=
+        ' select';
     } else {
       const index = arrDeliveries.indexOf(+e.target.value);
       arrDeliveries.splice(index, 1);
-      document.getElementById(`methodItem${e.target.value}`).className = 'method-item';
+      document.getElementById(`methodItem${e.target.value}`).className =
+        'method-item';
     }
   };
 
@@ -96,7 +107,7 @@ const AddProducts = (props) => {
             category: '',
           }}
           // validationSchema={validate}
-          onSubmit={(values, {resetForm}) => {
+          onSubmit={(values, { resetForm }) => {
             console.log('values submit', values);
             console.log('images', image);
             console.log('startDate', startDate);
@@ -111,7 +122,11 @@ const AddProducts = (props) => {
                   <div className="image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {/* <img src={IL_IMGDefaultCamera} alt="image product" /> */}
-                    <Image src={IL_IMGDefaultCamera} alt="image" layout="fill" />
+                    <Image
+                      src={IL_IMGDefaultCamera}
+                      alt="image"
+                      layout="fill"
+                    />
                   </div>
                 </div>
                 <Button className="btn" theme="black">
@@ -216,13 +231,18 @@ const AddProducts = (props) => {
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input product size :</label>
-                  <p className="paragraph">Click size you want to use for this product</p>
+                  <p className="paragraph">
+                    Click size you want to use for this product
+                  </p>
                   <div className="select-group">
                     {sizes &&
                       sizes.map((size) => (
                         <>
                           <label htmlFor={`size${size.size_id}`}>
-                            <div className="size-item" id={`itemSize${size.size_id}`}>
+                            <div
+                              className="size-item"
+                              id={`itemSize${size.size_id}`}
+                            >
                               <p>{size.size_name}</p>
                             </div>
                           </label>
@@ -239,13 +259,18 @@ const AddProducts = (props) => {
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
-                  <p className="paragraph">Click methods you want to use for this product</p>
+                  <p className="paragraph">
+                    Click methods you want to use for this product
+                  </p>
                   <div className="select-group">
                     {deliveries &&
                       deliveries.map((delivery) => (
                         <>
                           <label htmlFor={`delivery${delivery.delivery_id}`}>
-                            <div className="method-item" id={`methodItem${delivery.delivery_id}`}>
+                            <div
+                              className="method-item"
+                              id={`methodItem${delivery.delivery_id}`}
+                            >
                               <p>{delivery.delivery_name}</p>
                             </div>
                           </label>
@@ -261,9 +286,15 @@ const AddProducts = (props) => {
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input category :</label>
-                  <p className="paragraph">Select category you want to use for this product</p>
+                  <p className="paragraph">
+                    Select category you want to use for this product
+                  </p>
                   <div className="input-wrapper">
-                    <StyledSelect name="category" id="" onChange={formik.handleChange}>
+                    <StyledSelect
+                      name="category"
+                      id=""
+                      onChange={formik.handleChange}
+                    >
                       <option value="" selected>
                         select category
                       </option>
