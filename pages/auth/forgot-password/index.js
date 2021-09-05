@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
+import router from 'next/router';
 
 const ForgotPasswordPage = () => {
   const [reSend, setReSend] = useState();
@@ -58,7 +59,12 @@ const ForgotPasswordPage = () => {
                   onChange={formik.handleChange}
                   value={formik.values.email}
                 />
-                <Button theme="orange" className="button" type="submit">
+                <Button
+                  theme="orange"
+                  className="button"
+                  // type="submit"
+                  onClick={() => router.push('/auth/reset-password')}
+                >
                   Send
                 </Button>
               </Form>

@@ -8,7 +8,7 @@ import { Breakpoints } from '../../../utils';
 import Head from 'next/head';
 import router from 'next/router';
 
-const AuthLayout = ({ children, titlePage }) => {
+const AuthLayout = ({ children, titlePage, withCard }) => {
   return (
     <StyledAuthLayout>
       <Head>
@@ -20,21 +20,23 @@ const AuthLayout = ({ children, titlePage }) => {
         </aside>
         <main className="main">{children}</main>
       </div>
-      <div className="container card-wrapper">
-        <CardWraper className="card">
-          <div className="right">
-            <h3 className="heading">Get your member card now!</h3>
-            <p className="paragraph">
-              Lets join with our member and enjoy the deals.
-            </p>
-          </div>
-          <div className="button-wrapper">
-            <Button onClick={() => router.push('/auth/register')}>
-              Create Now
-            </Button>
-          </div>
-        </CardWraper>
-      </div>
+      {withCard && (
+        <div className="container card-wrapper">
+          <CardWraper className="card">
+            <div className="right">
+              <h3 className="heading">Get your member card now!</h3>
+              <p className="paragraph">
+                Lets join with our member and enjoy the deals.
+              </p>
+            </div>
+            <div className="button-wrapper">
+              <Button onClick={() => router.push('/auth/register')}>
+                Create Now
+              </Button>
+            </div>
+          </CardWraper>
+        </div>
+      )}
       <Footer />
     </StyledAuthLayout>
   );
@@ -42,6 +44,9 @@ const AuthLayout = ({ children, titlePage }) => {
 
 AuthLayout.propTypes = {
   titlePage: PropTypes.string.isRequired,
+};
+AuthLayout.defaultProps = {
+  withCard: true,
 };
 
 export default AuthLayout;
