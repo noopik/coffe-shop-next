@@ -13,7 +13,6 @@ const TextFieldAdmin = (props) => {
         // {...field}
         {...props}
       />
-      <div className="line-bottom" />
     </StyledTextInputAdmin>
   );
 };
@@ -42,8 +41,5 @@ const StyledTextInputAdmin = styled.div`
     &:valid {
       color: #4f5665;
     }
-  }
-  .line-bottom {
-    border: 1px solid #4f5665;
   }
 `;

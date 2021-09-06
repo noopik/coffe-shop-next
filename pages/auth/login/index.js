@@ -19,7 +19,7 @@ const LoginPage = () => {
     <StyledLoginPage>
       <AuthLayout titlePage="Login">
         <div className="header">
-          <LogoBrand />
+          <LogoBrand click />
           <Button className="btn" onClick={() => router.push('/auth/register')}>
             Sign Up
           </Button>

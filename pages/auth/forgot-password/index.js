@@ -11,13 +11,16 @@ const ForgotPasswordPage = () => {
   const [reSend, setReSend] = useState();
   const [email, setEmail] = useState(null);
   const [counter, setCounter] = useState(0);
+  const [btnSend, setbtnSend] = useState('');
+  const [bntResend, setbntResend] = useState('');
   const reSendEmail = () => {
     console.log('send email again');
+    setReSend(true);
+    countDown();
   };
 
   useEffect(() => {
     setTimeout(() => {
-      setCounter(0);
       setReSend(false);
     }, 2000);
   }, [reSend, counter]);
@@ -25,6 +28,31 @@ const ForgotPasswordPage = () => {
   const validate = Yup.object({
     email: Yup.string().email('Email is invalid').required('Email is required'),
   });
+
+  const countDown = () => {
+    setbtnSend(true);
+    setbntResend(true);
+    const duration = 60 * 2;
+    var timer = duration,
+      minutes,
+      seconds;
+    const loop = setInterval(() => {
+      minutes = parseInt(timer / 60, 10);
+      seconds = parseInt(timer % 60, 10);
+
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      seconds = seconds < 10 ? '0' + seconds : seconds;
+
+      setCounter(minutes + ':' + seconds);
+      timer--;
+      // console.log(counter);
+      if (timer < 1) {
+        setCounter(2);
+        setbntResend('');
+        clearInterval(loop);
+      }
+    }, 1000);
+  };
   // console.log('reSend', reSend);
   return (
     <>
@@ -58,19 +86,38 @@ const ForgotPasswordPage = () => {
                   onChange={formik.handleChange}
                   value={formik.values.email}
                 />
-                <Button theme="orange" className="button" type="submit">
+                {formik.errors.email && (
+                  <p className="text-error">Email Invalid</p>
+                )}
+                {/* router.push('/auth/reset-password') */}
+                <Button
+                  theme="orange"
+                  className="button"
+                  type="submit"
+                  onClick={() => countDown()}
+                  disabled={btnSend}
+                >
                   Send
                 </Button>
               </Form>
             )}
           </Formik>
-          <p className="sub-heading">
-            Click here if you didn’t receive any link in 2 minutes
-          </p>
-          <Button theme="brown" className="re-send" onClick={reSendEmail}>
-            Resend Link
-          </Button>
-          {counter !== 0 && <p className="sub-heading">{counter}</p>}
+          {counter !== 0 && (
+            <>
+              <p className="sub-heading">
+                Click here if you didn’t receive any link in 2 minutes
+              </p>
+              <Button
+                theme="brown"
+                className="re-send"
+                onClick={reSendEmail}
+                disabled={bntResend}
+              >
+                Resend Link
+              </Button>
+              {counter !== 2 && <p className="sub-heading">{counter}</p>}
+            </>
+          )}
         </div>
       </StyledForgotPasswordPage>
       <Footer />

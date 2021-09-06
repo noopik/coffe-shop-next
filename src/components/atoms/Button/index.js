@@ -9,7 +9,7 @@ const Button = ({ theme, onClick, children, className, icon, ...props }) => {
     google: <img alt="icon" src={IC_CircleFb} />,
   };
 
-  // console.log('disabled', className);
+  // console.log('className', className);
 
   return (
     <StyledButton
