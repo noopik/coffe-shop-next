@@ -45,6 +45,9 @@ const AddProducts = (props) => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [image, setImage] = useState();
+  const [errImg, seterrImg] = useState('Please upload product image');
+  const [ArrSize, setarrSize] = useState(0);
+  const [ArrDelivery, setArrDelivery] = useState(0);
 
   const validate = Yup.object({
     name: Yup.string().required('Please insert product name'),
@@ -60,10 +63,16 @@ const AddProducts = (props) => {
     let arrSize = formik.values.sizes;
     if (e.target.checked) {
       arrSize.push(+e.target.value);
+      setarrSize((old) => {
+        return old + 1;
+      });
       document.getElementById(`itemSize${e.target.value}`).className += ' select';
     } else {
       const index = arrSize.indexOf(+e.target.value);
       arrSize.splice(index, 1);
+      setarrSize((old) => {
+        return old - 1;
+      });
       document.getElementById(`itemSize${e.target.value}`).className = 'size-item';
     }
   };
@@ -72,10 +81,16 @@ const AddProducts = (props) => {
     let arrDeliveries = formik.values.deliveries;
     if (e.target.checked) {
       arrDeliveries.push(+e.target.value);
+      setArrDelivery((old) => {
+        return old + 1;
+      });
       document.getElementById(`methodItem${e.target.value}`).className += ' select';
     } else {
       const index = arrDeliveries.indexOf(+e.target.value);
       arrDeliveries.splice(index, 1);
+      setArrDelivery((old) => {
+        return old - 1;
+      });
       document.getElementById(`methodItem${e.target.value}`).className = 'method-item';
     }
   };
@@ -88,7 +103,7 @@ const AddProducts = (props) => {
           <Breadcrumb title="/ Add new product" active />
         </Breadcrumbs>
         <Formik
-          validateOnMount
+          // validateOnMount
           initialValues={{
             image: '',
             startDate: '',
@@ -120,13 +135,7 @@ const AddProducts = (props) => {
                     <Image src={image ? URL.createObjectURL(image) : IL_IMGDefaultCamera} alt="image" layout="fill" />
                   </div>
                 </div>
-                {!image ? (
-                  <label className="error text-center block mb-5">Please upload your product image</label>
-                ) : image.type === 'image/png' || image.type === 'image/jpeg' ? (
-                  image.size > 1048576 * 2 ? <label className="error text-center block mb-5">Max image size 2mb</label> : ""
-                  ) : (
-                    <label className="error text-center block mb-5">Only image is allowed</label>
-                )}
+                {errImg && <label className="error text-center block mb-5">{errImg}</label>}
                 <Button className="btn" theme="black">
                   Take a Picture
                 </Button>
@@ -136,8 +145,18 @@ const AddProducts = (props) => {
                     type="file"
                     className="input-file"
                     onChange={(e) => {
-                      setImage(e.target.files[0]);
-                      console.log(image);
+                      if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+                        if (e.target.files[0].size > 1048576 * 2) {
+                          seterrImg('max size file is 2mb');
+                          setImage('');
+                        } else {
+                          setImage(e.target.files[0]);
+                          seterrImg('');
+                        }
+                      } else {
+                        seterrImg('Only image is allowed');
+                        setImage('');
+                      }
                     }}
                     name="image"
                   />
@@ -237,7 +256,7 @@ const AddProducts = (props) => {
                     {sizes &&
                       sizes.map((size) => (
                         <>
-                          <label htmlFor={`size${size.size_id}`} onClick={() => console.log(formik.values.sizes)}>
+                          <label htmlFor={`size${size.size_id}`}>
                             <div className="size-item" id={`itemSize${size.size_id}`}>
                               <p>{size.size_name}</p>
                             </div>
@@ -252,7 +271,7 @@ const AddProducts = (props) => {
                         </>
                       ))}
                   </div>
-                  {/* <label className="error">Please select product size</label> */}
+                  {ArrSize < 1 && <label className="error">Please select size for this product</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
@@ -275,6 +294,7 @@ const AddProducts = (props) => {
                         </>
                       ))}
                   </div>
+                  {ArrDelivery < 1 && <label className="error">Please select delivery for this product</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input category :</label>
@@ -298,9 +318,11 @@ const AddProducts = (props) => {
                   {/* <input type="submit" placeholder="submit" /> */}
                   {/* <button type="submit">Submit</button> */}
                   <Button
-                    theme={!(formik.isValid && formik.dirty) ? 'gray' : 'brown'}
+                    theme={
+                      !(formik.isValid && formik.dirty) || !image || ArrSize < 1 || ArrDelivery < 1 ? 'gray' : 'brown'
+                    }
                     type="submit"
-                    disabled={!(formik.isValid && formik.dirty)}
+                    disabled={!(formik.isValid && formik.dirty) || !image || ArrSize < 1 || ArrDelivery < 1}
                   >
                     Save Product
                   </Button>
