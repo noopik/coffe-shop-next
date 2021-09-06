@@ -32,7 +32,7 @@ const ForgotPasswordPage = () => {
   const countDown = () => {
     setbtnSend(true);
     setbntResend(true);
-    const duration = 10;
+    const duration = 60 * 2;
     var timer = duration,
       minutes,
       seconds;
