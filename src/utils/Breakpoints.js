@@ -10,22 +10,22 @@ export const Breakpoints = generateMedia({
 });
 
 /*
-    ${breakpoints.lessThan('2xl')`
+    ${Breakpoints.lessThan('2xl')`
       background-color: yellow;
     `}
-    ${breakpoints.lessThan('xl')`
+    ${Breakpoints.lessThan('xl')`
       background-color: blue;
     `}
-    ${breakpoints.lessThan('lg')`
+    ${Breakpoints.lessThan('lg')`
       background-color: cyan;
     `}
-    ${breakpoints.lessThan('md')`
+    ${Breakpoints.lessThan('md')`
       background-color: pink;
     `}
-    ${breakpoints.lessThan('sm')`
+    ${Breakpoints.lessThan('sm')`
       background-color: green;
     `}
-    ${breakpoints.lessThan('xsm')`
+    ${Breakpoints.lessThan('xsm')`
       background-color: pink;
     `}
 */
