@@ -21,7 +21,7 @@ const resetPasswordPage = () => {
     <StyledLoginPage>
       <AuthLayout titlePage="Reset Password" withCard={false}>
         <div className="header">
-          <LogoBrand />
+          <LogoBrand click />
         </div>
         <Formik
           initialValues={{

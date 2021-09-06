@@ -13,7 +13,7 @@ const Footer = () => {
     <StyledFooter>
       <div className="container">
         <div className="description-shop">
-          <LogoBrand className="logo" />
+          <LogoBrand className="logo" click />
           <p className="paragraph">
             Coffee Shop is a store that sells some good meals, and especially
             coffee. We provide high quality beans

@@ -22,7 +22,7 @@ const RegisterPage = () => {
     <StyledRegisterPage>
       <AuthLayout titlePage="Sign Up">
         <div className="header">
-          <LogoBrand />
+          <LogoBrand click />
           <Button className="btn" onClick={() => router.push('/auth/login')}>
             Login
           </Button>

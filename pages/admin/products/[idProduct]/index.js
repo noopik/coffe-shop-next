@@ -9,8 +9,93 @@ import {
 import PrivateRoute from '../../../../src/components/hoc/PrivateRoute';
 import { Breakpoints } from '../../../../src/utils';
 import Image from 'next/image';
+import { useState } from 'react';
+import { Formik, Form } from 'formik';
+import * as Yup from 'yup';
 
-const EditProduct = () => {
+export const getServerSideProps = async () => {
+  try {
+    const resultSizes = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
+    );
+    const resultDeliveries = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
+    );
+    const resultCategories = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
+    );
+    const sizes = resultSizes.data.data;
+    const deliveries = resultDeliveries.data.data;
+    const categories = resultCategories.data.data;
+    return {
+      props: {
+        sizes,
+        deliveries,
+        categories,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      props: {},
+    };
+  }
+};
+
+const EditProduct = (props) => {
+  const sizes = props.sizes;
+  const deliveries = props.deliveries;
+  const categories = props.categories;
+  const [priviewImage, setPreviewImage] = useState([]);
+  const [stockCounter, setStockCounter] = useState(1);
+
+  // START = VALIDATION FORM
+  const validate = Yup.object({
+    // email: Yup.string().email('Email is invalid').required('Email is required'),
+    // password: Yup.string()
+    //   .min(6, 'Password must be at least 6 charaters')
+    //   .required('Password is required'),
+    // phone: Yup.string()
+    //   .required('Phone number is required')
+    //   .min(11, 'Password must be at least 11 charaters')
+    //   .max(13, 'Password must be less than 13 charaters'),
+    image: Yup.string(),
+    name: Yup.string(),
+    price: Yup.string(),
+    description: Yup.string(),
+    size: Yup.string(),
+    method: Yup.string(),
+    category: Yup.string(),
+    stock: Yup.string(),
+  });
+  // END = VALIDATION FORM
+
+  // START = HANDLE STOCK LOGIC
+  const stockIncrement = () => {
+    const increment = stockCounter + 1;
+    setStockCounter(increment);
+  };
+  const stockDecrement = () => {
+    if (stockCounter === 1) {
+      return null;
+    }
+    const increment = stockCounter - 1;
+    setStockCounter(increment);
+  };
+  // END = HANDLE STOCK LOGIC
+
+  // START = HANDLE PRIVIEW IMAGE
+  const previewImage = (e) => {
+    var dataImage = [];
+    dataImage.push(e.target.files);
+    const getImage = window.URL.createObjectURL(
+      new Blob(dataImage, { type: 'application/zip' })
+    );
+    setPreviewImage(getImage);
+  };
+  console.log('priviewImage', priviewImage);
+  // END = HANDLE PRIVIEW IMAGE
+
   return (
     <StyledEditProduct className="container main">
       <Breadcrumbs>
@@ -18,136 +103,230 @@ const EditProduct = () => {
         <Breadcrumb title="> Cold Brew" to="#" active />
         <Breadcrumb title="> Edit product" to="#" active />
       </Breadcrumbs>
-      <form>
-        <div className="side-left">
-          <div className="image-wrapper">
-            <Image src={IMG_DummyProduct} alt="image name" layout="fill" />
-            <div className="btn-circle-wrapper">
-              {true && (
-                <div className="btn delete">
-                  <svg
-                    width="23"
-                    height="24"
-                    viewBox="0 0 23 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 6H4.11111M4.11111 6H21M4.11111 6V20C4.11111 20.5304 4.33353 21.0391 4.72944 21.4142C5.12535 21.7893 5.66232 22 6.22222 22H16.7778C17.3377 22 17.8746 21.7893 18.2706 21.4142C18.6665 21.0391 18.8889 20.5304 18.8889 20V6H4.11111ZM7.27778 6V4C7.27778 3.46957 7.5002 2.96086 7.89611 2.58579C8.29202 2.21071 8.82899 2 9.38889 2H13.6111C14.171 2 14.708 2.21071 15.1039 2.58579C15.4998 2.96086 15.7222 3.46957 15.7222 4V6M9.38889 11V17M13.6111 11V17"
-                      stroke="#6A4029"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+      <Formik
+        initialValues={{
+          image: '',
+          name: '',
+          price: '',
+          description: '',
+          size: '',
+          method: '',
+          category: '',
+          stock: '',
+        }}
+        // validationSchema={validate}
+        onSubmit={(values, { resetForm }) => {
+          console.log(values);
+          resetForm();
+        }}
+      >
+        {(formik) => (
+          <Form>
+            <div className="side-left">
+              <div className="image-wrapper">
+                <Image src={IMG_DummyProduct} alt="image name" layout="fill" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* <img src={priviewImage} alt="image" className="image" /> */}
+                <div className="btn-circle-wrapper">
+                  {false && (
+                    <div className="btn delete">
+                      <svg
+                        width="23"
+                        height="24"
+                        viewBox="0 0 23 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 6H4.11111M4.11111 6H21M4.11111 6V20C4.11111 20.5304 4.33353 21.0391 4.72944 21.4142C5.12535 21.7893 5.66232 22 6.22222 22H16.7778C17.3377 22 17.8746 21.7893 18.2706 21.4142C18.6665 21.0391 18.8889 20.5304 18.8889 20V6H4.11111ZM7.27778 6V4C7.27778 3.46957 7.5002 2.96086 7.89611 2.58579C8.29202 2.21071 8.82899 2 9.38889 2H13.6111C14.171 2 14.708 2.21071 15.1039 2.58579C15.4998 2.96086 15.7222 3.46957 15.7222 4V6M9.38889 11V17M13.6111 11V17"
+                          stroke="#6A4029"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                  {true && (
+                    <div className="btn upload">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <rect
+                          x="10"
+                          width="4"
+                          height="24"
+                          rx="2"
+                          fill="#6A4029"
+                        />
+                        <rect
+                          x="24"
+                          y="10"
+                          width="4"
+                          height="24"
+                          rx="2"
+                          transform="rotate(90 24 10)"
+                          fill="#6A4029"
+                        />
+                      </svg>
+                      <input
+                        type="file"
+                        name="image"
+                        className="input-file"
+                        onChange={(e) => previewImage(e)}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
-              {false && (
-                <div className="btn upload">
+              </div>
+              <div className="date-wrapper">
+                <p className="text">
+                  Delivery only on{' '}
+                  <span className="bold">Monday to friday at 1 - 7 pm</span>
+                </p>
+              </div>
+            </div>
+            <div className="side-right">
+              <div className="row">
+                <TextFieldAdmin
+                  type="text"
+                  name="name"
+                  onChange={formik.handleChange}
+                  value={formik.values.name}
+                  placeholder="Name Product"
+                  defaultValue="COLD BREW"
+                  className="heading-name-product"
+                />
+                <div className="line" />
+              </div>
+              <div className="row price-wrapper">
+                <p className="price">IDR</p>
+                <TextFieldAdmin
+                  type="text"
+                  name="price"
+                  onChange={formik.handleChange}
+                  value={formik.values.price}
+                  placeholder="0"
+                  defaultValue="30.000"
+                  className="price"
+                />
+                <div className="line" />
+              </div>
+              <div className="row">
+                <textarea
+                  // id=" "
+                  // name=" "
+                  name="description"
+                  onChange={formik.handleChange}
+                  value={formik.values.description}
+                  className="text"
+                  defaultValue="Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours."
+                ></textarea>
+                <div className="line" />
+              </div>
+              <div className="row">
+                <select
+                  name="size"
+                  type="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.size}
+                  id="size"
+                  placeholder="Select Size"
+                >
+                  <option>Select Size</option>
+                  {sizes &&
+                    sizes.map((size) => (
+                      <>
+                        <option value={size.size_id}>{size.size_name}</option>
+                      </>
+                    ))}
+                </select>
+              </div>
+              <div className="row">
+                <select
+                  name="method"
+                  id="method"
+                  type="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.method}
+                  placeholder="Select Delivery Methods"
+                >
+                  <option value="">Select Delivery Methods</option>
+                  {deliveries &&
+                    deliveries.map((delivery) => (
+                      <>
+                        <option value={delivery.delivery_id}>
+                          {delivery.delivery_name}
+                        </option>
+                      </>
+                    ))}
+                </select>
+              </div>
+              <div className="row">
+                <select
+                  name="category"
+                  id="category"
+                  type="text"
+                  onChange={formik.handleChange}
+                  value={formik.values.category}
+                  placeholder="Select Delivery Methods"
+                >
+                  <option value="">Select Category Product</option>
+                  {categories &&
+                    categories.map((category) => (
+                      <>
+                        <option value={category.delivery_id}>
+                          {category.delivery_name}
+                        </option>
+                      </>
+                    ))}
+                </select>
+              </div>
+              <div className="row button-wrapper">
+                <div className="counter-wrapper">
                   <svg
+                    onClick={stockIncrement}
                     width="24"
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <rect x="10" width="4" height="24" rx="2" fill="#6A4029" />
-                    <rect
-                      x="24"
-                      y="10"
-                      width="4"
-                      height="24"
-                      rx="2"
-                      transform="rotate(90 24 10)"
-                      fill="#6A4029"
+                    <path
+                      d="M21 15.6H15.7515V21H8.24853V15.6H3V8.43529H8.24853V3H15.7515V8.43529H21V15.6Z"
+                      fill="#9F9F9F"
                     />
                   </svg>
+                  <p>{stockCounter}</p>
+                  <svg
+                    onClick={stockDecrement}
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M21 8V15.0687H3V8H21Z" fill="#9F9F9F" />
+                  </svg>
                 </div>
-              )}
+                <Button>Add to Cart</Button>
+              </div>
+              <div className="btn-saved-wrapper">
+                <Button
+                  disabled={!(formik.isValid && formik.dirty)}
+                  type="submit"
+                >
+                  Saved
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="date-wrapper">
-            <p className="text">
-              Delivery only on{' '}
-              <span className="bold">Monday to friday at 1 - 7 pm</span>
-            </p>
-          </div>
-        </div>
-        <div className="side-right">
-          <div className="row">
-            <TextFieldAdmin
-              placeholder="Name Product"
-              defaultValue="COLD BREW"
-              className="heading-name-product"
-            />
-          </div>
-          <div className="row">
-            <TextFieldAdmin
-              placeholder="IDR 0"
-              defaultValue="IDR 30.000"
-              className="price"
-            />
-          </div>
-          <div className="row">
-            <textarea
-              // id=" "
-              // name=" "
-              className="text"
-              defaultValue="Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours."
-            ></textarea>
-            <div className="line" />
-          </div>
-          <div className="row">
-            <select name="size" id="size" placeholder="Select Size">
-              <option value="">Select Size</option>
-
-              <option value="volvo">Volvo</option>
-              <option value="saab">Saab</option>
-              <option value="mercedes">Mercedes</option>
-              <option value="audi">Audi</option>
-            </select>
-          </div>
-          <div className="row">
-            <select name="size" id="size" placeholder="Select Delivery Methods">
-              <option value="">Select Delivery Methods</option>
-              <option value="volvo">Volvo</option>
-              <option value="saab">Saab</option>
-              <option value="mercedes">Mercedes</option>
-              <option value="audi">Audi</option>
-            </select>
-          </div>
-          <div className="row button-wrapper">
-            <div className="counter-wrapper">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M21 15.6H15.7515V21H8.24853V15.6H3V8.43529H8.24853V3H15.7515V8.43529H21V15.6Z"
-                  fill="#9F9F9F"
-                />
-              </svg>
-              <p>2</p>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M21 8V15.0687H3V8H21Z" fill="#9F9F9F" />
-              </svg>
-            </div>
-            <Button>Add to Cart</Button>
-          </div>
-          <div className="btn-saved-wrapper">
-            <Button theme="gray">Saved</Button>
-          </div>
-        </div>
-      </form>
+          </Form>
+        )}
+      </Formik>
     </StyledEditProduct>
   );
 };
@@ -206,6 +385,17 @@ const StyledEditProduct = styled.div`
           &:hover {
             cursor: pointer;
           }
+          .upload {
+            position: relative;
+            input.input-file {
+              width: 100%;
+              height: 100%;
+              opacity: 0;
+              position: absolute;
+              top: 0%;
+              z-index: 9;
+            }
+          }
         }
       }
       .date-wrapper {
@@ -226,6 +416,7 @@ const StyledEditProduct = styled.div`
         line-height: 97px;
         color: #000000;
       }
+
       .price {
         font-weight: 500;
         font-size: 40px;
@@ -234,6 +425,14 @@ const StyledEditProduct = styled.div`
       }
       .row {
         margin-bottom: 1.5rem;
+        &.price-wrapper {
+          display: flex;
+          .price {
+            padding: 10px 0;
+            margin-right: 10px;
+          }
+          border-bottom: 2px solid #9f9f9f;
+        }
         textarea {
           width: 100%;
           height: 100px;
@@ -244,7 +443,7 @@ const StyledEditProduct = styled.div`
         }
         .line {
           margin-top: 12px;
-          border: 1px solid #9f9f9f;
+          border-bottom: 1px solid #9f9f9f;
         }
         select {
           border: 1px solid #9f9f9f;
