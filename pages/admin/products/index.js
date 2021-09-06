@@ -1,22 +1,19 @@
 import styled from 'styled-components';
-import { Breakpoints } from '../../../src/utils';
+import {Breakpoints} from '../../../src/utils';
 import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
-import Link from 'next/link';
-import { Breadcrumb, Breadcrumbs, Button } from '../../../src/components/atoms';
-import { IL_IMGDefaultCamera } from '../../../src/assets';
+import {Breadcrumb, Breadcrumbs, Button} from '../../../src/components/atoms';
+import {IL_IMGDefaultCamera} from '../../../src/assets';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
-import { Formik, Form } from 'formik';
+import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 
 export const getServerSideProps = async () => {
   try {
-    const resultSizes = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
-    );
+    const resultSizes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`);
     const resultDeliveries = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
     );
@@ -50,39 +47,36 @@ const AddProducts = (props) => {
   const [image, setImage] = useState();
 
   const validate = Yup.object({
-    image: Yup.string().required('Image is required'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
-      .required('Password is required'),
-    phone: Yup.number().required('Password is required'),
+    name: Yup.string().required('Please insert product name'),
+    price: Yup.number().typeError('Price must be number').required('Please insert product price'),
+    description: Yup.string().required('Please insert product description'),
+    stock: Yup.number('').typeError('Stock must be number').required('Please insert product stock'),
+    // sizes: Yup.array().min(1),
+    // deliveries: Yup.array().min(1),
+    category: Yup.string().required('Please select product category'),
   });
 
   const handleSize = (e, formik) => {
     let arrSize = formik.values.sizes;
     if (e.target.checked) {
       arrSize.push(+e.target.value);
-      document.getElementById(`itemSize${e.target.value}`).className +=
-        ' select';
+      document.getElementById(`itemSize${e.target.value}`).className += ' select';
     } else {
       const index = arrSize.indexOf(+e.target.value);
       arrSize.splice(index, 1);
-      document.getElementById(`itemSize${e.target.value}`).className =
-        'size-item';
+      document.getElementById(`itemSize${e.target.value}`).className = 'size-item';
     }
-    // console.log(e);
   };
 
   const handleDelivery = (e, formik) => {
     let arrDeliveries = formik.values.deliveries;
     if (e.target.checked) {
       arrDeliveries.push(+e.target.value);
-      document.getElementById(`methodItem${e.target.value}`).className +=
-        ' select';
+      document.getElementById(`methodItem${e.target.value}`).className += ' select';
     } else {
       const index = arrDeliveries.indexOf(+e.target.value);
       arrDeliveries.splice(index, 1);
-      document.getElementById(`methodItem${e.target.value}`).className =
-        'method-item';
+      document.getElementById(`methodItem${e.target.value}`).className = 'method-item';
     }
   };
 
@@ -94,6 +88,7 @@ const AddProducts = (props) => {
           <Breadcrumb title="/ Add new product" active />
         </Breadcrumbs>
         <Formik
+          validateOnMount
           initialValues={{
             image: '',
             startDate: '',
@@ -106,12 +101,12 @@ const AddProducts = (props) => {
             deliveries: [],
             category: '',
           }}
-          // validationSchema={validate}
-          onSubmit={(values, { resetForm }) => {
+          validationSchema={validate}
+          onSubmit={(values, {resetForm}) => {
+            values.image = image;
+            values.startDate = startDate;
+            values.endDate = endDate;
             console.log('values submit', values);
-            console.log('images', image);
-            console.log('startDate', startDate);
-            console.log('endDate', endDate);
             resetForm();
           }}
         >
@@ -122,13 +117,16 @@ const AddProducts = (props) => {
                   <div className="image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {/* <img src={IL_IMGDefaultCamera} alt="image product" /> */}
-                    <Image
-                      src={IL_IMGDefaultCamera}
-                      alt="image"
-                      layout="fill"
-                    />
+                    <Image src={image ? URL.createObjectURL(image) : IL_IMGDefaultCamera} alt="image" layout="fill" />
                   </div>
                 </div>
+                {!image ? (
+                  <label className="error text-center block mb-5">Please upload your product image</label>
+                ) : image.type === 'image/png' || image.type === 'image/jpeg' ? (
+                  image.size > 1048576 * 2 ? <label className="error text-center block mb-5">Max image size 2mb</label> : ""
+                  ) : (
+                    <label className="error text-center block mb-5">Only image is allowed</label>
+                )}
                 <Button className="btn" theme="black">
                   Take a Picture
                 </Button>
@@ -138,10 +136,9 @@ const AddProducts = (props) => {
                     type="file"
                     className="input-file"
                     onChange={(e) => {
-                      // console.log(e.target.files);
-                      setImage(e.target.files);
+                      setImage(e.target.files[0]);
+                      console.log(image);
                     }}
-                    // value={image}
                     name="image"
                   />
                 </div>
@@ -191,6 +188,7 @@ const AddProducts = (props) => {
                     value={formik.values.stock}
                   />
                 </div>
+                {formik.errors.stock && <label className="error">{formik.errors.stock}</label>}
               </div>
               <div className="right-side">
                 <div className="input-wrapper">
@@ -203,7 +201,8 @@ const AddProducts = (props) => {
                     value={formik.values.name}
                     placeholder="Type product name min. 50 characters"
                   />
-                  <div className="line-bottom" />
+                  <div className={`line-bottom ${formik.errors.name && 'is-invalid'}`} />
+                  {formik.errors.name && <label className="error">{formik.errors.name}</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Price :</label>
@@ -215,7 +214,8 @@ const AddProducts = (props) => {
                     value={formik.values.price}
                     placeholder="Type the price"
                   />
-                  <div className="line-bottom" />
+                  <div className={`line-bottom ${formik.errors.price && 'is-invalid'}`} />
+                  {formik.errors.price && <label className="error">{formik.errors.price}</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Description :</label>
@@ -227,22 +227,18 @@ const AddProducts = (props) => {
                     value={formik.values.description}
                     placeholder="Describe your product min. 150 characters"
                   />
-                  <div className="line-bottom" />
+                  <div className={`line-bottom ${formik.errors.description && 'is-invalid'}`} />
+                  {formik.errors.description && <label className="error">{formik.errors.description}</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input product size :</label>
-                  <p className="paragraph">
-                    Click size you want to use for this product
-                  </p>
+                  <p className="paragraph">Click size you want to use for this product</p>
                   <div className="select-group">
                     {sizes &&
                       sizes.map((size) => (
                         <>
-                          <label htmlFor={`size${size.size_id}`}>
-                            <div
-                              className="size-item"
-                              id={`itemSize${size.size_id}`}
-                            >
+                          <label htmlFor={`size${size.size_id}`} onClick={() => console.log(formik.values.sizes)}>
+                            <div className="size-item" id={`itemSize${size.size_id}`}>
                               <p>{size.size_name}</p>
                             </div>
                           </label>
@@ -256,21 +252,17 @@ const AddProducts = (props) => {
                         </>
                       ))}
                   </div>
+                  {/* <label className="error">Please select product size</label> */}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
-                  <p className="paragraph">
-                    Click methods you want to use for this product
-                  </p>
+                  <p className="paragraph">Click methods you want to use for this product</p>
                   <div className="select-group">
                     {deliveries &&
                       deliveries.map((delivery) => (
                         <>
                           <label htmlFor={`delivery${delivery.delivery_id}`}>
-                            <div
-                              className="method-item"
-                              id={`methodItem${delivery.delivery_id}`}
-                            >
+                            <div className="method-item" id={`methodItem${delivery.delivery_id}`}>
                               <p>{delivery.delivery_name}</p>
                             </div>
                           </label>
@@ -286,15 +278,9 @@ const AddProducts = (props) => {
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input category :</label>
-                  <p className="paragraph">
-                    Select category you want to use for this product
-                  </p>
+                  <p className="paragraph">Select category you want to use for this product</p>
                   <div className="input-wrapper">
-                    <StyledSelect
-                      name="category"
-                      id=""
-                      onChange={formik.handleChange}
-                    >
+                    <StyledSelect name="category" id="" onChange={formik.handleChange}>
                       <option value="" selected>
                         select category
                       </option>
@@ -305,12 +291,17 @@ const AddProducts = (props) => {
                           </option>
                         ))}
                     </StyledSelect>
+                    {formik.errors.category && <label className="error">{formik.errors.category}</label>}
                   </div>
                 </div>
                 <div className="button-action">
                   {/* <input type="submit" placeholder="submit" /> */}
                   {/* <button type="submit">Submit</button> */}
-                  <Button theme="brown" type="submit">
+                  <Button
+                    theme={!(formik.isValid && formik.dirty) ? 'gray' : 'brown'}
+                    type="submit"
+                    disabled={!(formik.isValid && formik.dirty)}
+                  >
                     Save Product
                   </Button>
                   <Button theme="gray">Cancel</Button>
@@ -437,6 +428,9 @@ const StyledAddProducts = styled.div`
           }
           .line-bottom {
             border: 1px solid #4f5665;
+            &.is-invalid {
+              border-color: red;
+            }
           }
           .paragraph {
             font-family: Rubik;
@@ -520,6 +514,12 @@ const StyledAddProducts = styled.div`
         line-height: 30px;
         color: #6a4029;
         margin-bottom: 20px;
+      }
+      .error {
+        color: red;
+        margin-top: 10px;
+        font-family: Rubik;
+        font-size: 1rem;
       }
     }
   }
