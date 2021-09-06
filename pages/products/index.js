@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import PrivateRoute from '../../src/components/hoc/PrivateRoute';
+import PublicRoute from '../../src/components/hoc/PublicRoute';
 import { Breakpoints } from '../../src/utils';
 import Image from 'next/image';
 import { Button } from '../../src/components/atoms';
@@ -141,7 +141,7 @@ const ProductsPage = () => {
   );
 };
 
-export default PrivateRoute(ProductsPage);
+export default PublicRoute(ProductsPage);
 
 // START === STYLING CURRENT PAGE
 

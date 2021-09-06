@@ -394,7 +394,7 @@ const EditProduct = (props) => {
   );
 };
 
-export default EditProduct;
+export default PrivateRoute(EditProduct,['admin']);
 
 // START === STYLING CURRENT PAGE
 

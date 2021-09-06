@@ -16,7 +16,7 @@ axiosConfig.interceptors.response.use(
       try {
         originalRequest._retry = true;
         const data = await (
-          await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/refreshtoken`, {}, { withCredentials: true })
+          await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/refresh-token`, {}, { withCredentials: true })
         ).data;
         return axiosConfig(originalRequest);
       } catch (error) {

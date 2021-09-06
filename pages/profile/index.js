@@ -267,7 +267,7 @@ const ProfileUser = () => {
   );
 };
 
-export default PrivateRoute(ProfileUser);
+export default PrivateRoute(ProfileUser.apply,['member','admin']);
 
 // START === STYLING CURRENT PAGE
 
