@@ -67,7 +67,7 @@ const ForgotPasswordPage = () => {
                   // theme="orange"
                   className="button"
                   disabled={!(formik.isValid && formik.dirty)}
-                  onClick={() => router.push('/auth/reset-password')}
+                  // onClick={() => router.push('/auth/reset-password')}
                 >
                   Send
                 </Button>

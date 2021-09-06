@@ -46,7 +46,7 @@ const EditProduct = (props) => {
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
-  const [priviewImage, setPreviewImage] = useState([]);
+  const [priviewImage, setPreviewImage] = useState('');
   const [stockCounter, setStockCounter] = useState(1);
 
   // START = VALIDATION FORM
@@ -91,7 +91,8 @@ const EditProduct = (props) => {
     const getImage = window.URL.createObjectURL(
       new Blob(dataImage, { type: 'application/zip' })
     );
-    setPreviewImage(getImage);
+    // setPreviewImage(getImage);
+    setPreviewImage(e.target.files[0]);
   };
   console.log('priviewImage', priviewImage);
   // END = HANDLE PRIVIEW IMAGE
@@ -124,9 +125,16 @@ const EditProduct = (props) => {
           <Form>
             <div className="side-left">
               <div className="image-wrapper">
-                <Image src={IMG_DummyProduct} alt="image name" layout="fill" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {/* <img src={priviewImage} alt="image" className="image" /> */}
+                {/* <Image src={IMG_DummyProduct} alt="image name" layout="fill" /> */}
+                {priviewImage && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={URL?.createObjectURL(priviewImage)}
+                    alt="image"
+                    className="image"
+                  />
+                )}
+
                 <div className="btn-circle-wrapper">
                   {false && (
                     <div className="btn delete">
