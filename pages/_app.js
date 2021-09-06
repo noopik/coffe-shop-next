@@ -1,8 +1,14 @@
 import '../styles/globals.css';
 import Head from 'next/head';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { Breakpoints } from '../src/utils';
+import { useStore } from '../src/redux/store';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/lib/integration/react';
+import { persistStore } from 'redux-persist';
+import NextNProgress from 'nextjs-progressbar';
 
 const GlobalStyle = createGlobalStyle`
   .container {
@@ -20,11 +26,6 @@ const GlobalStyle = createGlobalStyle`
     `}
   }
 `;
-import { useStore } from '../src/redux/store';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/lib/integration/react';
-import { persistStore } from 'redux-persist';
-import NextNProgress from 'nextjs-progressbar';
 
 function MyApp({ Component, pageProps }) {
   const store = useStore(pageProps.initialReduxState);

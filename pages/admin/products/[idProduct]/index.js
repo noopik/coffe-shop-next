@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { IMG_DummyProduct } from '../../../../src/assets';
+import { IMG_DefaultProduct, IMG_DummyProduct } from '../../../../src/assets';
 import {
   Breadcrumb,
   Breadcrumbs,
@@ -7,21 +7,23 @@ import {
   TextFieldAdmin,
 } from '../../../../src/components/atoms';
 import PrivateRoute from '../../../../src/components/hoc/PrivateRoute';
-import { Breakpoints } from '../../../../src/utils';
+import { Breakpoints, Toastify } from '../../../../src/utils';
 import Image from 'next/image';
 import { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import axiosConfig from '../../../../src/config/Axios';
+import { ErrorMessage } from 'formik';
 
 export const getServerSideProps = async () => {
   try {
-    const resultSizes = await axios.get(
+    const resultSizes = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
     );
-    const resultDeliveries = await axios.get(
+    const resultDeliveries = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
     );
-    const resultCategories = await axios.get(
+    const resultCategories = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
     );
     const sizes = resultSizes.data.data;
@@ -47,26 +49,19 @@ const EditProduct = (props) => {
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
+  const [defaultImage, setDefaultImage] = useState(
+    'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg'
+  );
   const [stockCounter, setStockCounter] = useState(1);
 
   // START = VALIDATION FORM
   const validate = Yup.object({
-    // email: Yup.string().email('Email is invalid').required('Email is required'),
-    // password: Yup.string()
-    //   .min(6, 'Password must be at least 6 charaters')
-    //   .required('Password is required'),
-    // phone: Yup.string()
-    //   .required('Phone number is required')
-    //   .min(11, 'Password must be at least 11 charaters')
-    //   .max(13, 'Password must be less than 13 charaters'),
-    image: Yup.string(),
-    name: Yup.string(),
-    price: Yup.string(),
-    description: Yup.string(),
-    size: Yup.string(),
-    method: Yup.string(),
-    category: Yup.string(),
-    stock: Yup.string(),
+    name: Yup.string().required('Name product is required'),
+    price: Yup.number().required('Price is required'),
+    description: Yup.string().required('Description is required'),
+    size: Yup.string().required('Size is required'),
+    method: Yup.string().required('Method payment is required'),
+    category: Yup.string().required('Category is required'),
   });
   // END = VALIDATION FORM
 
@@ -86,17 +81,11 @@ const EditProduct = (props) => {
 
   // START = HANDLE PRIVIEW IMAGE
   const previewImage = (e) => {
-    var dataImage = [];
-    dataImage.push(e.target.files);
-    const getImage = window.URL.createObjectURL(
-      new Blob(dataImage, { type: 'application/zip' })
-    );
-    // setPreviewImage(getImage);
+    setDefaultImage(false);
     setPreviewImage(e.target.files[0]);
   };
-  console.log('priviewImage', priviewImage);
   // END = HANDLE PRIVIEW IMAGE
-
+  // console.log('categories', categories);
   return (
     <StyledEditProduct className="container main">
       <Breadcrumbs>
@@ -106,18 +95,44 @@ const EditProduct = (props) => {
       </Breadcrumbs>
       <Formik
         initialValues={{
-          image: '',
-          name: '',
-          price: '',
-          description: '',
+          name: 'COLD BREW',
+          price: 1000,
+          description:
+            'Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.',
           size: '',
           method: '',
           category: '',
-          stock: '',
         }}
-        // validationSchema={validate}
+        validationSchema={validate}
         onSubmit={(values, { resetForm }) => {
-          console.log(values);
+          const image = priviewImage ? priviewImage : defaultImage;
+
+          if (!image) {
+            return Toastify('Images required!', 'error');
+          }
+
+          const formData = new FormData();
+          formData.append('product_name', values.name);
+          formData.append('price', values.price);
+          formData.append('category_id', values.category);
+          formData.append('description', values.description);
+          formData.append('stock', stockCounter);
+          formData.append('delivery_id', values.method);
+          formData.append('size_id', values.size);
+          formData.append('img_product', image);
+
+          const checkDataSend = {
+            product_name: values.name,
+            price: values.price,
+            category_id: values.category,
+            description: values.description,
+            stock: stockCounter,
+            delivery_id: values.method,
+            size_id: values.size,
+            img_product: image,
+          };
+          console.log('checkDataSend:', checkDataSend);
+
           resetForm();
         }}
       >
@@ -125,7 +140,17 @@ const EditProduct = (props) => {
           <Form>
             <div className="side-left">
               <div className="image-wrapper">
-                {/* <Image src={IMG_DummyProduct} alt="image name" layout="fill" /> */}
+                {!defaultImage && !priviewImage && (
+                  <Image
+                    src={IMG_DefaultProduct}
+                    alt="image name"
+                    layout="fill"
+                  />
+                )}
+                {defaultImage && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={defaultImage} alt="image" className="image" />
+                )}
                 {priviewImage && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -136,8 +161,14 @@ const EditProduct = (props) => {
                 )}
 
                 <div className="btn-circle-wrapper">
-                  {false && (
-                    <div className="btn delete">
+                  {(priviewImage || defaultImage) && (
+                    <div
+                      className="btn delete"
+                      onClick={() => {
+                        setDefaultImage(false);
+                        setPreviewImage(false);
+                      }}
+                    >
                       <svg
                         width="23"
                         height="24"
@@ -155,7 +186,7 @@ const EditProduct = (props) => {
                       </svg>
                     </div>
                   )}
-                  {true && (
+                  {!(priviewImage || defaultImage) && (
                     <div className="btn upload">
                       <svg
                         width="24"
@@ -206,10 +237,13 @@ const EditProduct = (props) => {
                   onChange={formik.handleChange}
                   value={formik.values.name}
                   placeholder="Name Product"
-                  defaultValue="COLD BREW"
+                  defaultValue={formik.values.name}
                   className="heading-name-product"
                 />
                 <div className="line" />
+                {formik.errors.name && (
+                  <p className="input-invalid">{formik.errors.name}</p>
+                )}
               </div>
               <div className="row price-wrapper">
                 <p className="price">IDR</p>
@@ -219,11 +253,16 @@ const EditProduct = (props) => {
                   onChange={formik.handleChange}
                   value={formik.values.price}
                   placeholder="0"
-                  defaultValue="30.000"
+                  defaultValue={formik.values.price}
                   className="price"
                 />
                 <div className="line" />
               </div>
+              {formik.errors.price && (
+                <p className="input-invalid outside-form">
+                  {formik.errors.price}
+                </p>
+              )}
               <div className="row">
                 <textarea
                   // id=" "
@@ -232,9 +271,12 @@ const EditProduct = (props) => {
                   onChange={formik.handleChange}
                   value={formik.values.description}
                   className="text"
-                  defaultValue="Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours."
+                  defaultValue={formik.values.description}
                 ></textarea>
                 <div className="line" />
+                {formik.errors.description && (
+                  <p className="input-invalid">{formik.errors.description}</p>
+                )}
               </div>
               <div className="row">
                 <select
@@ -245,7 +287,7 @@ const EditProduct = (props) => {
                   id="size"
                   placeholder="Select Size"
                 >
-                  <option>Select Size</option>
+                  <option value="">Select Size</option>
                   {sizes &&
                     sizes.map((size) => (
                       <>
@@ -253,6 +295,9 @@ const EditProduct = (props) => {
                       </>
                     ))}
                 </select>
+                {formik.errors.size && (
+                  <p className="input-invalid">{formik.errors.size}</p>
+                )}
               </div>
               <div className="row">
                 <select
@@ -273,6 +318,9 @@ const EditProduct = (props) => {
                       </>
                     ))}
                 </select>
+                {formik.errors.method && (
+                  <p className="input-invalid">{formik.errors.method}</p>
+                )}
               </div>
               <div className="row">
                 <select
@@ -287,12 +335,15 @@ const EditProduct = (props) => {
                   {categories &&
                     categories.map((category) => (
                       <>
-                        <option value={category.delivery_id}>
-                          {category.delivery_name}
+                        <option value={category.category_id}>
+                          {category.category_name}
                         </option>
                       </>
                     ))}
                 </select>
+                {formik.errors.category && (
+                  <p className="input-invalid">{formik.errors.category}</p>
+                )}
               </div>
               <div className="row button-wrapper">
                 <div className="counter-wrapper">
@@ -323,10 +374,14 @@ const EditProduct = (props) => {
                 </div>
                 <Button>Add to Cart</Button>
               </div>
+              {formik.errors.stock && (
+                <p className="input-invalid">{formik.errors.stock}</p>
+              )}
               <div className="btn-saved-wrapper">
                 <Button
                   disabled={!(formik.isValid && formik.dirty)}
                   type="submit"
+                  className={formik.errors}
                 >
                   Saved
                 </Button>
@@ -344,6 +399,7 @@ export default PrivateRoute(EditProduct);
 // START === STYLING CURRENT PAGE
 
 const StyledEditProduct = styled.div`
+  padding-bottom: 80px;
   form {
     font-family: Poppins;
     font-style: normal;
@@ -375,6 +431,8 @@ const StyledEditProduct = styled.div`
         `}
         img {
           object-fit: cover;
+          width: 100%;
+          height: 100%;
         }
         .btn-circle-wrapper {
           background-color: blue;
@@ -514,6 +572,15 @@ const StyledEditProduct = styled.div`
       .bold {
         font-weight: bold;
         font-size: 25px;
+      }
+    }
+    .input-invalid {
+      color: red;
+      font-size: 20px;
+      margin-top: 10px;
+      &.outside-form {
+        margin-top: -10px;
+        margin-bottom: 10px;
       }
     }
   }
