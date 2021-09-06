@@ -122,11 +122,7 @@ const AddProducts = (props) => {
                   <div className="image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {/* <img src={IL_IMGDefaultCamera} alt="image product" /> */}
-                    <Image
-                      src={IL_IMGDefaultCamera}
-                      alt="image"
-                      layout="fill"
-                    />
+                    <Image src={IL_IMGDefaultCamera} alt="image" layout="fill" />
                   </div>
                 </div>
                 <Button className="btn" theme="black">
@@ -231,18 +227,13 @@ const AddProducts = (props) => {
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input product size :</label>
-                  <p className="paragraph">
-                    Click size you want to use for this product
-                  </p>
+                  <p className="paragraph">Click size you want to use for this product</p>
                   <div className="select-group">
                     {sizes &&
-                      sizes.map((size) => (
-                        <>
+                      sizes.map((size, index) => (
+                        <div key={index}>
                           <label htmlFor={`size${size.size_id}`}>
-                            <div
-                              className="size-item"
-                              id={`itemSize${size.size_id}`}
-                            >
+                            <div className="size-item" id={`itemSize${size.size_id}`}>
                               <p>{size.size_name}</p>
                             </div>
                           </label>
@@ -253,24 +244,19 @@ const AddProducts = (props) => {
                             value={size.size_id}
                             onChange={(e) => handleSize(e, formik)}
                           />
-                        </>
+                        </div>
                       ))}
                   </div>
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
-                  <p className="paragraph">
-                    Click methods you want to use for this product
-                  </p>
+                  <p className="paragraph">Click methods you want to use for this product</p>
                   <div className="select-group">
                     {deliveries &&
-                      deliveries.map((delivery) => (
-                        <>
+                      deliveries.map((delivery, index) => (
+                        <div key={index}>
                           <label htmlFor={`delivery${delivery.delivery_id}`}>
-                            <div
-                              className="method-item"
-                              id={`methodItem${delivery.delivery_id}`}
-                            >
+                            <div className="method-item" id={`methodItem${delivery.delivery_id}`}>
                               <p>{delivery.delivery_name}</p>
                             </div>
                           </label>
@@ -280,24 +266,16 @@ const AddProducts = (props) => {
                             value={delivery.delivery_id}
                             onChange={(e) => handleDelivery(e, formik)}
                           />
-                        </>
+                        </div>
                       ))}
                   </div>
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input category :</label>
-                  <p className="paragraph">
-                    Select category you want to use for this product
-                  </p>
+                  <p className="paragraph">Select category you want to use for this product</p>
                   <div className="input-wrapper">
-                    <StyledSelect
-                      name="category"
-                      id=""
-                      onChange={formik.handleChange}
-                    >
-                      <option value="" selected>
-                        select category
-                      </option>
+                    <StyledSelect name="category" id="" onChange={formik.handleChange}>
+                      <option value="">select category</option>
                       {categories &&
                         categories.map((category, index) => (
                           <option key={index} value={category.category_id}>
@@ -324,7 +302,7 @@ const AddProducts = (props) => {
   );
 };
 
-export default PrivateRoute(AddProducts);
+export default PrivateRoute(AddProducts,['admin']);
 
 // START === STYLING CURRENT PAGE
 

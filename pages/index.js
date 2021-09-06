@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 import { Breakpoints } from '../src/utils';
 import Image from 'next/image'
-import PrivateRoute from '../src/components/hoc/PrivateRoute';
+import PublicRoute from '../src/components/hoc/PublicRoute';
 import IMG_TeamWork from '../src/assets/images/IMG_TeamWork.png'
 import IMG_Global from '../src/assets/images/IMG_Global.png'
 import IMG_Sponsored from '../src/assets/images/IMG_Sponsored.png'
@@ -153,7 +153,7 @@ function Home() {
     </StyledHomePage>
   );
 }
-export default PrivateRoute(Home);
+export default PublicRoute(Home);
 
 const StyledHomePage = styled.div`
   /* background-color: yellow;

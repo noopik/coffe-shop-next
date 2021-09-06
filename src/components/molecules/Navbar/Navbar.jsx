@@ -15,8 +15,11 @@ import styled from 'styled-components';
 import { IMG_AvatarDefault } from '../../../assets';
 import { Breakpoints } from '../../../utils';
 import { LogoBrand } from '../../atoms';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/action/userAction';
 
 const Navbar = (props) => {
+  const dispatch = useDispatch()
   const [show, setShow] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
   const router = useRouter();
@@ -64,22 +67,22 @@ const Navbar = (props) => {
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
-                <Link href={props?.role === 'customer' ? '/carts' : '/orders'}>
+                <Link href={props?.user?.roles === 'member' ? '/carts' : '/orders'}>
                   <a
                     className={`${style['li-menu-a']} ${router.pathname === '/cart' ? style['li-menu-a-active'] : ''}`}
                   >
-                    {props?.role === 'customer' ? 'Your Cart' : 'Orders'}
+                    {props?.user?.roles === 'member' ? 'Your Cart' : 'Orders'}
                   </a>
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
-                <Link href={props?.role === 'customer' ? '/history' : '/dashboard'}>
+                <Link href={props?.user?.roles === 'member' ? '/history' : '/dashboard'}>
                   <a
                     className={`${style['li-menu-a']} ${
                       router.pathname === '/history' ? style['li-menu-a-active'] : ''
                     }`}
                   >
-                    {props?.role === 'customer' ? 'History' : 'Dashboard'}
+                    {props?.user?.roles === 'member' ? 'History' : 'Dashboard'}
                   </a>
                 </Link>
               </li>
@@ -128,9 +131,9 @@ const Navbar = (props) => {
                         <Link href="/profile">
                           <a>Edit Profile</a>
                         </Link>
-                        <Link href="/auth/login">
+                        <div onClick={()=> dispatch(logout(router))}>
                           <a>Logout</a>
-                        </Link>
+                        </div>
                       </div>
                     )}
                   </div>

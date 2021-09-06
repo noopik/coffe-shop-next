@@ -78,7 +78,7 @@ const CartPage = () => {
   )
 };
 
-export default PrivateRoute(CartPage);
+export default PrivateRoute(CartPage,['member','admin']);
 
 // START === STYLING CURRENT PAGE
 

@@ -13,9 +13,7 @@ const LoginPage = () => {
   const dispatch = useDispatch();
   const validate = Yup.object({
     email: Yup.string().email('Email is invalid').required('Email is required'),
-    password: Yup.string()
-      .min(8, 'Password must be at least 8 charaters')
-      .required('Password is required'),
+    password: Yup.string().min(8, 'Password must be at least 8 charaters').required('Password is required'),
   });
 
   return (
@@ -34,7 +32,7 @@ const LoginPage = () => {
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            dispatch(login(values,router))
+            dispatch(login(values, router));
             resetForm();
           }}
         >
@@ -42,26 +40,14 @@ const LoginPage = () => {
             <>
               <h1 className="heading-page">Login</h1>
               <Form>
-                <TextField
-                  label="Email Adress :"
-                  name="email"
-                  type="text"
-                  placeholder="Enter your email adress"
-                />
-                <TextField
-                  label="Password :"
-                  name="password"
-                  type="password"
-                  placeholder="Enter your password"
-                />
+                <TextField label="Email Adress :" name="email" type="text" placeholder="Enter your email adress" />
+                <TextField label="Password :" name="password" type="password" placeholder="Enter your password" />
                 <Link href="/auth/forgot-password">
                   <a className="forgot-password">Forgot password?</a>
                 </Link>
-                <Button disabled={!(formik.isValid && formik.dirty)}>
-                  Sign Up
-                </Button>
+                <Button disabled={!(formik.isValid && formik.dirty)}>Login</Button>
                 <Button icon="google" disabled={true} theme="white">
-                  Sign Up With Google
+                  Login With Google
                 </Button>
               </Form>
             </>
