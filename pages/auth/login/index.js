@@ -54,7 +54,9 @@ const LoginPage = () => {
                 <Link href="/auth/forgot-password">
                   <a className="forgot-password">Forgot password?</a>
                 </Link>
-                <Button>Sign Up</Button>
+                <Button disabled={!(formik.isValid && formik.dirty)}>
+                  Sign Up
+                </Button>
                 <Button icon="google" disabled={true} theme="white">
                   Sign Up With Google
                 </Button>

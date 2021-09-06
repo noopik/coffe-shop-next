@@ -9,7 +9,7 @@ const Button = ({ theme, onClick, children, className, icon, ...props }) => {
     google: <img alt="icon" src={IC_CircleFb} />,
   };
 
-  // console.log('disabled', disabled);
+  // console.log('disabled', className);
 
   return (
     <StyledButton
@@ -23,6 +23,7 @@ const Button = ({ theme, onClick, children, className, icon, ...props }) => {
     </StyledButton>
   );
 };
+
 Button.propTypes = {
   onClick: PropTypes.func,
   children: PropTypes.string.isRequired,

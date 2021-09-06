@@ -238,6 +238,9 @@ const StyledEditProduct = styled.div`
           width: 100%;
           height: 100px;
           background-color: transparent;
+          &:focus {
+            outline: none;
+          }
         }
         .line {
           margin-top: 12px;
@@ -254,10 +257,13 @@ const StyledEditProduct = styled.div`
           line-height: 138.84%;
           letter-spacing: 0.03em;
           color: #9f9f9f;
-
           -webkit-appearance: none;
           -moz-appearance: none;
           appearance: none;
+          option {
+            /* width: 50%; */
+            /* background-color: yellow; */
+          }
           &:focus {
             outline: none;
           }

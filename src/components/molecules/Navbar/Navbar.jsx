@@ -13,6 +13,7 @@ import style from './navbar.module.css';
 import styled from 'styled-components';
 import { IMG_AvatarDefault } from '../../../assets';
 import { Breakpoints } from '../../../utils';
+import { LogoBrand } from '../../atoms';
 
 const Navbar = (props) => {
   const [show, setShow] = useState(false);
@@ -32,9 +33,12 @@ const Navbar = (props) => {
       <div className={style.navbar}>
         <div className={`${style['navbar-container']} container`}>
           <div className={style['navbar-menu-left']}>
+            <LogoBrand click />
+          </div>
+          {/* <div className={style['navbar-menu-left']}>
             <Image src={logo} width="25px" height="25px" alt="icon-logo" />
             <p className={style['navbar-text-brand']}>Coffee Shop</p>
-          </div>
+          </div> */}
           <div className={style['button-show-hide-navbar']}>
             <button
               onClick={() => setShow(!show)}
