@@ -6,20 +6,39 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "production": "npm run build && npm run start"
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "bootstrap": "^5.1.0",
     "formik": "^2.2.9",
+    "js-cookie": "^3.0.1",
     "next": "11.1.2",
+    "nextjs-progressbar": "0.0.11",
+    "prop-types": "^15.7.2",
+    "rc-pagination": "^3.1.9",
     "react": "17.0.2",
+    "react-bootstrap": "^2.0.0-beta.6",
     "react-dom": "17.0.2",
+    "react-redux": "^7.2.4",
     "react-toastify": "^8.0.2",
+    "redux": "^4.1.1",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-persist": "^6.0.0",
+    "redux-persist-cookie-storage": "^1.0.0",
+    "redux-thunk": "^2.3.0",
+    "socket.io-client": "^4.2.0",
     "styled-components": "^5.3.1",
-    "styled-media-query": "^2.1.2"
+    "styled-media-query": "^2.1.2",
+    "sweetalert": "^2.1.2",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
+    "autoprefixer": "^10.3.4",
     "eslint": "7.32.0",
-    "eslint-config-next": "11.1.2"
+    "eslint-config-next": "11.1.2",
+    "postcss": "^8.3.6",
+    "tailwindcss": "^2.2.9"
   }
 }

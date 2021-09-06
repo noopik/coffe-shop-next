@@ -1,9 +1,31 @@
 import axios from 'axios';
-import getConfig from 'next/config';
-const { publicRuntimeConfig } = getConfig();
-
-const Axios = axios.create({
-  baseURL: publicRuntimeConfig.backendUrl,
+import { store } from '../redux/store';
+const axiosConfig = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
-export default Axios;
+axiosConfig.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async function (error) {
+    const originalRequest = error.config;
+    const { message, statusCode } = error.response.data;
+    if (statusCode === 401 && message === 'token expired' && !originalRequest._retry) {
+      try {
+        originalRequest._retry = true;
+        const data = await (
+          await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/users/refreshtoken`, {}, { withCredentials: true })
+        ).data;
+        return axiosConfig(originalRequest);
+      } catch (error) {
+        store.dispatch({ type: 'LOGOUT', payload: {} });
+        return Promise.reject(error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default axiosConfig;
