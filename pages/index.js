@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import styled from 'styled-components';
 import { Breakpoints } from '../src/utils';
 import Image from 'next/image'
@@ -296,7 +297,7 @@ const Container = styled.div`
 
 
     
-  }
+  }}
 `
 
 const HeaderHomePage = styled.div`
@@ -388,7 +389,7 @@ const Body1Right = styled.div`
   }
   ul {
     list-style: circle;
-    // list-style-image: url('../src/assets/icons/checklist.png');
+    /* list-style-image: url('../src/assets/icons/checklist.png'); */
   }
   li {
     font-size: 20px;
@@ -432,7 +433,7 @@ const Body2Card = styled.div`
   margin: 0 10%;
 
   .card-wrap{
-    width: 100p%;
+    width: 100%;
     height: 100%;
     display: flex;
     flex-direction: row;
