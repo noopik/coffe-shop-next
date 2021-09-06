@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const ProfileUser = () => {
   const [users, setUsers] = useState({
@@ -20,6 +22,8 @@ const ProfileUser = () => {
   });
 
   const [previewImage, setPreviewImage] = useState(users.image);
+  const [dateBorn, setDateBorn] = useState(new Date());
+
   // START = HANDLE PRIVIEW IMAGE
   const handlePreviewImage = (e) => {
     setPreviewImage(e.target.files[0]);
@@ -30,9 +34,7 @@ const ProfileUser = () => {
   const validate = Yup.object({
     address: Yup.string().required('Address is required'),
     phone: Yup.string().required('Phone is required'),
-    size: Yup.string().required('Size is required'),
-    method: Yup.string().required('Method payment is required'),
-    category: Yup.string().required('Category is required'),
+    name: Yup.string().required('Name is required'),
   });
   // END = VALIDATION FORM
 
@@ -41,13 +43,12 @@ const ProfileUser = () => {
       <div className="container">
         <Formik
           initialValues={{
-            name: 'COLD BREW',
-            price: 1000,
-            description:
-              'Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.',
-            size: '',
-            method: '',
-            category: '',
+            name: users.name,
+            email: users.email,
+            address: users.address,
+            phone: users.phone,
+            born: users.born,
+            gender: users.gender,
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
@@ -77,7 +78,7 @@ const ProfileUser = () => {
             //   size_id: values.size,
             //   img_product: image,
             // };
-            // console.log('checkDataSend:', checkDataSend);
+            console.log('values:', values);
 
             resetForm();
           }}
@@ -176,20 +177,56 @@ const ProfileUser = () => {
                   </div>
                   <div className="body">
                     <div className="body-left">
-                      <div className="left-top">
+                      <div className="left-top ">
                         <label htmlFor="email">Email Address</label>
-                        <input type="text" name="email" placeholder="Email" />
+                        <input
+                          type="text"
+                          name="email"
+                          // onChange={formik.handleChange}
+                          // value={formik.values.email}
+                          defaultValue={formik.values.email}
+                          disabled={true}
+                          placeholder="Email"
+                        />
                       </div>
-                      <div className="left-bottom">
+                      <div
+                        className={`left-bottom ${
+                          formik.errors.address ? 'input-error' : ''
+                        }`}
+                      >
                         <label>Delivery Address</label>
-                        <input type="text" placeholder="Delivery address" />
+                        <input
+                          type="text"
+                          placeholder="Delivery address"
+                          name="address"
+                          onChange={formik.handleChange}
+                          value={formik.values.address}
+                          defaultValue={formik.values.address}
+                        />
                       </div>
+                      {formik.errors.address && (
+                        <p className="input-invalid">{formik.errors.address}</p>
+                      )}
                     </div>
 
                     <div className="body-right">
-                      <div className="right-top">
+                      <div
+                        className={`right-top ${
+                          formik.errors.phone ? 'input-error' : ''
+                        }`}
+                      >
                         <label>Mobile number</label>
-                        <input type="text" placeholder="Mobile number" />
+                        <input
+                          type="text"
+                          placeholder="Mobile number"
+                          name="phone"
+                          onChange={formik.handleChange}
+                          value={formik.values.phone}
+                          defaultValue={formik.values.phone}
+                        />
+                        {formik.errors.phone && (
+                          <p className="input-invalid">{formik.errors.phone}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -219,33 +256,86 @@ const ProfileUser = () => {
                   </div>
                   <div className="body">
                     <div className="body-left">
-                      <div className="left-top">
+                      <div
+                        className={`left-top ${
+                          formik.errors.name ? 'input-error' : ''
+                        }`}
+                      >
                         <p>Display name</p>
-                        <input type="text" placeholder="Display name" />
+                        <input
+                          type="text"
+                          placeholder="Display name"
+                          name="name"
+                          onChange={formik.handleChange}
+                          value={formik.values.name}
+                          defaultValue={formik.values.name}
+                        />
+                        {formik.errors.name && (
+                          <p className="input-invalid">{formik.errors.name}</p>
+                        )}
                       </div>
                       <div className="left-top">
                         <p>First name</p>
-                        <input type="text" placeholder="First name" />
+                        <input
+                          type="text"
+                          placeholder="First name"
+                          name="name"
+                          disabled={true}
+                          // onChange={formik.handleChange}
+                          // value={formik.values.name}
+                          // defaultValue={formik.values.name}
+                        />
                       </div>
                       <div className="left-bottom">
                         <p>Last name</p>
-                        <input type="text" placeholder="last name" />
+                        <input
+                          type="text"
+                          placeholder="last name"
+                          disabled={true}
+                          // onChange={formik.handleChange}
+                          // value={formik.values.name}
+                          // defaultValue={formik.values.name}
+                        />
                       </div>
                     </div>
 
                     <div className="body-right">
-                      <div className="right-top">
-                        <p>DD / MM / YY</p>
-                        <input type="text" placeholder="DD/MM/YY" />
+                      <div
+                        className={`right-top ${
+                          formik.errors.phone ? 'input-error' : ''
+                        }`}
+                      >
+                        <label>DD / MM / YY</label>
+                        {/* Masih bug validasi */}
+                        {/* <input type="text" placeholder="DD/MM/YY" /> */}
+                        <DatePicker
+                          name="born"
+                          selected={dateBorn}
+                          onChange={(date) => setDateBorn(date)}
+                          peekNextMonth
+                          showMonthDropdown
+                          showYearDropdown
+                          dropdownMode="select"
+                        />
+                        {formik.errors.born && (
+                          <p className="input-invalid">{formik.errors.born}</p>
+                        )}
                       </div>
-                      <div className="right-bottom">
-                        <div className="male">
+                      <div
+                        className={`right-bottom  ${
+                          formik.errors.phone ? 'input-error' : ''
+                        }`}
+                      >
+                        <label className="male">
                           <input type="radio" value="male" name="gender" /> Male
-                        </div>
-                        <div className="female">
+                        </label>
+                        <label className="female">
                           <input type="radio" value="female" name="gender" />{' '}
                           Female
-                        </div>
+                        </label>
+                        {/* {formik.errors. && (
+                          <p className="input-invalid">{formik.errors.}</p>
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -253,8 +343,17 @@ const ProfileUser = () => {
                 <div className="bottom-right">
                   <p>Do you want to save the</p>
                   <p>change?</p>
-                  <Button className="save">Save</Button>
-                  <Button className="cancel">Cancel</Button>
+                  <Button
+                    className="save"
+                    disabled={!(formik.isValid && formik.dirty)}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                  // className="cancel"
+                  >
+                    Cancel
+                  </Button>
                   {/* <Button className="edit-password">Edit Password <span> > </span> </Button> */}
                   {/* <Button className="logout">Log Out <span> > </span> </Button> */}
                 </div>
@@ -453,6 +552,7 @@ const StyledProfileUserPage = styled.div`
                 outline: none;
                 border: none;
                 border-bottom: 2px solid black;
+                background-color: transparent;
               }
             }
           }
@@ -645,8 +745,8 @@ const StyledProfileUserPage = styled.div`
         }
 
         .save {
-          background-color: #6a4029;
-          color: white;
+          /* background-color: #6a4029; */
+          /* color: white; */
           margin-bottom: 20px;
         }
 
@@ -694,6 +794,17 @@ const StyledProfileUserPage = styled.div`
       color: #6a4029;
       &:hover {
         cursor: pointer;
+      }
+    }
+    .input-error {
+      /* background-color: red; */
+      label {
+        color: red !important;
+      }
+      input {
+        color: red !important;
+        border-bottom: 2px solid red !important;
+        background-color: transparent !important;
       }
     }
   }
