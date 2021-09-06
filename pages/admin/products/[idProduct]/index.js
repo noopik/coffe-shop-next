@@ -80,7 +80,7 @@ const EditProduct = (props) => {
   // END = HANDLE STOCK LOGIC
 
   // START = HANDLE PRIVIEW IMAGE
-  const previewImage = (e) => {
+  const handlePreviewImage = (e) => {
     setDefaultImage(false);
     setPreviewImage(e.target.files[0]);
   };
@@ -216,7 +216,7 @@ const EditProduct = (props) => {
                         type="file"
                         name="image"
                         className="input-file"
-                        onChange={(e) => previewImage(e)}
+                        onChange={(e) => handlePreviewImage(e)}
                       />
                     </div>
                   )}
@@ -394,11 +394,30 @@ const EditProduct = (props) => {
   );
 };
 
-export default PrivateRoute(EditProduct);
+export default EditProduct;
 
 // START === STYLING CURRENT PAGE
 
 const StyledEditProduct = styled.div`
+  /* START == BREAKPOINT */
+  /* ${Breakpoints.lessThan('2xl')`
+      background-color: yellow;
+    `}
+  ${Breakpoints.lessThan('xl')`
+      background-color: blue;
+    `}
+    ${Breakpoints.lessThan('lg')`
+    background-color: cyan;
+    `}
+    ${Breakpoints.lessThan('md')`
+    background-color: pink;
+    `}
+    ${Breakpoints.lessThan('sm')`
+    background-color: green;
+    `}
+    ${Breakpoints.lessThan('xsm')`
+    background-color: pink;
+    `} */
   padding-bottom: 80px;
   form {
     font-family: Poppins;
@@ -406,15 +425,6 @@ const StyledEditProduct = styled.div`
     display: flex;
     gap: 61px;
     margin-top: 60px;
-    ${Breakpoints.lessThan('lg')`
-      gap: 32px;
-    `}
-    ${Breakpoints.lessThan('md')`
-      flex-direction: column; 
-    `}
-    ${Breakpoints.lessThan('md')`
-      gap: 3px;
-    `}
     .side-left {
       width: 50%;
       ${Breakpoints.lessThan('md')`

@@ -6,12 +6,15 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import { login } from '../../../src/redux/action/userAction';
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
   const validate = Yup.object({
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
+      .min(8, 'Password must be at least 8 charaters')
       .required('Password is required'),
   });
 
@@ -31,7 +34,7 @@ const LoginPage = () => {
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            console.log(values);
+            dispatch(login(values,router))
             resetForm();
           }}
         >

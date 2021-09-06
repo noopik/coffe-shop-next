@@ -6,7 +6,7 @@ const PrivateRoute = (Component) => {
     const { user, auth } = useSelector((state) => state.user);
     return (
       <>
-        <Navbar />
+        <Navbar user={user} auth={auth} />
         <Component {...props} user={user} auth={auth} />
         <Footer />
       </>
