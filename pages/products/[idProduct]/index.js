@@ -7,18 +7,14 @@ import Navbar from '../../../src/components/molecules/Navbar/Navbar';
 import Footer from '../../../src/components/molecules/Footer';
 import { Button } from '../../../src/components/atoms';
 
-
-
 const ProductDetailPage = () => {
-
-
   return (
     <StyledProductDetailPage>
       <Navbar />
       <Container>
         <div className="menu">
           <Link href="/products">
-            <a className="product-favourite">Favourite and Promo  </a>
+            <a className="product-favourite">Favourite and Promo </a>
           </Link>
           <Link href="/products/12">
             {/* <a className="product-detail"> >  Cold Brew</a> */}
@@ -38,8 +34,19 @@ const ProductDetailPage = () => {
           <BodyRight>
             <div className="box">
               <div className="description">
-                <h3>Delivery only on <span>Monday to <br /> friday</span> at  <span> 1 - 7 pm</span> </h3>
-                <h3>Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.</h3>
+                <h3>
+                  Delivery only on{' '}
+                  <span>
+                    Monday to <br /> friday
+                  </span>{' '}
+                  at <span> 1 - 7 pm</span>{' '}
+                </h3>
+                <h3>
+                  Cold brewing is a method of brewing that combines ground
+                  coffee and cool water and uses time instead of heat to extract
+                  the flavor. It is brewed in small batches and steeped for as
+                  long as 48 hours.
+                </h3>
 
                 <h4>Choose a size</h4>
                 <div className="size-check">
@@ -88,17 +95,18 @@ const ProductDetailPage = () => {
 
               <div className="time">
                 <h1>Set Time:</h1>
-                <input type="text" placeholder="Enter the time you'll arrived" />
+                <input
+                  type="text"
+                  placeholder="Enter the time you'll arrived"
+                />
               </div>
             </div>
-
           </BodyRight>
-
         </BodyWrapper>
-
       </Container>
       <BodyBottom>
         <div className="item">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/IMG_Product.png" alt="" />
           <div className="detail">
             <h1>Cold Brew</h1>
@@ -110,7 +118,7 @@ const ProductDetailPage = () => {
       </BodyBottom>
       <Footer />
     </StyledProductDetailPage>
-  )
+  );
 };
 
 export default ProductDetailPage;
@@ -138,8 +146,7 @@ const StyledProductDetailPage = styled.div`
       background-color: pink;
     `} */
 
-  background-color: #EDEDED;
-
+  background-color: #ededed;
 `;
 
 const Container = styled.div`
@@ -152,7 +159,6 @@ const Container = styled.div`
   margin-left: 5%;
   margin-right: 5%;
 
-
   .menu {
     display: flex;
     flex-direction: row;
@@ -161,7 +167,7 @@ const Container = styled.div`
       margin: 0 10px;
     }
   }
-`
+`;
 const BodyWrapper = styled.div`
   width: 100%;
   height: 1000px;
@@ -169,9 +175,7 @@ const BodyWrapper = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  // border: 1px solid black;
-`
-
+`;
 
 const BodyLeft = styled.div`
   width: 40%;
@@ -180,21 +184,19 @@ const BodyLeft = styled.div`
   flex-direction: column;
   align-items: center;
   padding-right: 10%;
-  // border: 1px solid black;
 
   .image {
     width: 482px;
     height: 500px;
-    // border: 1px solid black;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    
+
     img {
       width: 400px;
       height: 400px;
-      border-radius: 100%
+      border-radius: 100%;
     }
   }
 
@@ -211,13 +213,13 @@ const BodyLeft = styled.div`
 
   .btn-add {
     color: white;
-    background: #6A4029;
-    // filter: drop-shadow(0px 6px 20px rgba(255, 186, 51, 0.4));
+    background: #6a4029;
+    /* // filter: drop-shadow(0px 6px 20px rgba(255, 186, 51, 0.4)); */
     border-radius: 12px;
     width: 350px;
     height: 80px;
     padding: 13px;
-    margin-bottom: 30px
+    margin-bottom: 30px;
   }
 
   .btn-ask {
@@ -227,15 +229,14 @@ const BodyLeft = styled.div`
     width: 350px;
     padding: 13px;
   }
-  
-`
+`;
 const BodyRight = styled.div`
   width: 60%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  // border: 1px solid black;
+  /* // border: 1px solid black; */
 
   .description {
     width: 100%;
@@ -246,12 +247,12 @@ const BodyRight = styled.div`
     display: flex;
     padding-top: 80px;
     flex-direction: column;
-    // align-items: center;
+    /* // align-items: center; */
 
     h3 {
       padding: 0px 100px 30px 100px;
       font-size: 30px;
-      color: #6A4029;
+      color: #6a4029;
 
       span {
         font-weight: bolder;
@@ -272,7 +273,6 @@ const BodyRight = styled.div`
       justify-content: center;
       align-items: center;
       padding-left: 50px;
-
     }
 
     label {
@@ -283,18 +283,18 @@ const BodyRight = styled.div`
       margin-right: 50px;
 
       .btn-check {
-        // position: absolute;
-        // top: 0;
-        // left: 0;
+        /* // position: absolute; */
+        /* // top: 0; */
+        /* // left: 0; */
         display: block;
         width: 80px;
         height: 80px;
         border-radius: 100%;
         background-color: white;
-        border: 3px solid #FFBA33;
+        border: 3px solid #ffba33;
       }
 
-      input[type="checkbox"] {
+      input[type='checkbox'] {
         -webkit-appearance: none;
       }
 
@@ -318,12 +318,10 @@ const BodyRight = styled.div`
         font-weight: bolder;
       }
 
-    
-      input[type="checkbox"]:checked ~ .btn-check {
-        background-color: #FFBA33;
+      input[type='checkbox']:checked ~ .btn-check {
+        background-color: #ffba33;
       }
     }
-    
   }
 
   .delivery {
@@ -354,18 +352,18 @@ const BodyRight = styled.div`
       margin-right: 50px;
 
       .btn-check {
-        // position: absolute;
-        // top: 0;
-        // left: 0;
+        /* // position: absolute; */
+        /* // top: 0; */
+        /* // left: 0; */
         display: block;
         border-radius: 15px;
         width: 150px;
         height: 60px;
-        background-color: #F4F4F8;
+        background-color: #f4f4f8;
         border: none;
       }
 
-      input[type="checkbox"] {
+      input[type='checkbox'] {
         -webkit-appearance: none;
       }
 
@@ -399,23 +397,19 @@ const BodyRight = styled.div`
         font-weight: bolder;
       }
 
-
-      input[type="checkbox"]:checked ~ .btn-check {
-        background-color: #6A4029;
+      input[type='checkbox']:checked ~ .btn-check {
+        background-color: #6a4029;
       }
 
-      
-      input[type="checkbox"]:checked ~ h1 {
+      input[type='checkbox']:checked ~ h1 {
         color: white;
       }
 
-      
-      input[type="checkbox"]:checked ~ h2 {
+      input[type='checkbox']:checked ~ h2 {
         color: white;
       }
 
-      
-      input[type="checkbox"]:checked ~ h3 {
+      input[type='checkbox']:checked ~ h3 {
         color: white;
       }
     }
@@ -436,11 +430,11 @@ const BodyRight = styled.div`
       height: 40px;
       opacity: 0.8;
       border-bottom: 3px solid lightgray;
-      background-color: #EDEDED;
+      background-color: #ededed;
       outline: none;
     }
   }
-`
+`;
 
 const BodyBottom = styled.div`
   display: flex;
@@ -468,7 +462,7 @@ const BodyBottom = styled.div`
       height: 80px;
       object-fit: contain;
       border-radius: 100%;
-      margin-right:50px;
+      margin-right: 50px;
     }
 
     h1 {
@@ -479,4 +473,4 @@ const BodyBottom = styled.div`
   .btn-checkout {
     width: 200px;
   }
-`
+`;

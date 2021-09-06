@@ -80,7 +80,7 @@ const EditProduct = (props) => {
   // END = HANDLE STOCK LOGIC
 
   // START = HANDLE PRIVIEW IMAGE
-  const previewImage = (e) => {
+  const handlePreviewImage = (e) => {
     setDefaultImage(false);
     setPreviewImage(e.target.files[0]);
   };
@@ -216,7 +216,7 @@ const EditProduct = (props) => {
                         type="file"
                         name="image"
                         className="input-file"
-                        onChange={(e) => previewImage(e)}
+                        onChange={(e) => handlePreviewImage(e)}
                       />
                     </div>
                   )}

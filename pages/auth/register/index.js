@@ -67,9 +67,7 @@ const RegisterPage = () => {
           )}
         </Formik>
       </AuthLayout>
-  return (
-    <StyledRegisterPage>
-      <AuthLayout></AuthLayout>
+      return (
     </StyledRegisterPage>
   );
 };
