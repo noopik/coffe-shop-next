@@ -13,6 +13,7 @@ import axiosConfig from '../../../src/config/Axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Breakpoints } from '../../../src/utils';
+import { ModalAlertValidation } from '../../../src/components/molecules';
 
 export const getServerSideProps = async (ctx) => {
   try {
@@ -70,6 +71,9 @@ const ProductDetailPage = () => {
     ],
   };
 
+  // MODAL STATE
+  const [showModal, setShowModal] = useState(false);
+
   // Mata Uang Rupiah
   const formatter = new Intl.NumberFormat(['ban', 'id']);
   const [dateBirth, setDateBirth] = useState(new Date());
@@ -105,8 +109,21 @@ const ProductDetailPage = () => {
               <h2>IDR {formatter.format(dummyData.price)}</h2>
             </div>
             <div className="button-action">
-              <Button className="btn-add">Add To Cart</Button>
-              <Button className="btn-ask">Ask the Staff</Button>
+              <Button className="btn btn-add">Add To Cart</Button>
+
+              {/* Conditinal rendering : Ini untuk role customer */}
+              <Button className="btn btn-ask">Ask the Staff</Button>
+
+              {/* Conditinal rendering : Ini untuk role admin */}
+              <Button className="btn btn-ask">Edit Product</Button>
+              {/* Conditinal rendering : Ini untuk role admin udah terintegrasi modal coba ditesting dulu*/}
+              <Button
+                className="btn btn-ask"
+                theme="black"
+                onClick={() => setShowModal(true)}
+              >
+                Delete Menu
+              </Button>
             </div>
           </BodyLeft>
           <BodyRight>
@@ -212,6 +229,15 @@ const ProductDetailPage = () => {
           </div>
         </BodyBottom>
       </div>
+      <ModalAlertValidation
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        actionDelete={() => {
+          // Menghapus data terpilih
+          console.log('delete item 1');
+          setShowModal(false);
+        }}
+      />
     </StyledProductDetailPage>
   );
 };
@@ -331,7 +357,6 @@ const BodyLeft = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: pink;
     ${Breakpoints.lessThan('lg')`
     width:max-content;
     `}
@@ -386,6 +411,9 @@ const BodyLeft = styled.div`
     ${Breakpoints.lessThan('md')`
       width: 100%;
     `}
+    .btn {
+      margin-bottom: 1rem;
+    }
     .btn-add {
       color: white;
       background: #6a4029;
@@ -394,7 +422,7 @@ const BodyLeft = styled.div`
       width: 100%;
       height: 80px;
       padding: 13px;
-      margin-bottom: 30px;
+      /* margin-bottom: 30px; */
       ${Breakpoints.lessThan('lg')`
       margin-bottom: 10px; 
     `}
