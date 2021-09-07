@@ -12,6 +12,9 @@ const ProductsPage = () => {
   const [dataProducts, setDataProduct] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   const [page, setPage] = useState(1);
 
+  // State sort untuk kebutuhan icon sort
+  const [sortASC, setSortASC] = useState(true);
+
   // START === HANDLE PAGINATION
   const handlePagination = (event, value) => {
     setPage(value);
@@ -83,6 +86,33 @@ const ProductsPage = () => {
             <h5 className="heading-nav ">Add-on</h5>
           </div>
         </div>
+        <SortFilter asc={sortASC}>
+          <div
+            className="icon"
+            onClick={() => (sortASC ? setSortASC(false) : setSortASC(true))}
+          >
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7.46958 0H5.33419L0.105469 14.9391H3.07779L3.86332 12.6947H8.88152L9.6558 14.9391H12.6235L7.46958 0ZM4.84523 9.88924L6.39042 5.47425L7.91367 9.88924H4.84523Z"
+                fill="#6A4029"
+              />
+              <path
+                d="M33.9812 25.2994L28.6508 30.6298V0H25.8454V30.6298L20.515 25.2994L18.5312 27.2831L27.2481 36L35.965 27.2831L33.9812 25.2994Z"
+                fill="#6A4029"
+              />
+              <path
+                d="M12.8 21.041H0.0351562V23.8465H8.58094L0.0351562 33.7764V35.9803H12.6597V33.1748H4.25419L12.8 23.245V21.041Z"
+                fill="#6A4029"
+              />
+            </svg>
+          </div>
+        </SortFilter>
         <div className="content-products">
           {dataProducts.map((index) => {
             return (
@@ -274,7 +304,7 @@ const StyledProductsPage = styled.div`
     `}
     .navigation-category {
       display: flex;
-      margin-bottom: 70px;
+      margin-bottom: 20px;
       justify-content: space-between;
       ${Breakpoints.lessThan('xl')`
         flex-wrap: wrap;
@@ -312,6 +342,7 @@ const StyledProductsPage = styled.div`
         }
       }
     }
+
     .content-products {
       display: grid;
       grid-template-columns: auto auto auto auto auto;
@@ -403,5 +434,17 @@ const StyledProductsPage = styled.div`
     line-height: 18px;
     text-align: center;
     color: #000000;
+  }
+`;
+
+const SortFilter = styled.div`
+  margin-bottom: 60px;
+  .icon {
+    svg {
+      transform: ${({ asc }) => asc && 'rotate(180deg)'};
+    }
+    &:hover {
+      cursor: pointer;
+    }
   }
 `;
