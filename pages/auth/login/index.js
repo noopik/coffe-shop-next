@@ -8,6 +8,7 @@ import router from 'next/router';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 import { login } from '../../../src/redux/action/userAction';
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -58,7 +59,7 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default AuthRoute(LoginPage);
 
 // START === STYLING CURRENT PAGE
 

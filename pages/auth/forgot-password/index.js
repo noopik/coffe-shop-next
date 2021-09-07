@@ -8,6 +8,7 @@ import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 import router from 'next/router';
 import { forgotPassword as forgotPasswordUser } from '../../../src/redux/action/userAction';
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 const ForgotPasswordPage = () => {
   const [reSend, setReSend] = useState();
@@ -118,7 +119,7 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default AuthRoute(ForgotPasswordPage);
 
 // START === STYLING CURRENT PAGE
 

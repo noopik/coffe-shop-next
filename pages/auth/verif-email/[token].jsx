@@ -5,6 +5,7 @@ import { IMG_BGForgotPassword } from '../../../src/assets';
 import Image from 'next/image';
 import axios from '../../../src/config/Axios';
 import router from 'next/router';
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 const VerifEmail = (props) => {
   return (
@@ -34,7 +35,7 @@ const VerifEmail = (props) => {
   );
 };
 
-export default VerifEmail;
+export default AuthRoute(VerifEmail);
 
 export const getServerSideProps = async (context) => {
   let verifEmail = false;

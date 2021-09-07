@@ -6,6 +6,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
 import { register } from '../../../src/redux/action/userAction'
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 const RegisterPage = () => {
   const validate = Yup.object({
@@ -79,7 +80,7 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default AuthRoute(RegisterPage);
 
 // START === STYLING CURRENT PAGE
 

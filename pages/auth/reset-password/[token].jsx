@@ -7,9 +7,10 @@ import * as Yup from 'yup';
 import router from 'next/router';
 import axios from '../../../src/config/Axios'
 import { resetPassword } from '../../../src/redux/action/userAction';
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 
-const resetPasswordPage = (props) => {
+const ResetPasswordPage = (props) => {
   const validate = Yup.object({
     password: Yup.string()
       .min(8, 'Password must be at least 8 charaters')
@@ -53,9 +54,7 @@ const resetPasswordPage = (props) => {
                   type="password"
                   placeholder="Confirmation new password"
                 />
-                <Button disabled={!(formik.isValid && formik.dirty)}>
-                  Submit
-                </Button>
+                <Button disabled={!(formik.isValid && formik.dirty)}>Submit</Button>
               </Form>
             </>
           )}
@@ -65,7 +64,7 @@ const resetPasswordPage = (props) => {
   );
 };
 
-export default resetPasswordPage;
+export default AuthRoute(ResetPasswordPage);
 
 export const getServerSideProps = async (context) => {
   let resetPassword = false;
