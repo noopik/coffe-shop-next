@@ -1,26 +1,25 @@
 import styled from 'styled-components';
-import { Breakpoints } from '../../../src/utils';
+import {Breakpoints} from '../../../src/utils';
 import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
-import Link from 'next/link';
-import { Breadcrumb, Breadcrumbs, Button } from '../../../src/components/atoms';
-import { IL_IMGDefaultCamera } from '../../../src/assets';
+import {Breadcrumb, Breadcrumbs, Button} from '../../../src/components/atoms';
+import {IL_IMGDefaultCamera} from '../../../src/assets';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import DatePicker from 'react-datepicker';
-import { Formik, Form } from 'formik';
+import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
+// import axios from 'axios';
+import axiosConfig from '../../../src/config/Axios';
+import {toast} from 'react-toastify';
 
 export const getServerSideProps = async () => {
   try {
-    const resultSizes = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
-    );
-    const resultDeliveries = await axios.get(
+    const resultSizes = await axiosConfig.get(`${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`);
+    const resultDeliveries = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
     );
-    const resultCategories = await axios.get(
+    const resultCategories = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
     );
     const sizes = resultSizes.data.data;
@@ -45,46 +44,83 @@ const AddProducts = (props) => {
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState('');
+  const [previewStartDate, setpreviewStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState('');
+  const [previewEndDate, setpreviewEndDate] = useState(new Date());
   const [image, setImage] = useState();
+  const [errImg, seterrImg] = useState('Please upload product image');
+  const [ArrSize, setarrSize] = useState(0);
+  const [ArrDelivery, setArrDelivery] = useState(0);
 
   const validate = Yup.object({
-    image: Yup.string().required('Image is required'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
-      .required('Password is required'),
-    phone: Yup.number().required('Password is required'),
+    name: Yup.string().required('Please insert product name').min(3).max(50),
+    price: Yup.number().typeError('Price must be number').required('Please insert product price'),
+    description: Yup.string().required('Please insert product description').min(10).max(150),
+    stock: Yup.number('').typeError('Stock must be number').required('Please insert product stock'),
+    // sizes: Yup.array().min(1),
+    // deliveries: Yup.array().min(1),
+    category: Yup.string().required('Please select product category'),
   });
-
   const handleSize = (e, formik) => {
     let arrSize = formik.values.sizes;
     if (e.target.checked) {
       arrSize.push(+e.target.value);
-      document.getElementById(`itemSize${e.target.value}`).className +=
-        ' select';
+      setarrSize((old) => {
+        return old + 1;
+      });
+      document.getElementById(`itemSize${e.target.value}`).className += ' select';
     } else {
       const index = arrSize.indexOf(+e.target.value);
       arrSize.splice(index, 1);
-      document.getElementById(`itemSize${e.target.value}`).className =
-        'size-item';
+      setarrSize((old) => {
+        return old - 1;
+      });
+      document.getElementById(`itemSize${e.target.value}`).className = 'size-item';
     }
-    // console.log(e);
   };
 
   const handleDelivery = (e, formik) => {
     let arrDeliveries = formik.values.deliveries;
     if (e.target.checked) {
       arrDeliveries.push(+e.target.value);
-      document.getElementById(`methodItem${e.target.value}`).className +=
-        ' select';
+      setArrDelivery((old) => {
+        return old + 1;
+      });
+      document.getElementById(`methodItem${e.target.value}`).className += ' select';
     } else {
       const index = arrDeliveries.indexOf(+e.target.value);
       arrDeliveries.splice(index, 1);
-      document.getElementById(`methodItem${e.target.value}`).className =
-        'method-item';
+      setArrDelivery((old) => {
+        return old - 1;
+      });
+      document.getElementById(`methodItem${e.target.value}`).className = 'method-item';
     }
   };
+
+  const handleStartDate = (date) => {
+    // 0000-00-00 00:00:00
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    const hours = ('0' + date.getHours()).slice(-2);
+    const minute = ('0' + date.getMinutes()).slice(-2);
+    const formatStartDate = `${year}-${month}-${day} ${hours}:${minute}:00`;
+    setStartDate(formatStartDate);
+    setpreviewStartDate(date);
+  };
+
+  const handleEndDate = (date) => {
+      // 0000-00-00 00:00:00
+    const year = date.getFullYear()
+    const month = ("0" + (date.getMonth() + 1)).slice(-2)
+    const day = ("0" + date.getDate()).slice(-2)
+    const hours = ("0" + date.getHours()).slice(-2)
+    const minute = ("0" + date.getMinutes()).slice(-2)
+    const formatStartDate = `${year}-${month}-${day} ${hours}:${minute}:00`
+    setEndDate(formatStartDate)
+    setpreviewEndDate(date)
+  }
 
   return (
     <StyledAddProducts>
@@ -94,6 +130,7 @@ const AddProducts = (props) => {
           <Breadcrumb title="/ Add new product" active />
         </Breadcrumbs>
         <Formik
+          // validateOnMount
           initialValues={{
             image: '',
             startDate: '',
@@ -106,13 +143,57 @@ const AddProducts = (props) => {
             deliveries: [],
             category: '',
           }}
-          // validationSchema={validate}
-          onSubmit={(values, { resetForm }) => {
-            console.log('values submit', values);
-            console.log('images', image);
-            console.log('startDate', startDate);
-            console.log('endDate', endDate);
-            resetForm();
+          validationSchema={validate}
+          onSubmit={(values, {resetForm}) => {
+            values.image = image;
+            values.startDate = startDate;
+            values.endDate = endDate;
+            // console.log('values submit', values);
+            const formData = new FormData();
+            formData.append('img_product', image);
+            formData.append('stock', values.stock);
+            formData.append('product_name', values.name);
+            formData.append('delivery_start_date', `${values.startDate}`);
+            // 2021-09-05 07:37:14
+            formData.append('delivery_end_date', `${values.endDate}`);
+            formData.append('price', values.price);
+            formData.append('description', values.description);
+            for (let i = 0; i < values.sizes.length; i++) {
+              formData.append('size_id', values.sizes[i]);
+            }
+            for (let I = 0; I < values.deliveries.length; I++) {
+              formData.append('delivery_id', values.deliveries[I]);
+            }
+            formData.append('category_id', values.category);
+            for (let [key, value] of formData.entries()) {
+              console.log(`${key}: ${value}`);
+            }
+            axiosConfig
+              .post(`${process.env.NEXT_PUBLIC_API_URL}/products`, formData)
+              .then((res) => {
+                console.log(res);
+                toast.success('Successfully add product');
+                resetForm();
+                setImage('');
+                values.sizes.map((idSize) => {
+                  values.sizes = [];
+                  setarrSize(0);
+                  document.getElementById(`size${idSize}`).checked = false;
+                  document.getElementById(`itemSize${idSize}`).className = 'size-item';
+                });
+                values.deliveries.map((idDelivery) => {
+                  values.deliveries = [];
+                  setArrDelivery(0);
+                  document.getElementById(`delivery${idDelivery}`).checked = false;
+                  document.getElementById(`methodItem${idDelivery}`).className = 'method-item';
+                });
+                seterrImg('Please upload product image');
+                document.getElementById('category-opt').selected = true;
+              })
+              .catch((err) => {
+                console.log(err.response);
+                toast.warning('Insert data failed');
+              });
           }}
         >
           {(formik) => (
@@ -122,9 +203,10 @@ const AddProducts = (props) => {
                   <div className="image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {/* <img src={IL_IMGDefaultCamera} alt="image product" /> */}
-                    <Image src={IL_IMGDefaultCamera} alt="image" layout="fill" />
+                    <Image src={image ? URL.createObjectURL(image) : IL_IMGDefaultCamera} alt="image" layout="fill" />
                   </div>
                 </div>
+                {errImg && <label className="error text-center block mb-5">{errImg}</label>}
                 <Button className="btn" theme="black">
                   Take a Picture
                 </Button>
@@ -133,23 +215,34 @@ const AddProducts = (props) => {
                   <input
                     type="file"
                     className="input-file"
+                    accept="image/jpeg, image/png"
                     onChange={(e) => {
-                      // console.log(e.target.files);
-                      setImage(e.target.files);
+                      if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+                        if (e.target.files[0].size > 1048576 * 2) {
+                          seterrImg('max size file is 2mb');
+                          setImage('');
+                        } else {
+                          setImage(e.target.files[0]);
+                          seterrImg('');
+                        }
+                      } else {
+                        seterrImg('Only image is allowed');
+                        setImage('');
+                      }
                     }}
-                    // value={image}
                     name="image"
                   />
                 </div>
                 <div className="select-section">
                   <h3 className="heading">Delivery Hour :</h3>
                   <div className="select-date-time">
+                    {startDate === '' && <label className='error'>Please select start date delivery</label>}
                     <DatePicker
                       className="select-custom"
                       id="startDate"
                       name="startDate"
-                      selected={startDate}
-                      onChange={(date) => setStartDate(date)}
+                      selected={previewStartDate}
+                      onChange={(date) => handleStartDate(date)}
                       // onChange={formik.handleChange}
                       // value={formik.values.startDate}
                       showTimeSelect
@@ -160,14 +253,13 @@ const AddProducts = (props) => {
                     />
                   </div>
                   <div className="select-date-time">
+                  {endDate === '' && <label className='error'>Please select end date delivery</label>}
                     <DatePicker
                       className="select-custom"
                       id="endDate"
                       name="endDate"
-                      selected={endDate}
-                      // onChange={formik.handleChange}
-                      // value={formik.values.endDate}
-                      onChange={(date) => setEndDate(date)}
+                      selected={previewEndDate}
+                      onChange={(date) => handleEndDate(date)}
                       showTimeSelect
                       timeFormat="HH:mm"
                       timeIntervals={15}
@@ -187,6 +279,7 @@ const AddProducts = (props) => {
                     value={formik.values.stock}
                   />
                 </div>
+                {formik.errors.stock && <label className="error">{formik.errors.stock}</label>}
               </div>
               <div className="right-side">
                 <div className="input-wrapper">
@@ -199,7 +292,8 @@ const AddProducts = (props) => {
                     value={formik.values.name}
                     placeholder="Type product name min. 50 characters"
                   />
-                  <div className="line-bottom" />
+                  <div className={`line-bottom ${formik.errors.name && 'is-invalid'}`} />
+                  {formik.errors.name && <label className="error">{formik.errors.name}</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Price :</label>
@@ -211,7 +305,8 @@ const AddProducts = (props) => {
                     value={formik.values.price}
                     placeholder="Type the price"
                   />
-                  <div className="line-bottom" />
+                  <div className={`line-bottom ${formik.errors.price && 'is-invalid'}`} />
+                  {formik.errors.price && <label className="error">{formik.errors.price}</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Description :</label>
@@ -223,7 +318,8 @@ const AddProducts = (props) => {
                     value={formik.values.description}
                     placeholder="Describe your product min. 150 characters"
                   />
-                  <div className="line-bottom" />
+                  <div className={`line-bottom ${formik.errors.description && 'is-invalid'}`} />
+                  {formik.errors.description && <label className="error">{formik.errors.description}</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input product size :</label>
@@ -247,6 +343,7 @@ const AddProducts = (props) => {
                         </div>
                       ))}
                   </div>
+                  {ArrSize < 1 && <label className="error">Please select size for this product</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
@@ -269,13 +366,16 @@ const AddProducts = (props) => {
                         </div>
                       ))}
                   </div>
+                  {ArrDelivery < 1 && <label className="error">Please select delivery for this product</label>}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input category :</label>
                   <p className="paragraph">Select category you want to use for this product</p>
                   <div className="input-wrapper">
                     <StyledSelect name="category" id="" onChange={formik.handleChange}>
-                      <option value="">select category</option>
+                      <option id="category-opt" value="" selected>
+                        select category
+                      </option>
                       {categories &&
                         categories.map((category, index) => (
                           <option key={index} value={category.category_id}>
@@ -283,12 +383,23 @@ const AddProducts = (props) => {
                           </option>
                         ))}
                     </StyledSelect>
+                    {formik.errors.category && <label className="error">{formik.errors.category}</label>}
                   </div>
                 </div>
                 <div className="button-action">
                   {/* <input type="submit" placeholder="submit" /> */}
                   {/* <button type="submit">Submit</button> */}
-                  <Button theme="brown" type="submit">
+                  <Button
+                    theme={
+                      !(formik.isValid && formik.dirty) || !image || ArrSize < 1 || ArrDelivery < 1 || startDate === ''
+                        ? 'gray'
+                        : 'brown'
+                    }
+                    type="submit"
+                    disabled={
+                      !(formik.isValid && formik.dirty) || !image || ArrSize < 1 || ArrDelivery < 1 || startDate === ''
+                    }
+                  >
                     Save Product
                   </Button>
                   <Button theme="gray">Cancel</Button>
@@ -415,6 +526,9 @@ const StyledAddProducts = styled.div`
           }
           .line-bottom {
             border: 1px solid #4f5665;
+            &.is-invalid {
+              border-color: red;
+            }
           }
           .paragraph {
             font-family: Rubik;
@@ -498,6 +612,12 @@ const StyledAddProducts = styled.div`
         line-height: 30px;
         color: #6a4029;
         margin-bottom: 20px;
+      }
+      .error {
+        color: red;
+        margin-top: 10px;
+        font-family: Rubik;
+        font-size: 1rem;
       }
     }
   }
