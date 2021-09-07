@@ -9,13 +9,13 @@ import {
   IMG_BGHistoryPage,
   IMG_DummyProduct,
   IMG_DummyProductCard,
-} from '../../src/assets';
-import { CardWraper, Button } from '../../src/components/atoms';
-import PrivateRoute from '../../src/components/hoc/PrivateRoute';
-import { ModalAlertValidation } from '../../src/components/molecules';
-import { Breakpoints } from '../../src/utils';
+} from '../../../src/assets';
+import { CardWraper, Button, CardOrder } from '../../../src/components/atoms';
+import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
 
-const PaymentsPage = () => {
+import { Breakpoints } from '../../../src/utils';
+
+const OrdersPage = () => {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState('');
   const handlePagination = (event, value) => {
@@ -31,42 +31,16 @@ const PaymentsPage = () => {
     <StyledHistoryPage>
       <div className="container">
         <div className="side-left">
-          <h1 className="heading-page">Checkout your item now!</h1>
+          <h1 className="heading-page">Finish your customer order now.!</h1>
           <CardWraper className="order-summary-wrapper">
             <h3 className="heading-summary">Order Summary</h3>
+            <p className="customer">for Zulaikha</p>
             <div className="body-card-summary">
-              {/* START = Card Item per product */}
-              <div className="item-product">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://upload.wikimedia.org/wikipedia/commons/a/a5/Homemade_Dalgona_Coffee.jpg`}
-                  alt="product"
-                  className="image-product"
-                />
-                <div className="desc-product">
-                  <p className="paragraph">Hazelnut Latte</p>
-                  <p className="paragraph">x 1</p>
-                  <p className="paragraph">Regular</p>
-                </div>
-                <p className="price">IDR 24.0</p>
-              </div>
-              {/* START = Card Item per product */}
-              {/* END = Card Item per product */}
-              <div className="item-product">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://upload.wikimedia.org/wikipedia/commons/a/a5/Homemade_Dalgona_Coffee.jpg`}
-                  alt="product"
-                  className="image-product"
-                />
-                <div className="desc-product">
-                  <p className="paragraph">Chicken Fire Wings</p>
-                  <p className="paragraph">x 2</p>
-                  <p className="paragraph">Regular</p>
-                </div>
-                <p className="price">IDR 25.0</p>
-              </div>
-              {/* END = Card Item per product */}
+              <CardOrder nameProduct="Soto" total={20} price={25000} />
+              <CardOrder nameProduct="Soto" total={20} price={25000} />
+              <CardOrder nameProduct="Soto" total={20} price={25000} />
+              <CardOrder nameProduct="Bakso" total={20} price={25000} />
+              <CardOrder nameProduct="Ayam" total={20} price={25000} />
             </div>
             <div className="divider" />
             <div className="row">
@@ -103,12 +77,18 @@ const PaymentsPage = () => {
                       name="receiver"
                       id="receiver"
                       defaultValue=" Iskandar Street"
+                      placeholder="Receiver name"
                     />
                   </div>
-                  <textarea name="address">
+                  <textarea name="address" placeholder="Address">
                     Km 5 refinery road oppsite re public road, effurun, Jakarta
                   </textarea>
-                  <input type="text" name="phone" defaultValue="0895658745" />
+                  <input
+                    type="text"
+                    name="phone"
+                    defaultValue="0895658745"
+                    placeholder="Your phone number"
+                  />
                 </CardWraper>
               </div>
             </div>
@@ -143,7 +123,9 @@ const PaymentsPage = () => {
                     <p>Cash on delivery</p>
                   </label>
                 </CardWraper>
-                <Button theme="brown">Confirm and Pay</Button>
+                <Button theme="brown" className="button-pay">
+                  Mark as done
+                </Button>
               </div>
             </div>
           </form>
@@ -153,7 +135,7 @@ const PaymentsPage = () => {
   );
 };
 
-export default PrivateRoute(PaymentsPage, ['member', 'admin']);
+export default PrivateRoute(OrdersPage, ['member', 'admin']);
 
 // START === STYLING CURRENT PAGE
 
@@ -209,8 +191,8 @@ const StyledHistoryPage = styled.div`
         line-height: 47px;
         color: #ffffff;
         text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.8);
-        width: 400px;
         margin-bottom: 32px;
+        width: 500px;
         ${Breakpoints.lessThan('md')`
           width: 100%;
           text-align: center;
@@ -221,6 +203,7 @@ const StyledHistoryPage = styled.div`
         padding: 43px;
         font-family: Poppins;
         font-style: normal;
+
         ${Breakpoints.lessThan('lg')`
           width: 100%; 
         `}
@@ -233,35 +216,23 @@ const StyledHistoryPage = styled.div`
           line-height: 52px;
           color: #362115;
           text-align: center;
-          margin-bottom: 50px;
+        }
+        .customer {
+          font-family: Poppins;
+          font-style: normal;
+          font-weight: normal;
+          font-size: 20px;
+          line-height: 30px;
+          text-align: center;
+          color: #362115;
+          margin-bottom: 30px;
         }
         .body-card-summary {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          .item-product {
-            display: flex;
-            gap: 1rem;
-            .image-product {
-              width: 82px;
-              height: 90px;
-              object-fit: cover;
-              border-radius: 20px;
-            }
-            .desc-product {
-              font-weight: normal;
-              font-size: 20px;
-              line-height: 30px;
-              flex: 1;
-              color: #000000;
-            }
-            .price {
-              font-size: 20px;
-              color: #000000;
-              display: flex;
-              align-items: center;
-            }
-          }
+          max-height: 300px;
+          overflow-y: scroll;
         }
         .divider {
           border: 0.5px solid #000000;
@@ -364,12 +335,12 @@ font-weight: normal; */
           `}
           }
           .method-wrapper {
+            padding: 16px;
             label {
-              padding: 16px;
               display: flex;
               align-items: center;
               gap: 1rem;
-              margin-bottom: 30px;
+              margin-bottom: 16px;
               ${Breakpoints.lessThan('md')`
                 margin-bottom: 16px;
               `}
@@ -410,6 +381,9 @@ font-weight: normal; */
                 border-radius: 100%;
               }
             }
+          }
+          .button-pay {
+            margin-top: 32px;
           }
         }
       }
