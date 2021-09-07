@@ -5,6 +5,7 @@ import IMG_DummyProductCard from './IMG_DummyCard.png';
 import IMG_AvatarDefault from './user-default.png';
 import IMG_BGHistoryPage from './IMG_BgHistoryPage.png';
 import IMG_DefaultProduct from './default.jpg';
+import IMG_Ava from './IMG_Ava.png'
 export {
   IMG_DummyProductCard,
   IMG_BGAuth,
@@ -13,4 +14,5 @@ export {
   IMG_AvatarDefault,
   IMG_BGHistoryPage,
   IMG_DefaultProduct,
+  IMG_Ava
 };
