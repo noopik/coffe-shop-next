@@ -46,3 +46,24 @@ export const getProfile = () => async (dispatch) => {
     dispatch({ type: 'LOGOUT', payload: {} });
   }
 };
+
+export const forgotPassword = async (formData) => {
+  try {
+    await axios.patch('/users/forgot-password', formData);
+    toast.success('Please check your email for confirm reset password!');
+  } catch (error) {
+    toast.error(error?.response?.data?.message);
+    console.log(error);
+  }
+};
+
+export const resetPassword = async (formData, history, token) => {
+  try {
+    await axios.patch('/users/reset-password', { password: formData.password, tokenPassword: token });
+    toast.success('Successfully reset password!');
+    history.push('/auth/login');
+  } catch (error) {
+    toast.error(error?.response?.data?.message);
+    console.log(error);
+  }
+};

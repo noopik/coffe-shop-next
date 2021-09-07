@@ -5,11 +5,9 @@ import { Breakpoints, phoneRegExp } from '../../../src/utils';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
-import { useDispatch } from 'react-redux';
 import { register } from '../../../src/redux/action/userAction'
 
 const RegisterPage = () => {
-  const dispatch = useDispatch();
   const validate = Yup.object({
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
@@ -40,7 +38,7 @@ const RegisterPage = () => {
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            dispatch(register({ ...values, phone_number :values.phone},router));
+            register({ ...values, phone_number: values.phone }, router);
             resetForm();
           }}
         >

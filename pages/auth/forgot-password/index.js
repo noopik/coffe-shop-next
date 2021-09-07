@@ -7,6 +7,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 import router from 'next/router';
+import { forgotPassword as forgotPasswordUser } from '../../../src/redux/action/userAction';
 
 const ForgotPasswordPage = () => {
   const [reSend, setReSend] = useState();
@@ -15,7 +16,6 @@ const ForgotPasswordPage = () => {
   const [btnSend, setbtnSend] = useState('');
   const [bntResend, setbntResend] = useState('');
   const reSendEmail = () => {
-    console.log('send email again');
     setReSend(true);
     countDown();
   };
@@ -70,7 +70,7 @@ const ForgotPasswordPage = () => {
             }}
             validationSchema={validate}
             onSubmit={(values, { resetForm }) => {
-              console.log(values);
+              forgotPasswordUser(values, router);
               setEmail(values.email);
               setReSend(true);
               setCounter('Wait 2 minute again');
@@ -88,15 +88,13 @@ const ForgotPasswordPage = () => {
                   value={formik.values.email}
                   className={` ${formik.errors.email && 'is-invalid'}`}
                 />
-                {formik.errors.email && (
-                  <p className="text-error">Email Invalid</p>
-                )}
+                {formik.errors.email && <p className="text-error">Email Invalid</p>}
                 {/* router.push('/auth/reset-password') */}
                 <Button
                   theme="orange"
                   className="button"
                   type="submit"
-                  onClick={() => countDown()}
+                  onClick={() => (formik.isValid && formik.dirty ? countDown() : '')}
                   disabled={btnSend}
                 >
                   Send
@@ -106,15 +104,8 @@ const ForgotPasswordPage = () => {
           </Formik>
           {counter !== 0 && (
             <>
-              <p className="sub-heading">
-                Click here if you didn’t receive any link in 2 minutes
-              </p>
-              <Button
-                theme="brown"
-                className="re-send"
-                onClick={reSendEmail}
-                disabled={bntResend}
-              >
+              <p className="sub-heading">Click here if you didn’t receive any link in 2 minutes</p>
+              <Button theme="brown" className="re-send" onClick={reSendEmail} disabled={bntResend}>
                 Resend Link
               </Button>
               {counter !== 2 && <p className="sub-heading">{counter}</p>}
