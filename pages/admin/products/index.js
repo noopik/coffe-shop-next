@@ -325,8 +325,8 @@ const AddProducts = (props) => {
                   <p className="paragraph">Click size you want to use for this product</p>
                   <div className="select-group">
                     {sizes &&
-                      sizes.map((size) => (
-                        <>
+                      sizes.map((size, index) => (
+                        <div key={index}>
                           <label htmlFor={`size${size.size_id}`}>
                             <div className="size-item" id={`itemSize${size.size_id}`}>
                               <p>{size.size_name}</p>
@@ -339,7 +339,7 @@ const AddProducts = (props) => {
                             value={size.size_id}
                             onChange={(e) => handleSize(e, formik)}
                           />
-                        </>
+                        </div>
                       ))}
                   </div>
                   {ArrSize < 1 && <label className="error">Please select size for this product</label>}
@@ -349,8 +349,8 @@ const AddProducts = (props) => {
                   <p className="paragraph">Click methods you want to use for this product</p>
                   <div className="select-group">
                     {deliveries &&
-                      deliveries.map((delivery) => (
-                        <>
+                      deliveries.map((delivery, index) => (
+                        <div key={index}>
                           <label htmlFor={`delivery${delivery.delivery_id}`}>
                             <div className="method-item" id={`methodItem${delivery.delivery_id}`}>
                               <p>{delivery.delivery_name}</p>
@@ -362,7 +362,7 @@ const AddProducts = (props) => {
                             value={delivery.delivery_id}
                             onChange={(e) => handleDelivery(e, formik)}
                           />
-                        </>
+                        </div>
                       ))}
                   </div>
                   {ArrDelivery < 1 && <label className="error">Please select delivery for this product</label>}
@@ -412,7 +412,7 @@ const AddProducts = (props) => {
   );
 };
 
-export default PrivateRoute(AddProducts);
+export default PrivateRoute(AddProducts,['admin']);
 
 // START === STYLING CURRENT PAGE
 

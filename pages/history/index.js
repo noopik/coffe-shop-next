@@ -115,7 +115,7 @@ const HistoryPage = () => {
   );
 };
 
-export default PrivateRoute(HistoryPage);
+export default PrivateRoute(HistoryPage,['member','admin']);
 
 // START === STYLING CURRENT PAGE
 

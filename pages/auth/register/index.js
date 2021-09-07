@@ -1,18 +1,22 @@
 import styled from 'styled-components';
 import { Button, LogoBrand, TextField } from '../../../src/components/atoms';
 import { AuthLayout } from '../../../src/components/layout';
-import { Breakpoints } from '../../../src/utils';
+import { Breakpoints, phoneRegExp } from '../../../src/utils';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
+import { register } from '../../../src/redux/action/userAction'
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 const RegisterPage = () => {
   const validate = Yup.object({
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
+      .min(8, 'Password must be at least 8 charaters')
+      .max(255, 'Password must be at least 255 charaters')
       .required('Password is required'),
     phone: Yup.string()
+      .matches(phoneRegExp, 'Phone number is not valid')
       .required('Phone number is required')
       .min(11, 'Password must be at least 11 charaters')
       .max(13, 'Password must be less than 13 charaters'),
@@ -35,7 +39,7 @@ const RegisterPage = () => {
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            console.log(values);
+            register({ ...values, phone_number: values.phone }, router);
             resetForm();
           }}
         >
@@ -76,7 +80,7 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default AuthRoute(RegisterPage);
 
 // START === STYLING CURRENT PAGE
 

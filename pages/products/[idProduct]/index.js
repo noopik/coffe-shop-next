@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import styled from 'styled-components';
 import React, { useState } from 'react';
 import router from 'next/router';
