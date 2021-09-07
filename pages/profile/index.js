@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Breakpoints } from '../../src/utils';
+import { Breakpoints, phoneRegExp } from '../../src/utils';
 import PrivateRoute from '../../src/components/hoc/PrivateRoute';
 import { Button } from '../../src/components/atoms';
 import { IMG_AvatarDefault } from '../../src/assets/images';
@@ -13,28 +13,37 @@ import 'react-datepicker/dist/react-datepicker.css';
 const ProfileUser = () => {
   const [users, setUsers] = useState({
     image: null,
-    name: 'Joko Santoso Purwo',
+    firstname: 'Joko',
+    lastname: 'Santoso',
     email: 'joko@gmail.com',
     address: 'Jakarta Barat Daya',
     phone: '089656533654',
-    born: '20 Agustus 2000',
+    birth: '20 Agustus 2000',
     gender: 'male',
   });
 
   const [previewImage, setPreviewImage] = useState(users.image);
-  const [dateBorn, setDateBorn] = useState(new Date());
+  const [dateBirth, setDateBirth] = useState(new Date());
 
   // START = HANDLE PRIVIEW IMAGE
   const handlePreviewImage = (e) => {
+    const imageUpdate = e.target.files[0];
     setPreviewImage(e.target.files[0]);
   };
   // END = HANDLE PRIVIEW IMAGE
 
   // START = VALIDATION FORM
   const validate = Yup.object({
-    address: Yup.string().required('Address is required'),
-    phone: Yup.string().required('Phone is required'),
-    name: Yup.string().required('Name is required'),
+    firstname: Yup.string().required('First name is required'),
+    // lastname: Yup.string().required('Last name is required'),
+    // address: Yup.string().required('Address is required'),
+    phone: Yup.string()
+      .matches(phoneRegExp, 'Phone number is not valid')
+      .required('Phone number is required')
+      .min(11, 'Password must be at least 11 charaters')
+      .max(13, 'Password must be less than 13 charaters'),
+    // gender: Yup.string().required('Gender is required'),
+    // birth: Yup.string().required('Birth is required'),
   });
   // END = VALIDATION FORM
 
@@ -43,47 +52,42 @@ const ProfileUser = () => {
       <div className="container">
         <Formik
           initialValues={{
-            name: users.name,
             email: users.email,
+            fullname: users.firstname + ' ' + users?.lastname,
+            firstname: users.firstname,
+            lastname: users.lastname,
             address: users.address,
             phone: users.phone,
-            born: users.born,
             gender: users.gender,
+            birth: users.birth,
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            // const image = priviewImage ? priviewImage : defaultImage;
+            const formData = new FormData();
+            formData.append('firstname', values.firstname);
+            formData.append('lastname', values.lastname);
+            formData.append('phone_number', values.phone);
+            formData.append('gender', values.gender);
+            formData.append('date_of_birth', dateBirth);
+            formData.append('address', values.address);
+            formData.append('avatar', previewImage);
 
-            // if (!image) {
-            //   return Toastify('Images required!', 'error');
-            // }
-
-            // const formData = new FormData();
-            // formData.append('product_name', values.name);
-            // formData.append('price', values.price);
-            // formData.append('category_id', values.category);
-            // formData.append('description', values.description);
-            // formData.append('stock', stockCounter);
-            // formData.append('delivery_id', values.method);
-            // formData.append('size_id', values.size);
-            // formData.append('img_product', image);
-
-            // const checkDataSend = {
-            //   product_name: values.name,
-            //   price: values.price,
-            //   category_id: values.category,
-            //   description: values.description,
-            //   stock: stockCounter,
-            //   delivery_id: values.method,
-            //   size_id: values.size,
-            //   img_product: image,
-            // };
-            console.log('values:', values);
+            // Untuk mengecek data yg didapatkan saja
+            const checkDataSend = {
+              firstname: values.firstname,
+              lastname: values.lastname,
+              phone_number: values.phone,
+              gender: values.gender,
+              date_of_birth: dateBirth,
+              address: values.address,
+              avatar: previewImage,
+            };
+            console.log('Data yang dikirim:', checkDataSend);
 
             resetForm();
           }}
         >
-          {(formik) => (
+          {(formik, resetForm) => (
             <Form>
               <h1 className="heading-page">User Profile</h1>
               <div className="body-top">
@@ -149,7 +153,9 @@ const ProfileUser = () => {
                       </div>
                     )}
                   </div>
-                  <h3 className="heading-username">{users.name}</h3>
+                  <h3 className="heading-username">
+                    {users.firstname} {users?.lastname}
+                  </h3>
                   <h4>{users.email}</h4> <br />
                   <br />
                   {/* <h5>Has been ordered 15 products</h5> */}
@@ -189,11 +195,7 @@ const ProfileUser = () => {
                           placeholder="Email"
                         />
                       </div>
-                      <div
-                        className={`left-bottom ${
-                          formik.errors.address ? 'input-error' : ''
-                        }`}
-                      >
+                      <div className={`left-bottom`}>
                         <label>Delivery Address</label>
                         <input
                           type="text"
@@ -204,9 +206,6 @@ const ProfileUser = () => {
                           defaultValue={formik.values.address}
                         />
                       </div>
-                      {formik.errors.address && (
-                        <p className="input-invalid">{formik.errors.address}</p>
-                      )}
                     </div>
 
                     <div className="body-right">
@@ -256,76 +255,73 @@ const ProfileUser = () => {
                   </div>
                   <div className="body">
                     <div className="body-left">
-                      <div
-                        className={`left-top ${
-                          formik.errors.name ? 'input-error' : ''
-                        }`}
-                      >
+                      <div className={`left-top`}>
                         <p>Display name</p>
                         <input
                           type="text"
                           placeholder="Display name"
-                          name="name"
-                          onChange={formik.handleChange}
-                          value={formik.values.name}
-                          defaultValue={formik.values.name}
+                          name="fullname"
+                          // onChange={formik.handleChange}
+                          // value={formik.values.name}
+                          defaultValue={formik.values.fullname}
+                          disabled={true}
                         />
-                        {formik.errors.name && (
+                        {/* {formik.errors.name && (
                           <p className="input-invalid">{formik.errors.name}</p>
-                        )}
+                        )} */}
                       </div>
-                      <div className="left-top">
+                      <div
+                        className={`left-top ${
+                          formik.errors.firstname ? 'input-error' : ''
+                        }`}
+                      >
                         <p>First name</p>
                         <input
                           type="text"
                           placeholder="First name"
-                          name="name"
-                          disabled={true}
-                          // onChange={formik.handleChange}
-                          // value={formik.values.name}
-                          // defaultValue={formik.values.name}
+                          name="firstname"
+                          onChange={formik.handleChange}
+                          value={formik.values.firstname}
+                          defaultValue={formik.values.firstname}
                         />
+                        {formik.errors.firstname && (
+                          <p className="input-invalid">
+                            {formik.errors.firstname}
+                          </p>
+                        )}
                       </div>
                       <div className="left-bottom">
                         <p>Last name</p>
                         <input
                           type="text"
+                          name="lastname"
                           placeholder="last name"
-                          disabled={true}
-                          // onChange={formik.handleChange}
-                          // value={formik.values.name}
-                          // defaultValue={formik.values.name}
+                          onChange={formik.handleChange}
+                          value={formik.values.lastname}
+                          defaultValue={formik.values.lastname}
                         />
                       </div>
                     </div>
 
                     <div className="body-right">
-                      <div
-                        className={`right-top ${
-                          formik.errors.phone ? 'input-error' : ''
-                        }`}
-                      >
-                        <label>DD / MM / YY</label>
+                      <div className={`right-top`}>
+                        <p>DD / MM / YY</p>
                         {/* Masih bug validasi */}
                         {/* <input type="text" placeholder="DD/MM/YY" /> */}
                         <DatePicker
-                          name="born"
-                          selected={dateBorn}
-                          onChange={(date) => setDateBorn(date)}
+                          name="birth"
+                          selected={dateBirth}
+                          onChange={(date) => setDateBirth(date)}
                           peekNextMonth
                           showMonthDropdown
                           showYearDropdown
                           dropdownMode="select"
                         />
-                        {formik.errors.born && (
-                          <p className="input-invalid">{formik.errors.born}</p>
-                        )}
+                        {/* {formik.errors.birth && (
+                          <p className="input-invalid">{formik.errors.birth}</p>
+                        )} */}
                       </div>
-                      <div
-                        className={`right-bottom  ${
-                          formik.errors.phone ? 'input-error' : ''
-                        }`}
-                      >
+                      <div className={`right-bottom`}>
                         <label className="male">
                           <input type="radio" value="male" name="gender" /> Male
                         </label>
@@ -344,13 +340,15 @@ const ProfileUser = () => {
                   <p>Do you want to save the</p>
                   <p>change?</p>
                   <Button
+                    type="submit"
                     className="save"
-                    disabled={!(formik.isValid && formik.dirty)}
+                    disabled={!formik.isValid}
                   >
                     Save
                   </Button>
                   <Button
-                  // className="cancel"
+                    // className="cancel"
+                    onClick={resetForm}
                   >
                     Cancel
                   </Button>
@@ -718,9 +716,21 @@ const StyledProfileUserPage = styled.div`
 
             .right-bottom {
               padding-left: 20px;
-
+              display: flex;
+              flex-direction: column;
+              label {
+                font-family: Poppins;
+                font-style: normal;
+                font-weight: 500;
+                font-size: 20px;
+                line-height: 30px;
+                color: #9f9f9f;
+              }
               input [type='radio'] {
                 font-size: 20px;
+              }
+              input [type='radio']:checked ~ label {
+                color: red;
               }
             }
           }
@@ -798,6 +808,13 @@ const StyledProfileUserPage = styled.div`
     }
     .input-error {
       /* background-color: red; */
+      .input-invalid {
+        font-size: 1rem !important;
+        color: red !important;
+        font-weight: 500 !important;
+        margin-top: 10px;
+        margin-bottom: 0;
+      }
       label {
         color: red !important;
       }
@@ -810,13 +827,13 @@ const StyledProfileUserPage = styled.div`
   }
 `;
 
-const Container = styled.div`
-  width: 100%;
-  height: 1200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 80px;
-`;
+// const Container = styled.div`
+//   width: 100%;
+//   height: 1200px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   margin-top: 80px;
+// `;
 
-const BodyWrapper = styled.div``;
+// const BodyWrapper = styled.div``;
