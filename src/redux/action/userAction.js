@@ -1,6 +1,21 @@
 import axios from '../../config/Axios';
 import { toast } from 'react-toastify';
 
+export const register = async (formData, history) => {
+  try {
+    await axios.post('/users/auth/register', formData);
+    toast.success('Please check your email for email verification!');
+    history.push('/auth/login');
+  } catch (error) {
+    if (error.response?.data?.statusCode === 422) {
+      toast.error(error?.response?.data?.error[0].msg);
+    } else {
+      toast.error('Registration failed');
+      console.log(error);
+    }
+  }
+};
+
 export const login = (formData, history) => async (dispatch) => {
   try {
     const { data } = await (await axios.post('/users/auth/login', formData)).data;

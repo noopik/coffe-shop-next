@@ -5,12 +5,16 @@ import { Breakpoints, phoneRegExp } from '../../../src/utils';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
+import { useDispatch } from 'react-redux';
+import { register } from '../../../src/redux/action/userAction'
 
 const RegisterPage = () => {
+  const dispatch = useDispatch();
   const validate = Yup.object({
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
+      .min(8, 'Password must be at least 8 charaters')
+      .max(255, 'Password must be at least 255 charaters')
       .required('Password is required'),
     phone: Yup.string()
       .matches(phoneRegExp, 'Phone number is not valid')
@@ -36,7 +40,7 @@ const RegisterPage = () => {
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            console.log(values);
+            dispatch(register({ ...values, phone_number :values.phone},router));
             resetForm();
           }}
         >
