@@ -10,6 +10,7 @@ import { PersistGate } from 'redux-persist/lib/integration/react';
 import { persistStore } from 'redux-persist';
 import NextNProgress from 'nextjs-progressbar';
 
+
 const GlobalStyle = createGlobalStyle`
   .container {
     width: 1600px;
