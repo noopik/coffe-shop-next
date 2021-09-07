@@ -22,12 +22,17 @@ const ProfileUser = () => {
     gender: 'male',
   });
 
+  // Jika user melakukan action upload image
   const [previewImage, setPreviewImage] = useState(users.image);
+  // Jika user sudah punya image maka handle di state defaultImageValue
+  const [defaultImageValue, setDefaultImageValue] = useState(
+    'https://www.bioid.com/wp-content/uploads/face-database-bioid.jpg'
+  );
   const [dateBirth, setDateBirth] = useState(new Date());
 
   // START = HANDLE PRIVIEW IMAGE
   const handlePreviewImage = (e) => {
-    const imageUpdate = e.target.files[0];
+    // const imageUpdate = e.target.files[0];
     setPreviewImage(e.target.files[0]);
   };
   // END = HANDLE PRIVIEW IMAGE
@@ -93,22 +98,40 @@ const ProfileUser = () => {
               <div className="body-top">
                 <div className="top-left">
                   <div className="avatar-wrapper">
-                    {!previewImage && (
+                    {/* START === Jika user sudah memiliki image value  */}
+                    {defaultImageValue && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={defaultImageValue} alt="user" />
+                    )}
+                    {/* END === Jika user sudah memiliki image value  */}
+
+                    {/* START === Jika image null */}
+
+                    {!previewImage && !defaultImageValue && (
                       <Image
                         src={IMG_AvatarDefault}
                         alt="image name"
                         layout="fill"
                       />
                     )}
+                    {/* END === Jika image null */}
+
+                    {/* START === Jika user malukan action update image */}
                     {previewImage && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={URL?.createObjectURL(previewImage)} alt="" />
+                      <img
+                        src={URL?.createObjectURL(previewImage)}
+                        alt="user"
+                      />
                     )}
-                    {previewImage && (
+                    {/* END === Jika user malukan action update image */}
+
+                    {(previewImage || defaultImageValue) && (
                       <div
                         className="edit delete"
                         onClick={() => {
                           setPreviewImage(false);
+                          setDefaultImageValue(false);
                         }}
                       >
                         <svg
@@ -128,7 +151,7 @@ const ProfileUser = () => {
                         </svg>
                       </div>
                     )}
-                    {!previewImage && (
+                    {!previewImage && !defaultImageValue && (
                       <div className="edit upload">
                         <svg
                           width="14"
@@ -364,7 +387,8 @@ const ProfileUser = () => {
   );
 };
 
-export default PrivateRoute(ProfileUser.apply,['member','admin']);
+export default PrivateRoute(ProfileUser, ['member', 'admin']);
+// export default ProfileUser;
 
 // START === STYLING CURRENT PAGE
 
