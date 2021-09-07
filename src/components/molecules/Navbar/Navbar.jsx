@@ -83,7 +83,11 @@ const Navbar = (props) => {
               </li>
               <li className={`${style['li-menu']}`}>
                 <Link
-                  href={props?.user?.roles === 'member' ? '/carts' : '/orders'}
+                  href={
+                    props?.user?.roles === 'member'
+                      ? '/orders'
+                      : '/admin/orders'
+                  }
                 >
                   <a
                     className={`${style['li-menu-a']} ${

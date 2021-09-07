@@ -5,8 +5,9 @@ import TextField from './TextField';
 import Breadcrumb from './ItemBreadcrumb';
 import Breadcrumbs from './Breadcrumbs';
 import TextFieldAdmin from './TextFieldAdmin';
-
+import CardOrder from './CardOrder';
 export {
+  CardOrder,
   TextFieldAdmin,
   Button,
   CardWraper,

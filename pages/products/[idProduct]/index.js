@@ -86,16 +86,8 @@ const ProductDetailPage = () => {
   return (
     <StyledProductDetailPage>
       <div className="container">
-        {/* <div className="menu"> */}
-        {/* <Link href="/products">
-            <a className="product-favourite">Favourite and Promo </a>
-          </Link> */}
-        {/* <Link href="/products/12"> */}
-        {/* <a className="product-detail"> >  Cold Brew</a> */}
-        {/* </Link> */}
-        {/* </div> */}
         <Breadcrumbs>
-          <Breadcrumb title="Favourite and Promo" to="#" />
+          <Breadcrumb title="Products" to="/products" />
           <Breadcrumb title="> Cold Brew" to="#" active />
         </Breadcrumbs>
         <BodyWrapper>
@@ -224,8 +216,44 @@ const ProductDetailPage = () => {
                 <h2 className="list">1x Large</h2>
                 <h2 className="list">1x Regular</h2>
               </div>
+              <div className="counter-wrapper">
+                <div className="counter min">
+                  <svg
+                    width="12"
+                    height="5"
+                    viewBox="0 0 12 5"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z"
+                      fill="#6A4029"
+                    />
+                  </svg>
+                </div>
+                <div className="result">50</div>
+                <div className="counter plus">
+                  <svg
+                    width="14"
+                    height="13"
+                    viewBox="0 0 14 13"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M13.3902 9.05H9.66524V12.875H4.34023V9.05H0.615234V3.975H4.34023V0.125H9.66524V3.975H13.3902V9.05Z"
+                      fill="#6A4029"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
-            <Button className="btn-checkout">Checkout</Button>
+            <Button
+              className="btn-checkout"
+              onClick={() => router.push('/orders')}
+            >
+              Checkout
+            </Button>
           </div>
         </BodyBottom>
       </div>
@@ -693,6 +721,9 @@ const BodyBottom = styled.div`
       flex-direction: column;
       gap: 20px;
     `}
+       ${Breakpoints.lessThan('md')`
+        flex-direction: column; 
+      `}
     .item {
       width: 600px;
       padding: 16px 32px;
@@ -706,9 +737,60 @@ const BodyBottom = styled.div`
       flex-direction: row;
       align-items: center;
       /* padding: 20px; */
+
+      ${Breakpoints.lessThan('sm')`
+        width: 100%;
+      `}
       ${Breakpoints.lessThan('xsm')`
-      width: 100%;
+      flex-direction: column;
     `}
+      .detail {
+        flex: 1;
+        h1.title {
+          font-weight: bolder;
+          font-size: 18px;
+          font-family: Poppins;
+          font-style: normal;
+          font-weight: 900;
+          font-size: 25px;
+          line-height: 37px;
+          color: #000000;
+        }
+        h2.list {
+          font-family: Poppins;
+          font-style: normal;
+          font-weight: normal;
+          font-size: 20px;
+          line-height: 30px;
+          color: #000000;
+        }
+      }
+      .counter-wrapper {
+        display: flex;
+        width: 150px;
+        justify-content: space-between;
+        ${Breakpoints.lessThan('xsm')`
+          margin-top: 1rem;
+        `}
+        .counter {
+          width: 40px;
+          height: 40px;
+          border-radius: 100%;
+          background-color: rgba(231, 170, 54, 0.52);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .result {
+          font-family: Poppins;
+          font-style: normal;
+          font-weight: 900;
+          font-size: 25px;
+          line-height: 37px;
+          text-align: center;
+          color: #000000;
+        }
+      }
       img {
         width: 125px;
         height: 125px;
@@ -716,31 +798,13 @@ const BodyBottom = styled.div`
         border-radius: 100%;
         margin-right: 25px;
       }
-
-      h1.title {
-        font-weight: bolder;
-        font-size: 18px;
-        font-family: Poppins;
-        font-style: normal;
-        font-weight: 900;
-        font-size: 25px;
-        line-height: 37px;
-        color: #000000;
-      }
-      h2.list {
-        font-family: Poppins;
-        font-style: normal;
-        font-weight: normal;
-        font-size: 20px;
-        line-height: 30px;
-        color: #000000;
-      }
     }
     .btn-checkout {
       width: 200px;
-      ${Breakpoints.lessThan('xsm')`
+      ${Breakpoints.lessThan('md')`
       width: 100%;
-    `}
+      margin-top: 30px;
+      `}
     }
   }
 `;
