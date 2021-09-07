@@ -215,6 +215,7 @@ const AddProducts = (props) => {
                   <input
                     type="file"
                     className="input-file"
+                    accept="image/jpeg, image/png"
                     onChange={(e) => {
                       if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
                         if (e.target.files[0].size > 1048576 * 2) {
