@@ -47,13 +47,13 @@ const ProfileUser = (props) => {
         <Formik
           enableReinitialize
           initialValues={{
-            email: users.email,
-            firstname: users.firstname,
-            lastname: users.lastname,
-            address: users.address,
-            phone: users.phone_number,
-            gender: users.gender,
-            birth: users.birth,
+            email: users.email || '',
+            firstname: users.firstname || '',
+            lastname: users.lastname || '',
+            address: users.address || '',
+            phone: users.phone_number || '',
+            gender: users.gender || '',
+            birth: users.birth || '',
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
