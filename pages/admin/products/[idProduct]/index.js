@@ -1,39 +1,33 @@
 import styled from 'styled-components';
-import { IMG_DefaultProduct, IMG_DummyProduct } from '../../../../src/assets';
-import {
-  Breadcrumb,
-  Breadcrumbs,
-  Button,
-  TextFieldAdmin,
-} from '../../../../src/components/atoms';
+import {IMG_DefaultProduct, IMG_DummyProduct} from '../../../../src/assets';
+import {Breadcrumb, Breadcrumbs, Button, TextFieldAdmin} from '../../../../src/components/atoms';
 import PrivateRoute from '../../../../src/components/hoc/PrivateRoute';
-import { Breakpoints, Toastify } from '../../../../src/utils';
+import {Breakpoints, Toastify} from '../../../../src/utils';
 import Image from 'next/image';
-import { useState } from 'react';
-import { Formik, Form } from 'formik';
+import {useState} from 'react';
+import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import axiosConfig from '../../../../src/config/Axios';
-import { ErrorMessage } from 'formik';
+import {ErrorMessage} from 'formik';
+import {useRouter} from 'next/router';
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (context) => {
   try {
-    const resultSizes = await axiosConfig.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
-    );
-    const resultDeliveries = await axiosConfig.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
-    );
-    const resultCategories = await axiosConfig.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
-    );
+    const {idProduct} = context.query;
+    const resultSizes = await axiosConfig.get('/sizes/getsizes?pagination=off');
+    const resultDeliveries = await axiosConfig.get('/deliveries/getdeliveries?pagination=off');
+    const resultCategories = await axiosConfig.get('/categories/getcategory?pagination=off');
+    const resultDataProduct = await axiosConfig.get(`/products/${idProduct}`);
     const sizes = resultSizes.data.data;
     const deliveries = resultDeliveries.data.data;
     const categories = resultCategories.data.data;
+    const product = resultDataProduct.data.data;
     return {
       props: {
         sizes,
         deliveries,
         categories,
+        product,
       },
     };
   } catch (error) {
@@ -45,26 +39,71 @@ export const getServerSideProps = async () => {
 };
 
 const EditProduct = (props) => {
+  const {push, query} = useRouter();
+  const {idProduct} = query
+  if (!props.product) {
+    push('/404');
+  }
+  const {product} = props;
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
-  const [defaultImage, setDefaultImage] = useState(
-    'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg'
-  );
+  const [defaultImage, setDefaultImage] = useState(`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`);
   const [stockCounter, setStockCounter] = useState(1);
+  const [sizeProduct, setsizeProduct] = useState(product.size);
+  const [deliveryProduct, setdeliveryProduct] = useState(product.delivery);
 
   // START = VALIDATION FORM
   const validate = Yup.object({
     name: Yup.string().required('Name product is required'),
     price: Yup.number().required('Price is required'),
     description: Yup.string().required('Description is required'),
-    size: Yup.string().required('Size is required'),
-    method: Yup.string().required('Method payment is required'),
-    category: Yup.string().required('Category is required'),
+    // size: Yup.array().min(1),
+    // method: Yup.array().min(1),
+    // category: Yup.string().required('Please select category product')
   });
   // END = VALIDATION FORM
 
+  const handleSize = (method, data) => {
+    if (method === 'slice') {
+      const index = sizeProduct.indexOf(data);
+      sizeProduct.splice(index, 1);
+    } else {
+      const found = sizeProduct.find((element) => element.size_id === data.size_id);
+      if (found === undefined) {
+        setsizeProduct((old) => {
+          return [...old, data];
+        });
+        document.getElementById('size-opt').selected = true;
+      } else {
+        setsizeProduct((old) => {
+          return [...old];
+        });
+        document.getElementById('size-opt').selected = true;
+      }
+    }
+  };
+
+  const handleDelivery = (method, data) => {
+    if (method === 'slice') {
+      const index = deliveryProduct.indexOf(data);
+      deliveryProduct.splice(index, 1);
+    } else {
+      const found = deliveryProduct.find((element) => element.delivery_id === data.delivery_id);
+      if (found === undefined) {
+        setdeliveryProduct((old) => {
+          return [...old, data];
+        });
+        document.getElementById('delivery-opt').selected = true;
+      } else {
+        setdeliveryProduct((old) => {
+          return [...old];
+        });
+        document.getElementById('delivery-opt').selected = true;
+      }
+    }
+  };
   // START = HANDLE STOCK LOGIC
   const stockIncrement = () => {
     const increment = stockCounter + 1;
@@ -95,18 +134,16 @@ const EditProduct = (props) => {
       </Breadcrumbs>
       <Formik
         initialValues={{
-          name: 'COLD BREW',
-          price: 1000,
-          description:
-            'Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.',
-          size: '',
-          method: '',
-          category: '',
+          name: product.product_name,
+          price: product.price,
+          description: product.description,
+          size: sizeProduct,
+          method: deliveryProduct,
+          category: product.category_id,
         }}
         validationSchema={validate}
-        onSubmit={(values, { resetForm }) => {
+        onSubmit={(values, {resetForm}) => {
           const image = priviewImage ? priviewImage : defaultImage;
-
           if (!image) {
             return Toastify('Images required!', 'error');
           }
@@ -117,47 +154,38 @@ const EditProduct = (props) => {
           formData.append('category_id', values.category);
           formData.append('description', values.description);
           formData.append('stock', stockCounter);
-          formData.append('delivery_id', values.method);
-          formData.append('size_id', values.size);
-          formData.append('img_product', image);
-
-          const checkDataSend = {
-            product_name: values.name,
-            price: values.price,
-            category_id: values.category,
-            description: values.description,
-            stock: stockCounter,
-            delivery_id: values.method,
-            size_id: values.size,
-            img_product: image,
-          };
-          console.log('checkDataSend:', checkDataSend);
-
-          resetForm();
+          for (let itr = 0; itr < deliveryProduct.length; itr++) {
+            formData.append('delivery_id', deliveryProduct[itr].delivery_id);
+          }
+          for (let i = 0; i < sizeProduct.length; i++) {
+            formData.append('size_id', sizeProduct[i].size_id);
+          }
+          image !== defaultImage && formData.append('img_product', image);
+          // for (let [key, value] of formData.entries()) {
+          //   console.log(`${key}: ${value}`);
+          // }
+          axiosConfig.post(`/products/${idProduct}`, formData)
+          .then(() => {
+            Toastify('Update product successfull', 'success');
+          })
+          .catch((err) => {
+            console.log(err.response);
+            Toastify('Update product failed, please try again later', 'error');
+          })
         }}
       >
         {(formik) => (
           <Form>
             <div className="side-left">
               <div className="image-wrapper">
-                {!defaultImage && !priviewImage && (
-                  <Image
-                    src={IMG_DefaultProduct}
-                    alt="image name"
-                    layout="fill"
-                  />
-                )}
+                {!defaultImage && !priviewImage && <Image src={IMG_DefaultProduct} alt="image name" layout="fill" />}
                 {defaultImage && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={defaultImage} alt="image" className="image" />
                 )}
                 {priviewImage && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={URL?.createObjectURL(priviewImage)}
-                    alt="image"
-                    className="image"
-                  />
+                  <img src={URL?.createObjectURL(priviewImage)} alt="image" className="image" />
                 )}
 
                 <div className="btn-circle-wrapper">
@@ -169,13 +197,7 @@ const EditProduct = (props) => {
                         setPreviewImage(false);
                       }}
                     >
-                      <svg
-                        width="23"
-                        height="24"
-                        viewBox="0 0 23 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                      <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M2 6H4.11111M4.11111 6H21M4.11111 6V20C4.11111 20.5304 4.33353 21.0391 4.72944 21.4142C5.12535 21.7893 5.66232 22 6.22222 22H16.7778C17.3377 22 17.8746 21.7893 18.2706 21.4142C18.6665 21.0391 18.8889 20.5304 18.8889 20V6H4.11111ZM7.27778 6V4C7.27778 3.46957 7.5002 2.96086 7.89611 2.58579C8.29202 2.21071 8.82899 2 9.38889 2H13.6111C14.171 2 14.708 2.21071 15.1039 2.58579C15.4998 2.96086 15.7222 3.46957 15.7222 4V6M9.38889 11V17M13.6111 11V17"
                           stroke="#6A4029"
@@ -188,44 +210,18 @@ const EditProduct = (props) => {
                   )}
                   {!(priviewImage || defaultImage) && (
                     <div className="btn upload">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect
-                          x="10"
-                          width="4"
-                          height="24"
-                          rx="2"
-                          fill="#6A4029"
-                        />
-                        <rect
-                          x="24"
-                          y="10"
-                          width="4"
-                          height="24"
-                          rx="2"
-                          transform="rotate(90 24 10)"
-                          fill="#6A4029"
-                        />
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" width="4" height="24" rx="2" fill="#6A4029" />
+                        <rect x="24" y="10" width="4" height="24" rx="2" transform="rotate(90 24 10)" fill="#6A4029" />
                       </svg>
-                      <input
-                        type="file"
-                        name="image"
-                        className="input-file"
-                        onChange={(e) => handlePreviewImage(e)}
-                      />
+                      <input accept="image/jpeg, image/png" type="file" name="image" className="input-file" onChange={(e) => handlePreviewImage(e)} />
                     </div>
                   )}
                 </div>
               </div>
               <div className="date-wrapper">
                 <p className="text">
-                  Delivery only on{' '}
-                  <span className="bold">Monday to friday at 1 - 7 pm</span>
+                  Delivery only on <span className="bold">Monday to friday at 1 - 7 pm</span>
                 </p>
               </div>
             </div>
@@ -241,9 +237,7 @@ const EditProduct = (props) => {
                   className="heading-name-product"
                 />
                 <div className="line" />
-                {formik.errors.name && (
-                  <p className="input-invalid">{formik.errors.name}</p>
-                )}
+                {formik.errors.name && <p className="input-invalid">{formik.errors.name}</p>}
               </div>
               <div className="row price-wrapper">
                 <p className="price">IDR</p>
@@ -258,11 +252,7 @@ const EditProduct = (props) => {
                 />
                 <div className="line" />
               </div>
-              {formik.errors.price && (
-                <p className="input-invalid outside-form">
-                  {formik.errors.price}
-                </p>
-              )}
+              {formik.errors.price && <p className="input-invalid outside-form">{formik.errors.price}</p>}
               <div className="row">
                 <textarea
                   // id=" "
@@ -274,53 +264,80 @@ const EditProduct = (props) => {
                   defaultValue={formik.values.description}
                 ></textarea>
                 <div className="line" />
-                {formik.errors.description && (
-                  <p className="input-invalid">{formik.errors.description}</p>
-                )}
+                {formik.errors.description && <p className="input-invalid">{formik.errors.description}</p>}
               </div>
               <div className="row">
                 <select
                   name="size"
                   type="text"
-                  onChange={formik.handleChange}
-                  value={formik.values.size}
+                  // onChange={formik.handleChange}
+                  // value={formik.values.size}
                   id="size"
                   placeholder="Select Size"
                 >
-                  <option value="">Select Size</option>
+                  <option value="" id="size-opt">
+                    Select Size
+                  </option>
                   {sizes &&
                     sizes.map((size) => (
                       <>
-                        <option value={size.size_id}>{size.size_name}</option>
+                        <option value={size.size_id} onClick={() => handleSize('push', size, formik)}>
+                          {size.size_name}
+                        </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.size && (
-                  <p className="input-invalid">{formik.errors.size}</p>
-                )}
+                {/* <span>Current size : </span> */}
+                <ItemWrapper>
+                  {sizeProduct.length > 0 ? (
+                    sizeProduct.map((item) => (
+                      <>
+                        <div className="item">
+                          {item.size_name}
+                          <button onClick={() => handleSize('slice', item)}>X</button>
+                        </div>
+                      </>
+                    ))
+                  ) : (
+                    <p className="input-invalid">Please select product size</p>
+                  )}
+                </ItemWrapper>
               </div>
               <div className="row">
                 <select
                   name="method"
                   id="method"
                   type="text"
-                  onChange={formik.handleChange}
-                  value={formik.values.method}
+                  // onChange={formik.handleChange}
+                  // value={formik.values.method}
                   placeholder="Select Delivery Methods"
                 >
-                  <option value="">Select Delivery Methods</option>
+                  <option value="" id="delivery-opt">
+                    Select Delivery Methods
+                  </option>
                   {deliveries &&
                     deliveries.map((delivery) => (
                       <>
-                        <option value={delivery.delivery_id}>
+                        <option value={delivery.delivery_id} onClick={() => handleDelivery('push', delivery)}>
                           {delivery.delivery_name}
                         </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.method && (
-                  <p className="input-invalid">{formik.errors.method}</p>
-                )}
+                <ItemWrapper>
+                  {deliveryProduct.length > 0 ? (
+                    deliveryProduct.map((item) => (
+                      <>
+                        <div className="item">
+                          {item.delivery_name}
+                          <button onClick={() => handleDelivery('slice', item)}>X</button>
+                        </div>
+                      </>
+                    ))
+                  ) : (
+                    <p className="input-invalid">Please select product delivery method</p>
+                  )}
+                </ItemWrapper>
               </div>
               <div className="row">
                 <select
@@ -335,15 +352,13 @@ const EditProduct = (props) => {
                   {categories &&
                     categories.map((category) => (
                       <>
-                        <option value={category.category_id}>
+                        <option id={category.category_id} value={category.category_id}>
                           {category.category_name}
                         </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.category && (
-                  <p className="input-invalid">{formik.errors.category}</p>
-                )}
+                {formik.errors.category && <p className="input-invalid">{formik.errors.category}</p>}
               </div>
               <div className="row button-wrapper">
                 <div className="counter-wrapper">
@@ -374,12 +389,11 @@ const EditProduct = (props) => {
                 </div>
                 <Button>Add to Cart</Button>
               </div>
-              {formik.errors.stock && (
-                <p className="input-invalid">{formik.errors.stock}</p>
-              )}
+              {formik.errors.stock && <p className="input-invalid">{formik.errors.stock}</p>}
               <div className="btn-saved-wrapper">
+                {/* <Button disabled={!(formik.isValid && formik.dirty)} type="submit" className={formik.errors}> */}
                 <Button
-                  disabled={!(formik.isValid && formik.dirty)}
+                  disabled={!formik.isValid || sizeProduct.length < 1 || deliveryProduct.length < 1}
                   type="submit"
                   className={formik.errors}
                 >
@@ -394,7 +408,7 @@ const EditProduct = (props) => {
   );
 };
 
-export default PrivateRoute(EditProduct,['admin']);
+export default PrivateRoute(EditProduct, ['admin']);
 
 // START === STYLING CURRENT PAGE
 
@@ -593,5 +607,36 @@ const StyledEditProduct = styled.div`
         margin-bottom: 10px;
       }
     }
+  }
+`;
+
+const ItemWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 5px;
+
+  .item {
+    height: 35px;
+    background-color: #ffba33;
+    min-width: 100px;
+    padding: 2px 5px;
+    padding-left: 20px;
+    padding-right: 40px;
+    margin: 5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 50px;
+  }
+
+  button {
+    background-color: grey;
+    color: white;
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50px;
   }
 `;
