@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Button, LogoBrand, TextField } from '../../../src/components/atoms';
 import { AuthLayout } from '../../../src/components/layout';
-import { Breakpoints } from '../../../src/utils';
+import { Breakpoints, phoneRegExp } from '../../../src/utils';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
@@ -13,6 +13,7 @@ const RegisterPage = () => {
       .min(6, 'Password must be at least 6 charaters')
       .required('Password is required'),
     phone: Yup.string()
+      .matches(phoneRegExp, 'Phone number is not valid')
       .required('Phone number is required')
       .min(11, 'Password must be at least 11 charaters')
       .max(13, 'Password must be less than 13 charaters'),
