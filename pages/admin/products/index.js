@@ -9,15 +9,17 @@ import DatePicker from 'react-datepicker';
 import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import 'react-datepicker/dist/react-datepicker.css';
-import axios from 'axios';
+// import axios from 'axios';
+import axiosConfig from '../../../src/config/Axios';
+import { toast } from 'react-toastify';
 
 export const getServerSideProps = async () => {
   try {
-    const resultSizes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`);
-    const resultDeliveries = await axios.get(
+    const resultSizes = await axiosConfig.get(`${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`);
+    const resultDeliveries = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
     );
-    const resultCategories = await axios.get(
+    const resultCategories = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
     );
     const sizes = resultSizes.data.data;
@@ -121,8 +123,43 @@ const AddProducts = (props) => {
             values.image = image;
             values.startDate = startDate;
             values.endDate = endDate;
-            console.log('values submit', values);
+            // console.log('values submit', values);
+            const formData = new FormData();
+            formData.append('img_product', image);
+            formData.append('stock', values.stock);
+            formData.append('product_name', values.name);
+            formData.append('delivery_start_date', values.startDate);
+            formData.append('delivery_end_date', values.endDate);
+            formData.append('price', values.price);
+            formData.append('description', values.description);
+            formData.append('size_id', values.sizes);
+            formData.append('delivery_id', values.deliveries);
+            formData.append('category_id', values.category);
+            for (let [key, value] of formData.entries()) {
+              console.log(`${key}: ${value}`);
+            }
+            axiosConfig.post(`${process.env.NEXT_PUBLIC_API_URL}/products`, formData)
+            .then((res) => {
+              console.log(res);
+              toast.success('Successfully add product');
+            })
+            .catch((err) => {
+              console.log(err.response);
+            })
             resetForm();
+            setImage('')
+            values.sizes.map((idSize) => {
+              values.sizes= []
+              setarrSize(0)
+              document.getElementById(`size${idSize}`).checked = false;
+              document.getElementById(`itemSize${idSize}`).className = 'size-item';
+            })
+            values.deliveries.map((idDelivery) => {
+              values.deliveries = []
+              setArrDelivery(0)
+              document.getElementById(`delivery${idDelivery}`).checked = false;
+              document.getElementById(`methodItem${idDelivery}`).className = 'method-item';
+            })
           }}
         >
           {(formik) => (
