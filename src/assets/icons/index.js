@@ -6,6 +6,10 @@ import IC_GoogleIcon from './google-icon.png';
 import IC_List from './list.svg';
 import IC_Search from './search.png';
 import IC_Message from './message.png';
+import ICBank from './IC_Bank.svg';
+import ICHall from './IC_Hall.svg';
+import ICCars from './IC_cars.svg';
+
 export {
   IC_Search,
   IC_Message,
@@ -15,4 +19,7 @@ export {
   IC_CircleTwitter,
   IC_CircleIg,
   IC_List,
+  ICBank,
+  ICHall,
+  ICCars,
 };
