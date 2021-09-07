@@ -10,19 +10,24 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { updateProfile } from '../../src/redux/action/userAction';
+import { useEffect } from 'react';
 
 const ProfileUser = (props) => {
   const dispatch = useDispatch();
-  const [users, setUsers] = useState({
-    ...props.user,
-    avatar: '',
-    firstname: props.user.firstname ? props.user.firstname : '',
-    lastname: props.user.lastname ? props.user.lastname : '',
-    address: props.user.address ? props.user.address : '',
-    phone: props.user.phone_number ? props.user.phone_number : '',
-    gender: props.user.gender ? props.user.gender : '',
-    birth: props.user.date_of_birth ? new Date(props.user.date_of_birth).toISOString().slice(0, 10) : '',
-  });
+  const [users, setUsers] = useState({});
+  useEffect(() => {
+    setUsers((old) => ({
+      ...old,
+      ...props.user,
+      avatar: '',
+      firstname: props.user.firstname ? props.user.firstname : '',
+      lastname: props.user.lastname ? props.user.lastname : '',
+      address: props.user.address ? props.user.address : '',
+      phone: props.user.phone_number ? props.user.phone_number : '',
+      gender: props.user.gender ? props.user.gender : '',
+      birth: props.user.date_of_birth ? new Date(props.user.date_of_birth).toISOString().slice(0, 10) : '',
+    }));
+  }, [props.user]);
   const defaultImageValue = 'https://www.bioid.com/wp-content/uploads/face-database-bioid.jpg';
   const validate = Yup.object({
     firstname: Yup.string().required('First name is required'),
@@ -40,6 +45,7 @@ const ProfileUser = (props) => {
     <StyledProfileUserPage>
       <div className="container">
         <Formik
+          enableReinitialize
           initialValues={{
             email: users.email,
             firstname: users.firstname,
