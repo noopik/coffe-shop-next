@@ -1,121 +1,100 @@
 /* eslint-disable @next/next/no-img-element */
 import styled from 'styled-components';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import router from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
-import Navbar from '../../../src/components/molecules/Navbar/Navbar';
-import Footer from '../../../src/components/molecules/Footer';
 import { Breadcrumb, Button, Breadcrumbs } from '../../../src/components/atoms';
 import PublicRoute from '../../../src/components/hoc/PublicRoute';
-import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
 import axiosConfig from '../../../src/config/Axios';
-import DatePicker from 'react-datepicker';
+import TimeField from 'react-simple-timefield';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Breakpoints } from '../../../src/utils';
 import { ModalAlertValidation } from '../../../src/components/molecules';
+import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import { addOrderCart } from '../../../src/redux/action/cartAction';
 
 export const getServerSideProps = async (ctx) => {
   try {
     const { params } = ctx;
-    // console.log(params);
-    const { data } = await (
-      await axiosConfig.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/${params.idProducts}`
-      )
-    ).data;
-    console.log(data);
-
+    const { data } = await (await axiosConfig.get(`/products/${params.idProduct}`)).data;
     return {
-      props: {},
+      props: { detailProduct: data },
     };
   } catch (error) {
-    console.log(error.response);
     return {
-      props: {},
+      notFound: true,
     };
   }
 };
 
-const ProductDetailPage = () => {
-  const dummyData = {
-    product_id: 15,
-    product_name: 'white coffee v1',
-    category_id: 1,
-    description: 'white coffee dengan citarasa yang enak dan mantap',
-    stock: 2,
-    price: '100000',
-    img_product:
-      'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg',
-    delivery_start_date: '2021-09-05T00:37:14.000Z',
-    delivery_end_date: '2021-09-05T00:37:14.000Z',
-    size: [
-      {
-        size_id: 32,
-        size_name: 'Raa',
-      },
-      {
-        size_id: 33,
-        size_name: 'L',
-      },
-    ],
-    delivery: [
-      {
-        delivery_id: 1,
-        delivery_name: 'bink',
-      },
-      {
-        delivery_id: 3,
-        delivery_name: 'bink',
-      },
-    ],
+const ProductDetailPage = ({ detailProduct, user, auth }) => {
+  const initialState = {
+    cart_product_id: detailProduct.product_id,
+    cart_deliver_id: null,
+    cart_deliver_name: '',
+    cart_size_id: null,
+    card_size_name: '',
+    cart_stock: 1,
+    cart_time_dineIn: null,
+    product_price: detailProduct.price,
+    product_img_product: detailProduct.img_product,
+    product_stock: detailProduct.stock,
+    product_name: detailProduct.product_name,
   };
-
-  // MODAL STATE
+  const [cart, setCart] = useState(initialState);
   const [showModal, setShowModal] = useState(false);
-
-  // Mata Uang Rupiah
   const formatter = new Intl.NumberFormat(['ban', 'id']);
-  const [dateBirth, setDateBirth] = useState(new Date());
-
-  // Date Converter
-  const start = new Date(dummyData.delivery_start_date);
-  const startDay = start.getDay();
-  console.log('startDay', startDay);
-
+  const dispatch = useDispatch();
+  const addCart = () => {
+    if (!auth) {
+      router.push('/auth/login');
+    } else {
+      dispatch(addOrderCart(cart));
+      setCart((oldVal) => ({ ...oldVal, cart_stock: 1 }));
+    }
+  };
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN == cart.cart_deliver_id) {
+      setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: moment(new Date()).format('HH:mm') }));
+    }
+  }, [cart.cart_deliver_id]);
   return (
     <StyledProductDetailPage>
       <div className="container">
         <Breadcrumbs>
           <Breadcrumb title="Products" to="/products" />
-          <Breadcrumb title="> Cold Brew" to="#" active />
+          <Breadcrumb title={`> ${detailProduct.product_name}`} to="#" active />
         </Breadcrumbs>
         <BodyWrapper>
           <BodyLeft>
             <div className="image">
-              {/* <Image src={IMG_Product} alt="" /> */}
-              <img src={dummyData.img_product} alt={dummyData.product_name} />
+              <img
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${detailProduct.img_product}`}
+                alt={detailProduct.product_name}
+              />
             </div>
             <div className="desc">
-              <h1 className="title-product">{dummyData.product_name}</h1>
-              <h2>IDR {formatter.format(dummyData.price)}</h2>
+              <h1 className="title-product">{detailProduct.product_name}</h1>
+              <h2>IDR {formatter.format(detailProduct.price)}</h2>
             </div>
             <div className="button-action">
-              <Button className="btn btn-add">Add To Cart</Button>
-
-              {/* Conditinal rendering : Ini untuk role customer */}
-              <Button className="btn btn-ask">Ask the Staff</Button>
-
-              {/* Conditinal rendering : Ini untuk role admin */}
-              <Button className="btn btn-ask">Edit Product</Button>
-              {/* Conditinal rendering : Ini untuk role admin udah terintegrasi modal coba ditesting dulu*/}
-              <Button
-                className="btn btn-ask"
-                theme="black"
-                onClick={() => setShowModal(true)}
-              >
-                Delete Menu
+              <Button className="btn btn-add" onClick={() => addCart()}>
+                Add To Cart
               </Button>
+              <Button className="btn btn-ask">Ask the Staff</Button>
+              {auth && user.roles === 'admin' && (
+                <Button
+                  className="btn btn-ask"
+                  onClick={() => router.push(`/admin/products/${router.query.idProduct}`)}
+                >
+                  Edit Product
+                </Button>
+              )}
+              {auth && user.roles === 'admin' && (
+                <Button className="btn btn-ask" theme="black" onClick={() => setShowModal(true)}>
+                  Delete Menu
+                </Button>
+              )}
             </div>
           </BodyLeft>
           <BodyRight>
@@ -128,81 +107,75 @@ const ProductDetailPage = () => {
                   </span>{' '}
                   at <span> 1 - 7 pm</span>{' '}
                 </h3>
-                <h3 className="desc-detail">
-                  Cold brewing is a method of brewing that combines ground
-                  coffee and cool water and uses time instead of heat to extract
-                  the flavor. It is brewed in small batches and steeped for as
-                  long as 48 hours.
-                </h3>
-
+                <h3 className="desc-detail">{detailProduct.description}</h3>
                 <h4>Choose a size</h4>
                 <div className="size-check">
-                  <label htmlFor={`size_name_R`}>
-                    <input type="radio" name="size" id={`size_name_R`} />
-                    <span className="btn-check">
-                      <p>R</p>
-                    </span>
-                    <h1></h1>
-                  </label>
-
-                  <label htmlFor={`size_name_L`}>
-                    <input type="radio" name="size" id={`size_name_L`} />
-                    <span className="btn-check">
-                      <p>L</p>
-                    </span>
-                  </label>
-
-                  <label htmlFor={`size_name_XL`}>
-                    <input type="radio" name="size" id={`size_name_XL`} />
-                    <span className="btn-check">
-                      <p>XL</p>
-                    </span>
-                  </label>
+                  {detailProduct?.size?.map((size, index) => (
+                    <label key={index} htmlFor={size.size_id}>
+                      <input
+                        value={size.size_id}
+                        onChange={() =>
+                          setCart((oldVal) => ({
+                            ...oldVal,
+                            cart_size_id: size.size_id,
+                            card_size_name: size.size_name,
+                          }))
+                        }
+                        type="radio"
+                        name="cart_size_id"
+                        id={size.size_id}
+                      />
+                      <span className="btn-check">
+                        <p>{size.size_name}</p>
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
-
             <div className="delivery">
               <h1 className="heading">Choose delivery methods</h1>
               <div className="delivery-check">
-                <label htmlFor={`delivery_dine_in`}>
-                  <input type="radio" name="delivery" id={`delivery_dine_in`} />
-                  <span className="btn-check">
-                    <p>Dine in</p>
-                  </span>
-                </label>
-
-                <label htmlFor={`delivery_door`}>
-                  <input type="radio" name="delivery" id={`delivery_door`} />
-                  <span className="btn-check">
-                    <p>Door delivery</p>
-                  </span>
-                </label>
-
-                <label htmlFor={`delivery_take_away`}>
-                  <input
-                    type="radio"
-                    name="delivery"
-                    id={`delivery_take_away`}
+                {detailProduct?.delivery?.map((delivery, index) => (
+                  <label key={index} htmlFor={delivery.delivery_id}>
+                    <input
+                      value={delivery.delivery_id}
+                      onChange={(e) =>
+                        setCart((oldVal) => ({
+                          ...oldVal,
+                          cart_deliver_id: delivery.delivery_id,
+                          cart_deliver_name: delivery.delivery_name,
+                        }))
+                      }
+                      type="radio"
+                      name="cart_deliver_id"
+                      id={delivery.delivery_id}
+                    />
+                    <span className="btn-check">
+                      <p>{delivery.delivery_name}</p>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN == cart.cart_deliver_id && (
+                <div className="time">
+                  <h1>Set Time:</h1>
+                  <TimeField
+                    value={cart.cart_time_dineIn}
+                    onChange={(event, value) => {
+                      const currentTime = moment(new Date(), 'HH:mm');
+                      const currentTimeInput = moment(value, 'HH:mm');
+                      if (currentTimeInput.isBefore(currentTime) === true) {
+                        setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: moment(new Date()).format('HH:mm') }));
+                      } else {
+                        setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: value }));
+                      }
+                    }}
+                    colon=":"
+                    input={<input className="input react-datepicker-wrapper" />}
                   />
-                  <span className="btn-check">
-                    <p>Take away</p>
-                  </span>
-                </label>
-              </div>
-
-              <div className="time">
-                <h1>Set Time:</h1>
-                <DatePicker
-                  name="birth"
-                  selected={dateBirth}
-                  onChange={(date) => setDateBirth(date)}
-                  peekNextMonth
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                />
-              </div>
+                </div>
+              )}
             </div>
           </BodyRight>
         </BodyWrapper>
@@ -218,28 +191,13 @@ const ProductDetailPage = () => {
               </div>
               <div className="counter-wrapper">
                 <div className="counter min">
-                  <svg
-                    width="12"
-                    height="5"
-                    viewBox="0 0 12 5"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z"
-                      fill="#6A4029"
-                    />
+                  <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z" fill="#6A4029" />
                   </svg>
                 </div>
                 <div className="result">50</div>
                 <div className="counter plus">
-                  <svg
-                    width="14"
-                    height="13"
-                    viewBox="0 0 14 13"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                  <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M13.3902 9.05H9.66524V12.875H4.34023V9.05H0.615234V3.975H4.34023V0.125H9.66524V3.975H13.3902V9.05Z"
                       fill="#6A4029"
@@ -248,10 +206,7 @@ const ProductDetailPage = () => {
                 </div>
               </div>
             </div>
-            <Button
-              className="btn-checkout"
-              onClick={() => router.push('/orders')}
-            >
+            <Button className="btn-checkout" onClick={() => router.push('/orders')}>
               Checkout
             </Button>
           </div>
@@ -270,7 +225,7 @@ const ProductDetailPage = () => {
   );
 };
 
-export default PrivateRoute(ProductDetailPage, ['member', 'admin']);
+export default PublicRoute(ProductDetailPage);
 
 // START === STYLING CURRENT PAGE
 
@@ -544,7 +499,7 @@ const BodyRight = styled.div`
           border: 3px solid #ffba33;
           p {
             position: relative;
-            font-size: 2.5em;
+            font-size: 1.5em;
             color: black;
             font-weight: bolder;
           }

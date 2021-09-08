@@ -21,6 +21,7 @@ axiosConfig.interceptors.response.use(
         return axiosConfig(originalRequest);
       } catch (error) {
         store.dispatch({ type: 'LOGOUT', payload: {} });
+        store.dispatch({ type: 'CART_MUTLI', payload: [] });
         return Promise.reject(error);
       }
     }
