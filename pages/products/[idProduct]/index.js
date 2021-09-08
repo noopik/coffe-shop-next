@@ -1,15 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 import styled from 'styled-components';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import router from 'next/router';
-import Link from 'next/link';
 import { Breadcrumb, Button, Breadcrumbs } from '../../../src/components/atoms';
 import PublicRoute from '../../../src/components/hoc/PublicRoute';
 import axiosConfig from '../../../src/config/Axios';
-import DatePicker from 'react-datepicker';
+import TimeField from 'react-simple-timefield';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Breakpoints } from '../../../src/utils';
 import { ModalAlertValidation } from '../../../src/components/molecules';
+import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import { addOrderCart } from '../../../src/redux/action/cartAction';
 
 export const getServerSideProps = async (ctx) => {
   try {
@@ -26,53 +28,36 @@ export const getServerSideProps = async (ctx) => {
 };
 
 const ProductDetailPage = ({ detailProduct, user, auth }) => {
-  const dummyData = {
-    product_id: 15,
-    product_name: 'white coffee v1',
-    category_id: 1,
-    description: 'white coffee dengan citarasa yang enak dan mantap',
-    stock: 2,
-    price: '100000',
-    img_product: 'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg',
-    delivery_start_date: '2021-09-05T00:37:14.000Z',
-    delivery_end_date: '2021-09-05T00:37:14.000Z',
-    size: [
-      {
-        size_id: 32,
-        size_name: 'Raa',
-      },
-      {
-        size_id: 33,
-        size_name: 'L',
-      },
-    ],
-    delivery: [
-      {
-        delivery_id: 1,
-        delivery_name: 'bink',
-      },
-      {
-        delivery_id: 3,
-        delivery_name: 'bink',
-      },
-    ],
+  const initialState = {
+    cart_product_id: detailProduct.product_id,
+    cart_deliver_id: null,
+    cart_deliver_name: '',
+    cart_size_id: null,
+    card_size_name: '',
+    cart_stock: 1,
+    cart_time_dineIn: null,
+    product_price: detailProduct.price,
+    product_img_product: detailProduct.img_product,
+    product_stock: detailProduct.stock,
+    product_name: detailProduct.product_name,
   };
-
-  // MODAL STATE
+  const [cart, setCart] = useState(initialState);
   const [showModal, setShowModal] = useState(false);
-
-  // Mata Uang Rupiah
   const formatter = new Intl.NumberFormat(['ban', 'id']);
-  const [dateBirth, setDateBirth] = useState(new Date());
-
-  // Date Converter
-  const start = new Date(dummyData.delivery_start_date);
-  const startDay = start.getDay();
+  const dispatch = useDispatch();
   const addCart = () => {
     if (!auth) {
       router.push('/auth/login');
+    } else {
+      dispatch(addOrderCart(cart));
+      setCart((oldVal) => ({ ...oldVal, cart_stock: 1 }));
     }
   };
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN == cart.cart_deliver_id) {
+      setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: moment(new Date()).format('HH:mm') }));
+    }
+  }, [cart.cart_deliver_id]);
   return (
     <StyledProductDetailPage>
       <div className="container">
@@ -93,7 +78,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
               <h2>IDR {formatter.format(detailProduct.price)}</h2>
             </div>
             <div className="button-action">
-              <Button className="btn btn-add" onClick={addCart}>
+              <Button className="btn btn-add" onClick={() => addCart()}>
                 Add To Cart
               </Button>
               <Button className="btn btn-ask">Ask the Staff</Button>
@@ -125,68 +110,72 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
                 <h3 className="desc-detail">{detailProduct.description}</h3>
                 <h4>Choose a size</h4>
                 <div className="size-check">
-                  <label htmlFor={`size_name_R`}>
-                    <input type="radio" name="size" id={`size_name_R`} />
-                    <span className="btn-check">
-                      <p>R</p>
-                    </span>
-                    <h1></h1>
-                  </label>
-
-                  <label htmlFor={`size_name_L`}>
-                    <input type="radio" name="size" id={`size_name_L`} />
-                    <span className="btn-check">
-                      <p>L</p>
-                    </span>
-                  </label>
-
-                  <label htmlFor={`size_name_XL`}>
-                    <input type="radio" name="size" id={`size_name_XL`} />
-                    <span className="btn-check">
-                      <p>XL</p>
-                    </span>
-                  </label>
+                  {detailProduct?.size?.map((size, index) => (
+                    <label key={index} htmlFor={size.size_id}>
+                      <input
+                        value={size.size_id}
+                        onChange={() =>
+                          setCart((oldVal) => ({
+                            ...oldVal,
+                            cart_size_id: size.size_id,
+                            card_size_name: size.size_name,
+                          }))
+                        }
+                        type="radio"
+                        name="cart_size_id"
+                        id={size.size_id}
+                      />
+                      <span className="btn-check">
+                        <p>{size.size_name}</p>
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
-
             <div className="delivery">
               <h1 className="heading">Choose delivery methods</h1>
               <div className="delivery-check">
-                <label htmlFor={`delivery_dine_in`}>
-                  <input type="radio" name="delivery" id={`delivery_dine_in`} />
-                  <span className="btn-check">
-                    <p>Dine in</p>
-                  </span>
-                </label>
-
-                <label htmlFor={`delivery_door`}>
-                  <input type="radio" name="delivery" id={`delivery_door`} />
-                  <span className="btn-check">
-                    <p>Door delivery</p>
-                  </span>
-                </label>
-
-                <label htmlFor={`delivery_take_away`}>
-                  <input type="radio" name="delivery" id={`delivery_take_away`} />
-                  <span className="btn-check">
-                    <p>Take away</p>
-                  </span>
-                </label>
+                {detailProduct?.delivery?.map((delivery, index) => (
+                  <label key={index} htmlFor={delivery.delivery_id}>
+                    <input
+                      value={delivery.delivery_id}
+                      onChange={(e) =>
+                        setCart((oldVal) => ({
+                          ...oldVal,
+                          cart_deliver_id: delivery.delivery_id,
+                          cart_deliver_name: delivery.delivery_name,
+                        }))
+                      }
+                      type="radio"
+                      name="cart_deliver_id"
+                      id={delivery.delivery_id}
+                    />
+                    <span className="btn-check">
+                      <p>{delivery.delivery_name}</p>
+                    </span>
+                  </label>
+                ))}
               </div>
-
-              <div className="time">
-                <h1>Set Time:</h1>
-                <DatePicker
-                  name="birth"
-                  selected={dateBirth}
-                  onChange={(date) => setDateBirth(date)}
-                  peekNextMonth
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                />
-              </div>
+              {process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN == cart.cart_deliver_id && (
+                <div className="time">
+                  <h1>Set Time:</h1>
+                  <TimeField
+                    value={cart.cart_time_dineIn}
+                    onChange={(event, value) => {
+                      const currentTime = moment(new Date(), 'HH:mm');
+                      const currentTimeInput = moment(value, 'HH:mm');
+                      if (currentTimeInput.isBefore(currentTime) === true) {
+                        setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: moment(new Date()).format('HH:mm') }));
+                      } else {
+                        setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: value }));
+                      }
+                    }}
+                    colon=":"
+                    input={<input className="input react-datepicker-wrapper" />}
+                  />
+                </div>
+              )}
             </div>
           </BodyRight>
         </BodyWrapper>
@@ -510,7 +499,7 @@ const BodyRight = styled.div`
           border: 3px solid #ffba33;
           p {
             position: relative;
-            font-size: 2.5em;
+            font-size: 1.5em;
             color: black;
             font-weight: bolder;
           }

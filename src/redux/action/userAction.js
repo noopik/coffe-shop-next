@@ -32,6 +32,7 @@ export const logout = (history) => async (dispatch, getState) => {
   try {
     await axios.delete('/users/logout');
     dispatch({ type: 'LOGOUT', payload: {} });
+    dispatch({ type: 'CART_MUTLI',payload:[] });
     history.push('/auth/login');
   } catch (error) {
     toast.error('Error', 'Logout failed', 'error');
