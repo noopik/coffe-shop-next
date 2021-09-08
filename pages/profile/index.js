@@ -25,10 +25,13 @@ const ProfileUser = (props) => {
       address: props.user.address ? props.user.address : '',
       phone: props.user.phone_number ? props.user.phone_number : '',
       gender: props.user.gender ? props.user.gender : '',
-      birth: props.user.date_of_birth ? new Date(props.user.date_of_birth).toISOString().slice(0, 10) : '',
+      birth: props.user.date_of_birth
+        ? new Date(props.user.date_of_birth).toISOString().slice(0, 10)
+        : '',
     }));
   }, [props.user]);
-  const defaultImageValue = 'https://www.bioid.com/wp-content/uploads/face-database-bioid.jpg';
+  const defaultImageValue =
+    'https://www.voanews.com/themes/custom/voa/images/Author__Placeholder.png';
   const validate = Yup.object({
     firstname: Yup.string().required('First name is required'),
     lastname: Yup.string().required('Last name is required'),
@@ -67,18 +70,37 @@ const ProfileUser = (props) => {
               <div className="body-top">
                 <div className="top-left">
                   <div className="avatar-wrapper">
-                    {props.user.avatar && props.user.avatar.length > 10 && !users.avatar && (
-                      <img src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`} alt="img-profile" />
-                    )}
+                    {props.user.avatar &&
+                      props.user.avatar.length > 10 &&
+                      !users.avatar && (
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`}
+                          alt="img-profile"
+                        />
+                      )}
                     {users.avatar && !props.user.avatar && (
-                      <img src={URL.createObjectURL(users.avatar)} alt="img-profile" />
+                      <img
+                        src={URL.createObjectURL(users.avatar)}
+                        alt="img-profile"
+                      />
                     )}
-                    {!users.avatar && !props.user.avatar && <img src={defaultImageValue} alt="img-profile" />}
+                    {!users.avatar && !props.user.avatar && (
+                      <img src={defaultImageValue} alt="img-profile" />
+                    )}
                     {users.avatar && props.user.avatar && (
-                      <img src={URL.createObjectURL(users.avatar)} alt="img-profile" />
+                      <img
+                        src={URL.createObjectURL(users.avatar)}
+                        alt="img-profile"
+                      />
                     )}
                     <div className="edit upload">
-                      <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg
+                        width="14"
+                        height="15"
+                        viewBox="0 0 14 15"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M10.0779 1.54314C10.2368 1.37094 10.4255 1.23435 10.6332 1.14116C10.8409 1.04796 11.0635 1 11.2883 1C11.513 1 11.7356 1.04796 11.9433 1.14116C12.151 1.23435 12.3397 1.37094 12.4986 1.54314C12.6576 1.71533 12.7837 1.91976 12.8697 2.14474C12.9557 2.36973 13 2.61086 13 2.85439C13 3.09791 12.9557 3.33904 12.8697 3.56403C12.7837 3.78901 12.6576 3.99344 12.4986 4.16563L4.32855 13.0166L1 14L1.90779 10.3941L10.0779 1.54314Z"
                           stroke="white"
@@ -91,12 +113,18 @@ const ProfileUser = (props) => {
                         accept="image/jpeg, image/png"
                         type="file"
                         onChange={(e) => {
-                          if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+                          if (
+                            e.target.files[0].type === 'image/png' ||
+                            e.target.files[0].type === 'image/jpeg'
+                          ) {
                             if (e.target.files[0].size > 1048576 * 2) {
                               setUsers((oldVal) => ({ ...oldVal, avatar: '' }));
                               toast.error('max size file is 2mb');
                             } else {
-                              setUsers((oldVal) => ({ ...oldVal, avatar: e.target.files[0] }));
+                              setUsers((oldVal) => ({
+                                ...oldVal,
+                                avatar: e.target.files[0],
+                              }));
                             }
                           } else {
                             setUsers((oldVal) => ({ ...oldVal, avatar: '' }));
@@ -117,7 +145,13 @@ const ProfileUser = (props) => {
                   <div className="top">
                     <h1>Contact</h1>
                     <button className="edit">
-                      <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg
+                        width="20"
+                        height="22"
+                        viewBox="0 0 20 22"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M14.6168 1.8356C14.8552 1.57068 15.1383 1.36054 15.4498 1.21716C15.7613 1.07379 16.0952 1 16.4324 1C16.7696 1 17.1035 1.07379 17.415 1.21716C17.7265 1.36054 18.0095 1.57068 18.248 1.8356C18.4864 2.10051 18.6755 2.41501 18.8046 2.76114C18.9336 3.10727 19 3.47825 19 3.8529C19 4.22755 18.9336 4.59853 18.8046 4.94466C18.6755 5.29079 18.4864 5.60529 18.248 5.87021L5.99283 19.487L1 21L2.36168 15.4524L14.6168 1.8356Z"
                           stroke="white"
@@ -141,7 +175,11 @@ const ProfileUser = (props) => {
                           placeholder="Email"
                         />
                       </div>
-                      <div className={`left-bottom ${formik.errors.address ? 'input-error' : ''}`}>
+                      <div
+                        className={`left-bottom ${
+                          formik.errors.address ? 'input-error' : ''
+                        }`}
+                      >
                         <label>Delivery Address</label>
                         <input
                           type="text"
@@ -150,12 +188,20 @@ const ProfileUser = (props) => {
                           onChange={formik.handleChange}
                           value={formik.values.address}
                         />
-                        {formik.errors.address && <p className="input-invalid">{formik.errors.address}</p>}
+                        {formik.errors.address && (
+                          <p className="input-invalid">
+                            {formik.errors.address}
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <div className="body-right">
-                      <div className={`right-top ${formik.errors.phone ? 'input-error' : ''}`}>
+                      <div
+                        className={`right-top ${
+                          formik.errors.phone ? 'input-error' : ''
+                        }`}
+                      >
                         <label>Mobile number</label>
                         <input
                           type="text"
@@ -164,7 +210,9 @@ const ProfileUser = (props) => {
                           onChange={formik.handleChange}
                           value={formik.values.phone}
                         />
-                        {formik.errors.phone && <p className="input-invalid">{formik.errors.phone}</p>}
+                        {formik.errors.phone && (
+                          <p className="input-invalid">{formik.errors.phone}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -175,7 +223,13 @@ const ProfileUser = (props) => {
                   <div className="top">
                     <h1>Details</h1>
                     <button className="edit-detail">
-                      <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg
+                        width="20"
+                        height="22"
+                        viewBox="0 0 20 22"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M14.6168 1.8356C14.8552 1.57068 15.1383 1.36054 15.4498 1.21716C15.7613 1.07379 16.0952 1 16.4324 1C16.7696 1 17.1035 1.07379 17.415 1.21716C17.7265 1.36054 18.0095 1.57068 18.248 1.8356C18.4864 2.10051 18.6755 2.41501 18.8046 2.76114C18.9336 3.10727 19 3.47825 19 3.8529C19 4.22755 18.9336 4.59853 18.8046 4.94466C18.6755 5.29079 18.4864 5.60529 18.248 5.87021L5.99283 19.487L1 21L2.36168 15.4524L14.6168 1.8356Z"
                           stroke="white"
@@ -195,12 +249,18 @@ const ProfileUser = (props) => {
                           placeholder="Display name"
                           name="fullname"
                           value={
-                            (users.firstname ? users.firstname : '') + ' ' + (users.lastname ? users.lastname : '')
+                            (users.firstname ? users.firstname : '') +
+                            ' ' +
+                            (users.lastname ? users.lastname : '')
                           }
                           disabled={true}
                         />
                       </div>
-                      <div className={`left-top ${formik.errors.firstname ? 'input-error' : ''}`}>
+                      <div
+                        className={`left-top ${
+                          formik.errors.firstname ? 'input-error' : ''
+                        }`}
+                      >
                         <p>First name</p>
                         <input
                           type="text"
@@ -209,9 +269,17 @@ const ProfileUser = (props) => {
                           onChange={formik.handleChange}
                           value={formik.values.firstname}
                         />
-                        {formik.errors.firstname && <p className="input-invalid">{formik.errors.firstname}</p>}
+                        {formik.errors.firstname && (
+                          <p className="input-invalid">
+                            {formik.errors.firstname}
+                          </p>
+                        )}
                       </div>
-                      <div className={`left-bottom ${formik.errors.lastname ? 'input-error' : ''}`}>
+                      <div
+                        className={`left-bottom ${
+                          formik.errors.lastname ? 'input-error' : ''
+                        }`}
+                      >
                         <p>Last name</p>
                         <input
                           type="text"
@@ -220,17 +288,36 @@ const ProfileUser = (props) => {
                           onChange={formik.handleChange}
                           value={formik.values.lastname}
                         />
-                        {formik.errors.lastname && <p className="input-invalid">{formik.errors.lastname}</p>}
+                        {formik.errors.lastname && (
+                          <p className="input-invalid">
+                            {formik.errors.lastname}
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <div className="body-right">
-                      <div className={`right-top ${formik.errors.birth ? 'input-error' : ''}`}>
+                      <div
+                        className={`right-top ${
+                          formik.errors.birth ? 'input-error' : ''
+                        }`}
+                      >
                         <p>DD / MM / YY</p>
-                        <input type="date" name="birth" value={formik.values.birth} onChange={formik.handleChange} />
-                        {formik.errors.birth && <p className="input-invalid">{formik.errors.birth}</p>}
+                        <input
+                          type="date"
+                          name="birth"
+                          value={formik.values.birth}
+                          onChange={formik.handleChange}
+                        />
+                        {formik.errors.birth && (
+                          <p className="input-invalid">{formik.errors.birth}</p>
+                        )}
                       </div>
-                      <div className={`right-bottom ${formik.errors.gender ? 'input-error' : ''}`}>
+                      <div
+                        className={`right-bottom ${
+                          formik.errors.gender ? 'input-error' : ''
+                        }`}
+                      >
                         <label className="male">
                           <input
                             type="radio"
@@ -251,7 +338,11 @@ const ProfileUser = (props) => {
                           />{' '}
                           Female
                         </label>
-                        {formik.errors.gender && <p className="input-invalid">{formik.errors.gender}</p>}
+                        {formik.errors.gender && (
+                          <p className="input-invalid">
+                            {formik.errors.gender}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -259,7 +350,11 @@ const ProfileUser = (props) => {
                 <div className="bottom-right">
                   <p>Do you want to save the</p>
                   <p>change?</p>
-                  <Button type="submit" className="save" disabled={!formik.isValid}>
+                  <Button
+                    type="submit"
+                    className="save"
+                    disabled={!formik.isValid}
+                  >
                     Save
                   </Button>
                   <Button
