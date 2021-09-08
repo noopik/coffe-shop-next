@@ -31,7 +31,7 @@ const ProductsPage = ({ user, auth }) => {
   useEffect(async () => {
     if (categoryId === null) {
       const { data, pagination } = await getProducts(
-        20,
+        10,
         sortASC ? 'ASC' : 'DESC ',
         page,
         router.query.search || '',
@@ -41,7 +41,7 @@ const ProductsPage = ({ user, auth }) => {
     } else if (categoryId !== null) {
       const { data, pagination } = await getProductsById(
         categoryId,
-        20,
+        10,
         sortASC ? 'ASC' : 'DESC ',
         page,
         router.query.search || '',
