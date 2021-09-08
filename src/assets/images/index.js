@@ -11,8 +11,14 @@ import LogoSpotify from './log-spotify.png';
 import LogoReddit from './logo-redit.png';
 import LogoAmazon from './logo-amazon.png';
 import LogoDiscord from './logo-discord.png';
+import IMGDummyProduct1 from './IMG_CartItem.png';
+import IMGDummyProduct2 from './IMG_DummyCard.png';
+import IMGDummyProduct3 from './IMG_Product.png';
 
 export {
+  IMGDummyProduct1,
+  IMGDummyProduct2,
+  IMGDummyProduct3,
   LogoNetflix,
   LogoSpotify,
   LogoReddit,

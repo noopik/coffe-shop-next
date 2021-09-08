@@ -6,7 +6,7 @@ import PublicRoute from '../src/components/hoc/PublicRoute';
 import IMG_TeamWork from '../src/assets/images/IMG_TeamWork.png';
 import IMG_Global from '../src/assets/images/IMG_Global.png';
 import IMG_Sponsored from '../src/assets/images/IMG_Sponsored.png';
-import { Button } from '../src/components/atoms';
+import { Button, CardWraper } from '../src/components/atoms';
 import person from '../src/assets/icons/person.png';
 import location from '../src/assets/icons/location.png';
 import love from '../src/assets/icons/love.png';
@@ -16,6 +16,9 @@ import {
   ICLocation,
   ICLove,
   IC_Search,
+  IMGDummyProduct1,
+  IMGDummyProduct2,
+  IMGDummyProduct3,
   IMGGLobe,
   IMG_AvatarDefault,
   IMG_DummyProduct,
@@ -25,6 +28,7 @@ import {
   LogoReddit,
   LogoSpotify,
 } from '../src/assets';
+import router from 'next/router';
 
 function Home() {
   return (
@@ -167,7 +171,7 @@ function Home() {
           <div className="menus">
             <div className="menu-item">
               <div className="image-product-wrapper">
-                <Image src={IMG_DummyProduct} alt="product" layout="fill" />
+                <Image src={IMGDummyProduct1} alt="product" layout="fill" />
               </div>
               <div className="description-product-wrapper">
                 <h5 className="product-name">Hazelnut Latte</h5>
@@ -212,15 +216,20 @@ function Home() {
               </div>
               <div className="price-wrapper">
                 <p className="price-bold">IDR 25.000</p>
-                <button className="btn-checkout">Order Now</button>
+                <button
+                  className="btn-checkout"
+                  onClick={() => router.push('/products')}
+                >
+                  Order Now
+                </button>
               </div>
             </div>
             <div className="menu-item">
               <div className="image-product-wrapper">
-                <Image src={IMG_DummyProduct} alt="product" layout="fill" />
+                <Image src={IMGDummyProduct2} alt="product" layout="fill" />
               </div>
               <div className="description-product-wrapper">
-                <h5 className="product-name">Hazelnut Latte</h5>
+                <h5 className="product-name">Pinky Promise</h5>
                 <ul>
                   <li>
                     <Image
@@ -229,7 +238,7 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">HazelnutSyrup</span>
+                    <span className="text">1 Shot of Coffee</span>
                   </li>
                   <li>
                     <Image
@@ -238,7 +247,7 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">Wanilla Whipped Cream</span>
+                    <span className="text">Vanilla Whipped Cream</span>
                   </li>
                   <li>
                     <Image
@@ -247,7 +256,7 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">Ice / Hot</span>
+                    <span className="text">Chocolate Biscuits</span>
                   </li>
                   <li>
                     <Image
@@ -256,21 +265,35 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">Sliced Banana on Top</span>
+                    <span className="text">Strawberry Syrup</span>
+                  </li>
+                  <li>
+                    <Image
+                      src={ICChecklistGreen}
+                      alt="checklist"
+                      width={24}
+                      height={24}
+                    />
+                    <span className="text">Sliced strawberry on Top</span>
                   </li>
                 </ul>
               </div>
               <div className="price-wrapper">
-                <p className="price-bold">IDR 25.000</p>
-                <button className="btn-checkout select">Order Now</button>
+                <p className="price-bold">IDR IDR 30.000</p>
+                <button
+                  className="btn-checkout "
+                  onClick={() => router.push('/products')}
+                >
+                  Order Now
+                </button>
               </div>
             </div>
             <div className="menu-item">
               <div className="image-product-wrapper">
-                <Image src={IMG_DummyProduct} alt="product" layout="fill" />
+                <Image src={IMGDummyProduct3} alt="product" layout="fill" />
               </div>
               <div className="description-product-wrapper">
-                <h5 className="product-name">Hazelnut Latte</h5>
+                <h5 className="product-name">Chicken Wings</h5>
                 <ul>
                   <li>
                     <Image
@@ -279,7 +302,7 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">HazelnutSyrup</span>
+                    <span className="text">Wings</span>
                   </li>
                   <li>
                     <Image
@@ -288,7 +311,7 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">Wanilla Whipped Cream</span>
+                    <span className="text">Drum Sticks</span>
                   </li>
                   <li>
                     <Image
@@ -297,7 +320,7 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">Ice / Hot</span>
+                    <span className="text">Mayonaise and Lemon</span>
                   </li>
                   <li>
                     <Image
@@ -306,13 +329,18 @@ function Home() {
                       width={24}
                       height={24}
                     />
-                    <span className="text">Sliced Banana on Top</span>
+                    <span className="text">Hot Fried</span>
                   </li>
                 </ul>
               </div>
               <div className="price-wrapper">
                 <p className="price-bold">IDR 25.000</p>
-                <button className="btn-checkout">Order Now</button>
+                <button
+                  className="btn-checkout"
+                  onClick={() => router.push('/products')}
+                >
+                  Order Now
+                </button>
               </div>
             </div>
           </div>
@@ -332,13 +360,23 @@ function Home() {
           </div>
         </section>
         <section className="partner-section">
-          <h2>Our Partner</h2>
+          <h2 className="heading-section">Our Partner</h2>
           <div className="images-wrapper">
-            <div className="partner">{/* <Image src={LogoNetflix} /> */}</div>
-            <div className="partner">{/* <Image src={LogoReddit} /> */}</div>
-            <div className="partner">{/* <Image src={LogoAmazon} /> */}</div>
-            <div className="partner">{/* <Image src={LogoDiscord} /> */}</div>
-            <div className="partner">{/* <Image src={LogoSpotify} /> */}</div>
+            <div className="partner">
+              <Image src={LogoNetflix} alt="netlix" />
+            </div>
+            <div className="partner">
+              <Image src={LogoReddit} alt="reddit" />
+            </div>
+            <div className="partner">
+              <Image src={LogoAmazon} alt="amazon" />
+            </div>
+            <div className="partner">
+              <Image src={LogoDiscord} alt="discord" />
+            </div>
+            <div className="partner">
+              <Image src={LogoSpotify} alt="spotify" />
+            </div>
           </div>
         </section>
         <section className="testimony-section">
@@ -408,7 +446,7 @@ function Home() {
               </p>
             </div>
           </div>
-          <div className="card promo">
+          <CardWraper className="promo">
             <div className="left">
               <h1 className="heading-section">Check our promo today!</h1>
               <p className="text">Lets see the deals and pick yours!</p>
@@ -416,7 +454,7 @@ function Home() {
             <div className="right">
               <Button>See Promo</Button>
             </div>
-          </div>
+          </CardWraper>
         </section>
       </div>
     </StyledHomePage>
@@ -425,29 +463,6 @@ function Home() {
 export default PublicRoute(Home);
 
 const StyledHomePage = styled.div`
-  /* background-color: yellow;
-  h1 {
-    font-size: 50px;
-    ${Breakpoints.lessThan('2xl')`
-      background-color: yellow;
-    `}
-    ${Breakpoints.lessThan('xl')`
-      background-color: blue;
-    `}
-    ${Breakpoints.lessThan('lg')`
-      background-color: cyan;
-    `}
-    ${Breakpoints.lessThan('md')`
-      background-color: pink;
-    `}
-    ${Breakpoints.lessThan('sm')`
-      background-color: green;
-    `}
-    ${Breakpoints.lessThan('xsm')`
-      background-color: pink;
-    `}
-  } */
-
   .header-section {
     background-image: url('/HeaderHomePage.png');
     background-repeat: no-repeat;
@@ -456,6 +471,12 @@ const StyledHomePage = styled.div`
     background-size: cover;
     padding-top: 125px;
     height: 100vh;
+    /*  */
+    ${Breakpoints.lessThan('xsm')`
+      height: max-content;
+      padding-bottom: 50px;
+    `}
+
     .container {
       display: flex;
       height: 100%;
@@ -463,6 +484,9 @@ const StyledHomePage = styled.div`
       .search-wrapper {
         display: flex;
         justify-content: flex-end;
+        ${Breakpoints.lessThan('md')`
+          width: 100%;
+        `}
         .search-icon {
           background: #efeeee;
           border-radius: 30px;
@@ -511,6 +535,15 @@ const StyledHomePage = styled.div`
     }
   }
   /* START = GLOBAL STYLING */
+  section {
+    margin-bottom: 100px;
+    ${Breakpoints.lessThan('lg')`
+      margin-bottom: 50px; 
+    `}
+  }
+  /* img {
+    object-fit: cover;
+  } */
   .text {
     font-family: Rubik;
     font-style: normal;
@@ -532,6 +565,9 @@ const StyledHomePage = styled.div`
   .service-section {
     position: relative;
     padding-top: 100px;
+    ${Breakpoints.lessThan('md')` 
+      padding-top: 10px; 
+    `}
     .card-summary {
       top: -80px;
       width: 100%;
@@ -543,6 +579,14 @@ const StyledHomePage = styled.div`
       justify-content: space-around;
       padding: 25px;
       box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67);
+      ${Breakpoints.lessThan('md')` 
+        position: relative;
+        top: 0px;
+        margin-bottom: 50px;
+        flex-direction: column;
+        height: max-content;
+        margin-top: 25px;
+      `}
       .item {
         width: 100%;
         display: flex;
@@ -550,7 +594,13 @@ const StyledHomePage = styled.div`
         justify-content: center;
         align-items: center;
         border-right: 2px solid #eeeff2;
+        ${Breakpoints.lessThan('md')` 
+          border: 0;
+        `}
         .desc {
+          ${Breakpoints.lessThan('md')` 
+            width: 100%; 
+          `}
           .text-bold {
             font-family: Rubik;
             font-style: normal;
@@ -567,13 +617,26 @@ const StyledHomePage = styled.div`
     }
     .content {
       display: flex;
+      ${Breakpoints.lessThan('lg')`
+        flex-direction: column;
+      `}
       .image-wrapper {
         padding: 50px;
         width: 50%;
         position: relative;
+        img {
+          object-fit: cover;
+        }
+        ${Breakpoints.lessThan('lg')`
+          width: 100%;
+          height: 250px;
+        `}
       }
       .service-description {
         padding: 50px;
+        ${Breakpoints.lessThan('lg')`
+          padding: 20px;
+        `}
         .text {
           margin-bottom: 16px;
         }
@@ -603,6 +666,10 @@ const StyledHomePage = styled.div`
       display: flex;
       justify-content: space-around;
       gap: 50px;
+      ${Breakpoints.lessThan('lg')`
+        flex-direction: column; 
+        gap: 20px;
+      `}
       .menu-item {
         width: 330px;
         display: flex;
@@ -615,6 +682,14 @@ const StyledHomePage = styled.div`
         box-sizing: border-box;
         border-radius: 10px;
         gap: 20px;
+        ${Breakpoints.lessThan('lg')`
+          flex-direction: row; 
+          width: 100%;
+          padding: 50px;
+        `}
+        ${Breakpoints.lessThan('sm')`
+          flex-direction: column;
+        `}
         .image-product-wrapper {
           position: relative;
           width: 120px;
@@ -624,6 +699,9 @@ const StyledHomePage = styled.div`
           }
         }
         .description-product-wrapper {
+          ${Breakpoints.lessThan('lg')`
+            flex: 1;
+          `}
           .product-name {
             font-family: Rubik;
             font-style: normal;
@@ -663,7 +741,7 @@ const StyledHomePage = styled.div`
             line-height: 19px;
 
             color: #6a4029;
-            &.select {
+            &:hover {
               background: #ffba33;
               border-radius: 50px;
               box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67);
@@ -674,7 +752,8 @@ const StyledHomePage = styled.div`
     }
   }
   .store-section {
-    height: 60vh;
+    height: max-content;
+
     .heading-page {
       font-weight: 500;
       font-size: 35px;
@@ -692,11 +771,112 @@ const StyledHomePage = styled.div`
       height: 500px;
       display: flex;
       justify-content: center;
+      img {
+        ${Breakpoints.lessThan('md')`
+            object-fit: cover; 
+        `}
+      }
       .image-location {
         margin-top: 30px;
         width: 100%;
-        height: 100%;
         position: relative;
+      }
+    }
+  }
+  .partner-section {
+    .heading-section {
+      text-align: center;
+      margin-top: 50px;
+    }
+    .images-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      ${Breakpoints.lessThan('sm')`
+        
+      `}
+      flex-wrap: wrap;
+    }
+  }
+  .testimony-section {
+    position: relative;
+    padding-bottom: 120px;
+    ${Breakpoints.lessThan('xl')`
+      padding-bottom: 20px;
+    `}
+
+    .heading-section {
+      text-align: center;
+    }
+    .sub-heading {
+      text-align: center;
+      font-family: Rubik;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      text-align: center;
+      line-height: 30px;
+      color: #4f5665;
+    }
+    .testimony-wrapper {
+      margin-top: 20px;
+      display: flex;
+      gap: 26px;
+      ${Breakpoints.lessThan('md')`
+        flex-direction: column;
+      `}
+      .customer {
+        padding: 10px;
+        background: #ffffff;
+        border: 2px solid #6a4029;
+        box-sizing: border-box;
+        border-radius: 10px;
+        ${Breakpoints.lessThan('md')`
+           padding: 16px;
+        `}
+        .profile {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 1rem;
+          .desc {
+            .username {
+              font-family: Rubik;
+              font-style: normal;
+              font-weight: 500;
+              font-size: 18px;
+              line-height: 30px;
+              color: #0b132a;
+            }
+          }
+        }
+      }
+    }
+    .promo {
+      display: flex;
+      padding: 50px;
+      justify-content: space-between;
+      position: absolute;
+      width: 100%;
+      bottom: -180px;
+      ${Breakpoints.lessThan('lg')`
+        bottom: -130px; 
+        `}
+      ${Breakpoints.lessThan('xl')`
+        position: relative;
+        flex-direction: column;
+        padding: 20px;
+        justify-content: start;
+      `}
+      
+      .right {
+        display: flex;
+        button {
+          width: 250px;
+          ${Breakpoints.lessThan('xl')`
+            width: 100%; 
+            margin-top: 25px;
+          `}
+        }
       }
     }
   }
