@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { IC_GoogleIcon, IC_CircleFb } from '../../../assets/icons';
-
+import Image from 'next/image';
 const Button = ({ theme, onClick, children, className, icon, ...props }) => {
   // const { disabled } = props;
   const Icons = {
     //  eslint-disable-next-line @next/next/no-img-element
-    google: <img alt="icon" src={IC_CircleFb} />,
+    google: <Image alt="icon" src={IC_GoogleIcon} width={36} height={36} />,
   };
 
   // console.log('className', className);
@@ -18,7 +18,7 @@ const Button = ({ theme, onClick, children, className, icon, ...props }) => {
       className={className}
       {...props}
     >
-      {/* {icon && Icons[icon]} */}
+      {icon && Icons[icon]}
       {children}
     </StyledButton>
   );
@@ -55,6 +55,10 @@ const StyledButton = styled.button`
     if (disabled) return '#555555';
     return '#6A4029';
   }};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
   border-radius: 10px;
   padding: 25px 0;
   font-family: Rubik;
@@ -67,8 +71,8 @@ const StyledButton = styled.button`
   box-shadow: ${({ theme }) => {
     if (theme === 'orange') return '0px 6px 20px rgba(196, 196, 196, 0.67)';
     if (theme === 'brown') return '0px 6px 20px rgba(106, 64, 41, 0.46);';
-    if (theme === 'white') 'box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67)';
-    return 'box-shadow: 0px 6px 20px rgba(196, 196, 196, 0.67)';
+    if (theme === 'white') return '0px 6px 20px rgba(196, 196, 196, 0.67)';
+    return '0px 6px 20px rgba(196, 196, 196, 0.67)';
   }};
   &:hover {
     cursor: ${({ disabled }) => {
