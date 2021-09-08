@@ -165,13 +165,9 @@ const AddProducts = (props) => {
               formData.append('delivery_id', values.deliveries[I]);
             }
             formData.append('category_id', values.category);
-            for (let [key, value] of formData.entries()) {
-              console.log(`${key}: ${value}`);
-            }
             axiosConfig
               .post(`${process.env.NEXT_PUBLIC_API_URL}/products`, formData)
-              .then((res) => {
-                console.log(res);
+              .then(() => {
                 toast.success('Successfully add product');
                 resetForm();
                 setImage('');
@@ -189,10 +185,17 @@ const AddProducts = (props) => {
                 });
                 seterrImg('Please upload product image');
                 document.getElementById('category-opt').selected = true;
+                for (let [key, value] of formData.entries()) {
+                  console.log(`FormData = ${key}: ${value}`);
+                }
+                console.log(`Formik values = ${values}`);
               })
               .catch((err) => {
                 console.log(err.response);
                 toast.warning('Insert data failed');
+                for (let [key, value] of formData.entries()) {
+                  console.log(`${key}: ${value}`);
+                }
               });
           }}
         >
@@ -211,7 +214,7 @@ const AddProducts = (props) => {
                   Take a Picture
                 </Button>
                 <div className="btn-upload-image">
-                  <Button className="">Choose from Gallery</Button>
+                  <Button type='button' className="">Choose from Gallery</Button>
                   <input
                     type="file"
                     className="input-file"
@@ -543,6 +546,7 @@ const StyledAddProducts = styled.div`
             width: 415px;
             overflow: auto;
             display: flex;
+            flex-direction: row-reverse;
             gap: 1rem;
             ${Breakpoints.lessThan('lg')`
               flex-wrap: wrap;
