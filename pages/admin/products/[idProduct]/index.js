@@ -1,22 +1,31 @@
 import styled from 'styled-components';
-import {IMG_DefaultProduct, IMG_DummyProduct} from '../../../../src/assets';
-import {Breadcrumb, Breadcrumbs, Button, TextFieldAdmin} from '../../../../src/components/atoms';
+import { IMG_DefaultProduct, IMG_DummyProduct } from '../../../../src/assets';
+import {
+  Breadcrumb,
+  Breadcrumbs,
+  Button,
+  TextFieldAdmin,
+} from '../../../../src/components/atoms';
 import PrivateRoute from '../../../../src/components/hoc/PrivateRoute';
-import {Breakpoints, Toastify} from '../../../../src/utils';
+import { Breakpoints, Toastify } from '../../../../src/utils';
 import Image from 'next/image';
-import {useState} from 'react';
-import {Formik, Form} from 'formik';
+import { useState } from 'react';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import axiosConfig from '../../../../src/config/Axios';
-import {ErrorMessage} from 'formik';
-import {useRouter} from 'next/router';
+import { ErrorMessage } from 'formik';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps = async (context) => {
   try {
-    const {idProduct} = context.query;
+    const { idProduct } = context.query;
     const resultSizes = await axiosConfig.get('/sizes/getsizes?pagination=off');
-    const resultDeliveries = await axiosConfig.get('/deliveries/getdeliveries?pagination=off');
-    const resultCategories = await axiosConfig.get('/categories/getcategory?pagination=off');
+    const resultDeliveries = await axiosConfig.get(
+      '/deliveries/getdeliveries?pagination=off'
+    );
+    const resultCategories = await axiosConfig.get(
+      '/categories/getcategory?pagination=off'
+    );
     const resultDataProduct = await axiosConfig.get(`/products/${idProduct}`);
     const sizes = resultSizes.data.data;
     const deliveries = resultDeliveries.data.data;
@@ -43,14 +52,16 @@ export const getServerSideProps = async (context) => {
 };
 
 const EditProduct = (props) => {
-  const {push, query} = useRouter();
-  const {idProduct} = query;
-  const {product} = props;
+  const { push, query } = useRouter();
+  const { idProduct } = query;
+  const { product } = props;
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
-  const [defaultImage, setDefaultImage] = useState(`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`);
+  const [defaultImage, setDefaultImage] = useState(
+    `${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`
+  );
   const [stockCounter, setStockCounter] = useState(product.stock);
   const [sizeProduct, setsizeProduct] = useState(product.size);
   const [deliveryProduct, setdeliveryProduct] = useState(product.delivery);
@@ -74,7 +85,9 @@ const EditProduct = (props) => {
         return [...old];
       });
     } else {
-      const found = sizeProduct.find((element) => element.size_id === data.size_id);
+      const found = sizeProduct.find(
+        (element) => element.size_id === data.size_id
+      );
       if (found === undefined) {
         setsizeProduct((old) => {
           return [...old, data];
@@ -94,10 +107,12 @@ const EditProduct = (props) => {
       const index = deliveryProduct.indexOf(data);
       deliveryProduct.splice(index, 1);
       setdeliveryProduct((old) => {
-        return [...old]
-      })
+        return [...old];
+      });
     } else {
-      const found = deliveryProduct.find((element) => element.delivery_id === data.delivery_id);
+      const found = deliveryProduct.find(
+        (element) => element.delivery_id === data.delivery_id
+      );
       if (found === undefined) {
         setdeliveryProduct((old) => {
           return [...old, data];
@@ -135,8 +150,8 @@ const EditProduct = (props) => {
   return (
     <StyledEditProduct className="container main">
       <Breadcrumbs>
-        <Breadcrumb title="Favorite & Promo" to="#" />
-        <Breadcrumb title="> Cold Brew" to="#" active />
+        <Breadcrumb title="Products" to="/products" />
+        <Breadcrumb title={`> ${product.product_name}`} to="#" active />
         <Breadcrumb title="> Edit product" to="#" active />
       </Breadcrumbs>
       <Formik
@@ -149,7 +164,7 @@ const EditProduct = (props) => {
           category: product.category_id,
         }}
         validationSchema={validate}
-        onSubmit={(values, {resetForm}) => {
+        onSubmit={(values, { resetForm }) => {
           const image = priviewImage ? priviewImage : defaultImage;
           if (!image) {
             return Toastify('Images required!', 'error');
@@ -178,7 +193,10 @@ const EditProduct = (props) => {
             })
             .catch((err) => {
               console.log(err.response);
-              Toastify('Update product failed, please try again later', 'error');
+              Toastify(
+                'Update product failed, please try again later',
+                'error'
+              );
             });
         }}
       >
@@ -186,14 +204,24 @@ const EditProduct = (props) => {
           <Form>
             <div className="side-left">
               <div className="image-wrapper">
-                {!defaultImage && !priviewImage && <Image src={IMG_DefaultProduct} alt="image name" layout="fill" />}
+                {!defaultImage && !priviewImage && (
+                  <Image
+                    src={IMG_DefaultProduct}
+                    alt="image name"
+                    layout="fill"
+                  />
+                )}
                 {defaultImage && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={defaultImage} alt="image" className="image" />
                 )}
                 {priviewImage && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={URL?.createObjectURL(priviewImage)} alt="image" className="image" />
+                  <img
+                    src={URL?.createObjectURL(priviewImage)}
+                    alt="image"
+                    className="image"
+                  />
                 )}
 
                 <div className="btn-circle-wrapper">
@@ -205,7 +233,13 @@ const EditProduct = (props) => {
                         setPreviewImage(false);
                       }}
                     >
-                      <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg
+                        width="23"
+                        height="24"
+                        viewBox="0 0 23 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
                         <path
                           d="M2 6H4.11111M4.11111 6H21M4.11111 6V20C4.11111 20.5304 4.33353 21.0391 4.72944 21.4142C5.12535 21.7893 5.66232 22 6.22222 22H16.7778C17.3377 22 17.8746 21.7893 18.2706 21.4142C18.6665 21.0391 18.8889 20.5304 18.8889 20V6H4.11111ZM7.27778 6V4C7.27778 3.46957 7.5002 2.96086 7.89611 2.58579C8.29202 2.21071 8.82899 2 9.38889 2H13.6111C14.171 2 14.708 2.21071 15.1039 2.58579C15.4998 2.96086 15.7222 3.46957 15.7222 4V6M9.38889 11V17M13.6111 11V17"
                           stroke="#6A4029"
@@ -218,9 +252,29 @@ const EditProduct = (props) => {
                   )}
                   {!(priviewImage || defaultImage) && (
                     <div className="btn upload">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="10" width="4" height="24" rx="2" fill="#6A4029" />
-                        <rect x="24" y="10" width="4" height="24" rx="2" transform="rotate(90 24 10)" fill="#6A4029" />
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <rect
+                          x="10"
+                          width="4"
+                          height="24"
+                          rx="2"
+                          fill="#6A4029"
+                        />
+                        <rect
+                          x="24"
+                          y="10"
+                          width="4"
+                          height="24"
+                          rx="2"
+                          transform="rotate(90 24 10)"
+                          fill="#6A4029"
+                        />
                       </svg>
                       <input
                         accept="image/jpeg, image/png"
@@ -235,7 +289,8 @@ const EditProduct = (props) => {
               </div>
               <div className="date-wrapper">
                 <p className="text">
-                  Delivery only on <span className="bold">Monday to friday at 1 - 7 pm</span>
+                  Delivery only on{' '}
+                  <span className="bold">Monday to friday at 1 - 7 pm</span>
                 </p>
               </div>
             </div>
@@ -251,7 +306,9 @@ const EditProduct = (props) => {
                   className="heading-name-product"
                 />
                 <div className="line" />
-                {formik.errors.name && <p className="input-invalid">{formik.errors.name}</p>}
+                {formik.errors.name && (
+                  <p className="input-invalid">{formik.errors.name}</p>
+                )}
               </div>
               <div className="row price-wrapper">
                 <p className="price">IDR</p>
@@ -266,7 +323,11 @@ const EditProduct = (props) => {
                 />
                 <div className="line" />
               </div>
-              {formik.errors.price && <p className="input-invalid outside-form">{formik.errors.price}</p>}
+              {formik.errors.price && (
+                <p className="input-invalid outside-form">
+                  {formik.errors.price}
+                </p>
+              )}
               <div className="row">
                 <textarea
                   // id=" "
@@ -278,7 +339,9 @@ const EditProduct = (props) => {
                   defaultValue={formik.values.description}
                 ></textarea>
                 <div className="line" />
-                {formik.errors.description && <p className="input-invalid">{formik.errors.description}</p>}
+                {formik.errors.description && (
+                  <p className="input-invalid">{formik.errors.description}</p>
+                )}
               </div>
               <div className="row">
                 <select
@@ -295,7 +358,10 @@ const EditProduct = (props) => {
                   {sizes &&
                     sizes.map((size) => (
                       <>
-                        <option value={size.size_id} onClick={() => handleSize('push', size, formik)}>
+                        <option
+                          value={size.size_id}
+                          onClick={() => handleSize('push', size, formik)}
+                        >
                           {size.size_name}
                         </option>
                       </>
@@ -308,7 +374,10 @@ const EditProduct = (props) => {
                       <>
                         <div className="item">
                           {item.size_name}
-                          <button type="button" onClick={() => handleSize('slice', item)}>
+                          <button
+                            type="button"
+                            onClick={() => handleSize('slice', item)}
+                          >
                             X
                           </button>
                         </div>
@@ -334,7 +403,10 @@ const EditProduct = (props) => {
                   {deliveries &&
                     deliveries.map((delivery) => (
                       <>
-                        <option value={delivery.delivery_id} onClick={() => handleDelivery('push', delivery)}>
+                        <option
+                          value={delivery.delivery_id}
+                          onClick={() => handleDelivery('push', delivery)}
+                        >
                           {delivery.delivery_name}
                         </option>
                       </>
@@ -346,12 +418,19 @@ const EditProduct = (props) => {
                       <>
                         <div className="item">
                           {item.delivery_name}
-                          <button type='button' onClick={() => handleDelivery('slice', item)}>X</button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelivery('slice', item)}
+                          >
+                            X
+                          </button>
                         </div>
                       </>
                     ))
                   ) : (
-                    <p className="input-invalid">Please select product delivery method</p>
+                    <p className="input-invalid">
+                      Please select product delivery method
+                    </p>
                   )}
                 </ItemWrapper>
               </div>
@@ -368,13 +447,18 @@ const EditProduct = (props) => {
                   {categories &&
                     categories.map((category) => (
                       <>
-                        <option id={category.category_id} value={category.category_id}>
+                        <option
+                          id={category.category_id}
+                          value={category.category_id}
+                        >
                           {category.category_name}
                         </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.category && <p className="input-invalid">{formik.errors.category}</p>}
+                {formik.errors.category && (
+                  <p className="input-invalid">{formik.errors.category}</p>
+                )}
               </div>
               <div className="row button-wrapper">
                 <div className="counter-wrapper">
@@ -403,13 +487,19 @@ const EditProduct = (props) => {
                     <path d="M21 8V15.0687H3V8H21Z" fill="#9F9F9F" />
                   </svg>
                 </div>
-                <Button type='button'>Add to Cart</Button>
+                <Button type="button">Add to Cart</Button>
               </div>
-              {formik.errors.stock && <p className="input-invalid">{formik.errors.stock}</p>}
+              {formik.errors.stock && (
+                <p className="input-invalid">{formik.errors.stock}</p>
+              )}
               <div className="btn-saved-wrapper">
                 {/* <Button disabled={!(formik.isValid && formik.dirty)} type="submit" className={formik.errors}> */}
                 <Button
-                  disabled={!formik.isValid || sizeProduct.length < 1 || deliveryProduct.length < 1}
+                  disabled={
+                    !formik.isValid ||
+                    sizeProduct.length < 1 ||
+                    deliveryProduct.length < 1
+                  }
                   type="submit"
                   className={formik.errors}
                 >

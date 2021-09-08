@@ -19,7 +19,7 @@ import Image from 'next/image';
 import { IMG_Ava } from '../../src/assets';
 
 const Dashboard = (props) => {
-  console.log('props', props);
+  // console.log('props', props);
 
   // const defaultImageValue =
   //   'https://www.voanews.com/themes/custom/voa/images/Author__Placeholder.png';
