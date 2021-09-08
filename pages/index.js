@@ -53,7 +53,12 @@ function Home() {
                 made by love just for you. Start your day with us for a bigger
                 smile!
               </h4>
-              <Button className="button">Get Started</Button>
+              <Button
+                className="button"
+                onClick={() => router.push('/products')}
+              >
+                Get Started
+              </Button>
             </div>
           </div>
         </div>

@@ -16,15 +16,27 @@ const VerifEmail = (props) => {
         </div>
         <div className="container">
           <h1 className="heading">Verif Email</h1>
-          <h1 className="heading-1">{props.verifEmail ? 'Success' : 'Failed'}</h1>
-          <p className="sub-heading">Email verification does not take long, please wait.</p>
+          <h1 className="heading-1">
+            {props.verifEmail ? 'Success' : 'Failed'}
+          </h1>
+          <p className="sub-heading">
+            Email verification does not take long, please wait.
+          </p>
           {props.verifEmail && (
-            <Button theme="brown" onClick={() => router.push('/auth/login')} className="verif-email button">
+            <Button
+              theme="brown"
+              onClick={() => router.push('/auth/login')}
+              className="verif-email button"
+            >
               Login
             </Button>
           )}
           {!props.verifEmail && (
-            <Button theme="brown" onClick={() => router.push('/auth/register')} className="verif-email button">
+            <Button
+              theme="brown"
+              onClick={() => router.push('/auth/register')}
+              className="verif-email button"
+            >
               Register
             </Button>
           )}
@@ -45,7 +57,11 @@ export const getServerSideProps = async (context) => {
     },
   };
   try {
-    const checkToken = await axios.patch('/users/check-token', { token: 'email' }, headers);
+    const checkToken = await axios.patch(
+      '/users/check-token',
+      { token: 'email' },
+      headers
+    );
     if (checkToken.data.statusCode === 200) {
       await axios.post('/users/verify-email', {}, headers);
       verifEmail = true;
