@@ -12,6 +12,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 // import axios from 'axios';
 import axiosConfig from '../../../src/config/Axios';
 import {toast} from 'react-toastify';
+import { useRouter } from 'next/router';
 
 export const getServerSideProps = async () => {
   try {
@@ -42,6 +43,7 @@ export const getServerSideProps = async () => {
 
 const AddProducts = (props) => {
   const sizes = props.sizes;
+  const {push} = useRouter()
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [startDate, setStartDate] = useState('');
@@ -111,16 +113,16 @@ const AddProducts = (props) => {
   };
 
   const handleEndDate = (date) => {
-      // 0000-00-00 00:00:00
-    const year = date.getFullYear()
-    const month = ("0" + (date.getMonth() + 1)).slice(-2)
-    const day = ("0" + date.getDate()).slice(-2)
-    const hours = ("0" + date.getHours()).slice(-2)
-    const minute = ("0" + date.getMinutes()).slice(-2)
-    const formatStartDate = `${year}-${month}-${day} ${hours}:${minute}:00`
-    setEndDate(formatStartDate)
-    setpreviewEndDate(date)
-  }
+    // 0000-00-00 00:00:00
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    const hours = ('0' + date.getHours()).slice(-2);
+    const minute = ('0' + date.getMinutes()).slice(-2);
+    const formatStartDate = `${year}-${month}-${day} ${hours}:${minute}:00`;
+    setEndDate(formatStartDate);
+    setpreviewEndDate(date);
+  };
 
   return (
     <StyledAddProducts>
@@ -165,30 +167,32 @@ const AddProducts = (props) => {
               formData.append('delivery_id', values.deliveries[I]);
             }
             formData.append('category_id', values.category);
+
             axiosConfig
               .post(`${process.env.NEXT_PUBLIC_API_URL}/products`, formData)
               .then(() => {
                 toast.success('Successfully add product');
+                push('/products')
                 resetForm();
-                setImage('');
-                values.sizes.map((idSize) => {
-                  values.sizes = [];
-                  setarrSize(0);
-                  document.getElementById(`size${idSize}`).checked = false;
-                  document.getElementById(`itemSize${idSize}`).className = 'size-item';
-                });
-                values.deliveries.map((idDelivery) => {
-                  values.deliveries = [];
-                  setArrDelivery(0);
-                  document.getElementById(`delivery${idDelivery}`).checked = false;
-                  document.getElementById(`methodItem${idDelivery}`).className = 'method-item';
-                });
-                seterrImg('Please upload product image');
-                document.getElementById('category-opt').selected = true;
-                for (let [key, value] of formData.entries()) {
-                  console.log(`FormData = ${key}: ${value}`);
-                }
-                console.log(`Formik values = ${values}`);
+                // setImage('');
+                // values.sizes.map((idSize) => {
+                //   setarrSize(0);
+                //   document.getElementById(`size${idSize}`).checked = false;
+                //   document.getElementById(`itemSize${idSize}`).className = 'size-item';
+                // });
+                // values.deliveries.map((idDelivery) => {
+                //   setArrDelivery(0);
+                //   document.getElementById(`delivery${idDelivery}`).checked = false;
+                //   document.getElementById(`methodItem${idDelivery}`).className = 'method-item';
+                // });
+                // // values.sizes = [];
+                // // values.deliveries = [];
+                // seterrImg('Please upload product image');
+                // document.getElementById('category-opt').selected = true;
+                // console.log(values);
+                // for (let [key, value] of formData.entries()) {
+                //   console.log(`FormData = ${key}: ${value}`);
+                // }
               })
               .catch((err) => {
                 console.log(err.response);
@@ -210,37 +214,38 @@ const AddProducts = (props) => {
                   </div>
                 </div>
                 {errImg && <label className="error text-center block mb-5">{errImg}</label>}
-                <Button type='button' className="btn" theme="black">
+                <Button type="button" className="btn" theme="black">
                   Take a Picture
                 </Button>
                 <div className="btn-upload-image">
-                  <Button type='button' className="">Choose from Gallery
-                  <input
-                    type="file"
-                    className="input-file"
-                    accept="image/jpeg, image/png"
-                    onChange={(e) => {
-                      if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
-                        if (e.target.files[0].size > 1048576 * 2) {
-                          seterrImg('max size file is 2mb');
-                          setImage('');
+                  <Button type="button" className="">
+                    Choose from Gallery
+                    <input
+                      type="file"
+                      className="input-file"
+                      accept="image/jpeg, image/png"
+                      onChange={(e) => {
+                        if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+                          if (e.target.files[0].size > 1048576 * 2) {
+                            seterrImg('max size file is 2mb');
+                            setImage('');
+                          } else {
+                            setImage(e.target.files[0]);
+                            seterrImg('');
+                          }
                         } else {
-                          setImage(e.target.files[0]);
-                          seterrImg('');
+                          seterrImg('Only image is allowed');
+                          setImage('');
                         }
-                      } else {
-                        seterrImg('Only image is allowed');
-                        setImage('');
-                      }
-                    }}
-                    name="image"
-                  />
+                      }}
+                      name="image"
+                    />
                   </Button>
                 </div>
                 <div className="select-section">
                   <h3 className="heading">Delivery Hour :</h3>
                   <div className="select-date-time">
-                    {startDate === '' && <label className='error'>Please select start date delivery</label>}
+                    {startDate === '' && <label className="error">Please select start date delivery</label>}
                     <DatePicker
                       className="select-custom"
                       id="startDate"
@@ -257,7 +262,7 @@ const AddProducts = (props) => {
                     />
                   </div>
                   <div className="select-date-time">
-                  {endDate === '' && <label className='error'>Please select end date delivery</label>}
+                    {endDate === '' && <label className="error">Please select end date delivery</label>}
                     <DatePicker
                       className="select-custom"
                       id="endDate"
@@ -417,7 +422,7 @@ const AddProducts = (props) => {
   );
 };
 
-export default PrivateRoute(AddProducts,['admin']);
+export default PrivateRoute(AddProducts, ['admin']);
 
 // START === STYLING CURRENT PAGE
 
