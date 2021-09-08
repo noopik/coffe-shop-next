@@ -1,89 +1,66 @@
+/* eslint-disable @next/next/no-img-element */
 import styled from 'styled-components';
 import { Breakpoints, phoneRegExp } from '../../src/utils';
 import PrivateRoute from '../../src/components/hoc/PrivateRoute';
 import { Button } from '../../src/components/atoms';
-import { IMG_AvatarDefault } from '../../src/assets/images';
-import Image from 'next/image';
 import { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { updateProfile } from '../../src/redux/action/userAction';
+import { useEffect } from 'react';
 
-const ProfileUser = () => {
-  const [users, setUsers] = useState({
-    image: null,
-    firstname: 'Joko',
-    lastname: 'Santoso',
-    email: 'joko@gmail.com',
-    address: 'Jakarta Barat Daya',
-    phone: '089656533654',
-    birth: '20 Agustus 2000',
-    gender: 'male',
-  });
-
-  const [previewImage, setPreviewImage] = useState(users.image);
-  const [dateBirth, setDateBirth] = useState(new Date());
-
-  // START = HANDLE PRIVIEW IMAGE
-  const handlePreviewImage = (e) => {
-    const imageUpdate = e.target.files[0];
-    setPreviewImage(e.target.files[0]);
-  };
-  // END = HANDLE PRIVIEW IMAGE
-
-  // START = VALIDATION FORM
+const ProfileUser = (props) => {
+  const dispatch = useDispatch();
+  const [users, setUsers] = useState({});
+  useEffect(() => {
+    setUsers((old) => ({
+      ...old,
+      ...props.user,
+      avatar: '',
+      firstname: props.user.firstname ? props.user.firstname : '',
+      lastname: props.user.lastname ? props.user.lastname : '',
+      address: props.user.address ? props.user.address : '',
+      phone: props.user.phone_number ? props.user.phone_number : '',
+      gender: props.user.gender ? props.user.gender : '',
+      birth: props.user.date_of_birth
+        ? new Date(props.user.date_of_birth).toISOString().slice(0, 10)
+        : '',
+    }));
+  }, [props.user]);
+  const defaultImageValue =
+    'https://www.voanews.com/themes/custom/voa/images/Author__Placeholder.png';
   const validate = Yup.object({
     firstname: Yup.string().required('First name is required'),
-    // lastname: Yup.string().required('Last name is required'),
-    // address: Yup.string().required('Address is required'),
+    lastname: Yup.string().required('Last name is required'),
+    address: Yup.string().required('Address is required'),
     phone: Yup.string()
       .matches(phoneRegExp, 'Phone number is not valid')
       .required('Phone number is required')
       .min(11, 'Password must be at least 11 charaters')
       .max(13, 'Password must be less than 13 charaters'),
-    // gender: Yup.string().required('Gender is required'),
-    // birth: Yup.string().required('Birth is required'),
+    gender: Yup.string().required('Gender is required'),
+    birth: Yup.string().required('Birth is required'),
   });
-  // END = VALIDATION FORM
-
   return (
     <StyledProfileUserPage>
       <div className="container">
         <Formik
+          enableReinitialize
           initialValues={{
-            email: users.email,
-            fullname: users.firstname + ' ' + users?.lastname,
-            firstname: users.firstname,
-            lastname: users.lastname,
-            address: users.address,
-            phone: users.phone,
-            gender: users.gender,
-            birth: users.birth,
+            email: users.email || '',
+            firstname: users.firstname || '',
+            lastname: users.lastname || '',
+            address: users.address || '',
+            phone: users.phone_number || '',
+            gender: users.gender || '',
+            birth: users.birth || '',
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            const formData = new FormData();
-            formData.append('firstname', values.firstname);
-            formData.append('lastname', values.lastname);
-            formData.append('phone_number', values.phone);
-            formData.append('gender', values.gender);
-            formData.append('date_of_birth', dateBirth);
-            formData.append('address', values.address);
-            formData.append('avatar', previewImage);
-
-            // Untuk mengecek data yg didapatkan saja
-            const checkDataSend = {
-              firstname: values.firstname,
-              lastname: values.lastname,
-              phone_number: values.phone,
-              gender: values.gender,
-              date_of_birth: dateBirth,
-              address: values.address,
-              avatar: previewImage,
-            };
-            console.log('Data yang dikirim:', checkDataSend);
-
+            dispatch(updateProfile({ ...values, avatar: users.avatar }));
             resetForm();
           }}
         >
@@ -93,70 +70,74 @@ const ProfileUser = () => {
               <div className="body-top">
                 <div className="top-left">
                   <div className="avatar-wrapper">
-                    {!previewImage && (
-                      <Image
-                        src={IMG_AvatarDefault}
-                        alt="image name"
-                        layout="fill"
+                    {props.user.avatar &&
+                      props.user.avatar.length > 10 &&
+                      !users.avatar && (
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`}
+                          alt="img-profile"
+                        />
+                      )}
+                    {users.avatar && !props.user.avatar && (
+                      <img
+                        src={URL.createObjectURL(users.avatar)}
+                        alt="img-profile"
                       />
                     )}
-                    {previewImage && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={URL?.createObjectURL(previewImage)} alt="" />
+                    {!users.avatar && !props.user.avatar && (
+                      <img src={defaultImageValue} alt="img-profile" />
                     )}
-                    {previewImage && (
-                      <div
-                        className="edit delete"
-                        onClick={() => {
-                          setPreviewImage(false);
-                        }}
+                    {users.avatar && props.user.avatar && (
+                      <img
+                        src={URL.createObjectURL(users.avatar)}
+                        alt="img-profile"
+                      />
+                    )}
+                    <div className="edit upload">
+                      <svg
+                        width="14"
+                        height="15"
+                        viewBox="0 0 14 15"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        <svg
-                          width="23"
-                          height="24"
-                          viewBox="0 0 23 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2 6H4.11111M4.11111 6H21M4.11111 6V20C4.11111 20.5304 4.33353 21.0391 4.72944 21.4142C5.12535 21.7893 5.66232 22 6.22222 22H16.7778C17.3377 22 17.8746 21.7893 18.2706 21.4142C18.6665 21.0391 18.8889 20.5304 18.8889 20V6H4.11111ZM7.27778 6V4C7.27778 3.46957 7.5002 2.96086 7.89611 2.58579C8.29202 2.21071 8.82899 2 9.38889 2H13.6111C14.171 2 14.708 2.21071 15.1039 2.58579C15.4998 2.96086 15.7222 3.46957 15.7222 4V6M9.38889 11V17M13.6111 11V17"
-                            stroke="white"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                    {!previewImage && (
-                      <div className="edit upload">
-                        <svg
-                          width="14"
-                          height="15"
-                          viewBox="0 0 14 15"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M10.0779 1.54314C10.2368 1.37094 10.4255 1.23435 10.6332 1.14116C10.8409 1.04796 11.0635 1 11.2883 1C11.513 1 11.7356 1.04796 11.9433 1.14116C12.151 1.23435 12.3397 1.37094 12.4986 1.54314C12.6576 1.71533 12.7837 1.91976 12.8697 2.14474C12.9557 2.36973 13 2.61086 13 2.85439C13 3.09791 12.9557 3.33904 12.8697 3.56403C12.7837 3.78901 12.6576 3.99344 12.4986 4.16563L4.32855 13.0166L1 14L1.90779 10.3941L10.0779 1.54314Z"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-
-                        <input
-                          type="file"
-                          onChange={(e) => handlePreviewImage(e)}
+                        <path
+                          d="M10.0779 1.54314C10.2368 1.37094 10.4255 1.23435 10.6332 1.14116C10.8409 1.04796 11.0635 1 11.2883 1C11.513 1 11.7356 1.04796 11.9433 1.14116C12.151 1.23435 12.3397 1.37094 12.4986 1.54314C12.6576 1.71533 12.7837 1.91976 12.8697 2.14474C12.9557 2.36973 13 2.61086 13 2.85439C13 3.09791 12.9557 3.33904 12.8697 3.56403C12.7837 3.78901 12.6576 3.99344 12.4986 4.16563L4.32855 13.0166L1 14L1.90779 10.3941L10.0779 1.54314Z"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
-                      </div>
-                    )}
+                      </svg>
+                      <input
+                        accept="image/jpeg, image/png"
+                        type="file"
+                        onChange={(e) => {
+                          if (
+                            e.target.files[0].type === 'image/png' ||
+                            e.target.files[0].type === 'image/jpeg'
+                          ) {
+                            if (e.target.files[0].size > 1048576 * 2) {
+                              setUsers((oldVal) => ({ ...oldVal, avatar: '' }));
+                              toast.error('max size file is 2mb');
+                            } else {
+                              setUsers((oldVal) => ({
+                                ...oldVal,
+                                avatar: e.target.files[0],
+                              }));
+                            }
+                          } else {
+                            setUsers((oldVal) => ({ ...oldVal, avatar: '' }));
+                            toast.error('Only image is allowed');
+                          }
+                        }}
+                      />
+                    </div>
                   </div>
                   <h3 className="heading-username">
-                    {users.firstname} {users?.lastname}
+                    {users?.firstname} {users?.lastname}
                   </h3>
-                  <h4>{users.email}</h4> <br />
+                  <h4>{users?.email}</h4> <br />
                   <br />
                   {/* <h5>Has been ordered 15 products</h5> */}
                 </div>
@@ -188,14 +169,17 @@ const ProfileUser = () => {
                         <input
                           type="text"
                           name="email"
-                          // onChange={formik.handleChange}
-                          // value={formik.values.email}
-                          defaultValue={formik.values.email}
+                          onChange={formik.handleChange}
+                          value={formik.values.email}
                           disabled={true}
                           placeholder="Email"
                         />
                       </div>
-                      <div className={`left-bottom`}>
+                      <div
+                        className={`left-bottom ${
+                          formik.errors.address ? 'input-error' : ''
+                        }`}
+                      >
                         <label>Delivery Address</label>
                         <input
                           type="text"
@@ -203,8 +187,12 @@ const ProfileUser = () => {
                           name="address"
                           onChange={formik.handleChange}
                           value={formik.values.address}
-                          defaultValue={formik.values.address}
                         />
+                        {formik.errors.address && (
+                          <p className="input-invalid">
+                            {formik.errors.address}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -221,7 +209,6 @@ const ProfileUser = () => {
                           name="phone"
                           onChange={formik.handleChange}
                           value={formik.values.phone}
-                          defaultValue={formik.values.phone}
                         />
                         {formik.errors.phone && (
                           <p className="input-invalid">{formik.errors.phone}</p>
@@ -256,19 +243,18 @@ const ProfileUser = () => {
                   <div className="body">
                     <div className="body-left">
                       <div className={`left-top`}>
-                        <p>Display name</p>
+                        <label>Display name</label>
                         <input
                           type="text"
                           placeholder="Display name"
                           name="fullname"
-                          // onChange={formik.handleChange}
-                          // value={formik.values.name}
-                          defaultValue={formik.values.fullname}
+                          value={
+                            (users.firstname ? users.firstname : '') +
+                            ' ' +
+                            (users.lastname ? users.lastname : '')
+                          }
                           disabled={true}
                         />
-                        {/* {formik.errors.name && (
-                          <p className="input-invalid">{formik.errors.name}</p>
-                        )} */}
                       </div>
                       <div
                         className={`left-top ${
@@ -282,7 +268,6 @@ const ProfileUser = () => {
                           name="firstname"
                           onChange={formik.handleChange}
                           value={formik.values.firstname}
-                          defaultValue={formik.values.firstname}
                         />
                         {formik.errors.firstname && (
                           <p className="input-invalid">
@@ -290,7 +275,11 @@ const ProfileUser = () => {
                           </p>
                         )}
                       </div>
-                      <div className="left-bottom">
+                      <div
+                        className={`left-bottom ${
+                          formik.errors.lastname ? 'input-error' : ''
+                        }`}
+                      >
                         <p>Last name</p>
                         <input
                           type="text"
@@ -298,40 +287,62 @@ const ProfileUser = () => {
                           placeholder="last name"
                           onChange={formik.handleChange}
                           value={formik.values.lastname}
-                          defaultValue={formik.values.lastname}
                         />
+                        {formik.errors.lastname && (
+                          <p className="input-invalid">
+                            {formik.errors.lastname}
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <div className="body-right">
-                      <div className={`right-top`}>
+                      <div
+                        className={`right-top ${
+                          formik.errors.birth ? 'input-error' : ''
+                        }`}
+                      >
                         <p>DD / MM / YY</p>
-                        {/* Masih bug validasi */}
-                        {/* <input type="text" placeholder="DD/MM/YY" /> */}
-                        <DatePicker
+                        <input
+                          type="date"
                           name="birth"
-                          selected={dateBirth}
-                          onChange={(date) => setDateBirth(date)}
-                          peekNextMonth
-                          showMonthDropdown
-                          showYearDropdown
-                          dropdownMode="select"
+                          value={formik.values.birth}
+                          onChange={formik.handleChange}
                         />
-                        {/* {formik.errors.birth && (
+                        {formik.errors.birth && (
                           <p className="input-invalid">{formik.errors.birth}</p>
-                        )} */}
+                        )}
                       </div>
-                      <div className={`right-bottom`}>
+                      <div
+                        className={`right-bottom ${
+                          formik.errors.gender ? 'input-error' : ''
+                        }`}
+                      >
                         <label className="male">
-                          <input type="radio" value="male" name="gender" /> Male
+                          <input
+                            type="radio"
+                            onChange={formik.handleChange}
+                            value="male"
+                            name="gender"
+                            checked={formik.values.gender === 'male'}
+                          />{' '}
+                          Male
                         </label>
                         <label className="female">
-                          <input type="radio" value="female" name="gender" />{' '}
+                          <input
+                            type="radio"
+                            onChange={formik.handleChange}
+                            value="female"
+                            name="gender"
+                            checked={formik.values.gender === 'female'}
+                          />{' '}
                           Female
                         </label>
-                        {/* {formik.errors. && (
-                          <p className="input-invalid">{formik.errors.}</p>
-                        )} */}
+                        {formik.errors.gender && (
+                          <p className="input-invalid">
+                            {formik.errors.gender}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -347,6 +358,7 @@ const ProfileUser = () => {
                     Save
                   </Button>
                   <Button
+                    type="button"
                     // className="cancel"
                     onClick={resetForm}
                   >
@@ -364,7 +376,8 @@ const ProfileUser = () => {
   );
 };
 
-export default PrivateRoute(ProfileUser.apply,['member','admin']);
+export default PrivateRoute(ProfileUser, ['member', 'admin']);
+// export default ProfileUser;
 
 // START === STYLING CURRENT PAGE
 
@@ -816,6 +829,9 @@ const StyledProfileUserPage = styled.div`
         margin-bottom: 0;
       }
       label {
+        color: red !important;
+      }
+      p {
         color: red !important;
       }
       input {
