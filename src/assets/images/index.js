@@ -5,7 +5,7 @@ import IMG_DummyProductCard from './IMG_DummyCard.png';
 import IMG_AvatarDefault from './user-default.png';
 import IMG_BGHistoryPage from './IMG_BgHistoryPage.png';
 import IMG_DefaultProduct from './default.jpg';
-import IMG_Ava from './IMG_Ava.png'
+import IMG_Ava from './IMG_Ava.png';
 import IMGGLobe from './IMG_Global.png';
 import LogoNetflix from './logo-netflix.png';
 import LogoSpotify from './log-spotify.png';
@@ -15,6 +15,9 @@ import LogoDiscord from './logo-discord.png';
 import IMGDummyProduct1 from './IMG_CartItem.png';
 import IMGDummyProduct2 from './IMG_DummyCard.png';
 import IMGDummyProduct3 from './IMG_Product.png';
+import IMGUser1 from './user1.png';
+import IMGUser2 from './user2.png';
+import IMGUser3 from './user3.png';
 
 export {
   IMGDummyProduct1,
@@ -33,5 +36,8 @@ export {
   IMG_AvatarDefault,
   IMG_BGHistoryPage,
   IMG_DefaultProduct,
-  IMG_Ava
+  IMG_Ava,
+  IMGUser1,
+  IMGUser2,
+  IMGUser3,
 };
