@@ -26,6 +26,8 @@ const OrdersPage = () => {
   const [dataHistory, setDataHistory] = useState([
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
   ]);
+  // Mata Uang Rupiah
+  const formatter = new Intl.NumberFormat(['ban', 'id']);
 
   return (
     <StyledHistoryPage>
@@ -44,19 +46,19 @@ const OrdersPage = () => {
             <div className="divider" />
             <div className="row">
               <p className="sub-heading">SUBTOTAL</p>
-              <p className="sub-heading">IDR 120.000</p>
+              <p className="sub-heading">IDR {formatter.format(100000)}</p>
             </div>
             <div className="row">
               <p className="sub-heading">TAX & FEES</p>
-              <p className="sub-heading">IDR 20.000</p>
+              <p className="sub-heading">IDR {formatter.format(100000)}</p>
             </div>
             <div className="row">
               <p className="sub-heading">SHIPPING</p>
-              <p className="sub-heading">IDR 10.000</p>
+              <p className="sub-heading">IDR {formatter.format(100000)}</p>
             </div>
             <div className="total">
               <p className="text-bold">TOTAL</p>
-              <p className="text-bold">IDR 150.000</p>
+              <p className="text-bold">IDR {formatter.format(50000)}</p>
             </div>
           </CardWraper>
         </div>
