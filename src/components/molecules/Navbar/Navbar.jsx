@@ -3,12 +3,7 @@ import Image from 'next/image';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import {
-  IC_Logo as logo,
-  IC_List as listIcon,
-  IC_Search,
-  IC_Message,
-} from '../../../assets/icons';
+import { IC_Logo as logo, IC_List as listIcon, IC_Search, IC_Message } from '../../../assets/icons';
 import { useState } from 'react';
 import style from './navbar.module.css';
 import styled from 'styled-components';
@@ -23,6 +18,7 @@ const Navbar = (props) => {
   const [show, setShow] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
   const router = useRouter();
+  const [search,setSearch] = useState('')
   const formatUrl = ([first, ...last]) => {
     return first.toUpperCase() + last.join('');
   };
@@ -30,9 +26,7 @@ const Navbar = (props) => {
     <>
       <Head>
         {router.route.split('/')[1] === '' && <title>Coffe-Shoop | Home</title>}
-        {router.route.split('/')[1] !== '' && (
-          <title>Coffe-Shoop | {formatUrl(router.route.split('/')[1])}</title>
-        )}
+        {router.route.split('/')[1] !== '' && <title>Coffe-Shoop | {formatUrl(router.route.split('/')[1])}</title>}
       </Head>
       <div className={style.navbar}>
         <div className={`${style['navbar-container']} container`}>
@@ -44,26 +38,15 @@ const Navbar = (props) => {
             <p className={style['navbar-text-brand']}>Coffee Shop</p>
           </div> */}
           <div className={style['button-show-hide-navbar']}>
-            <button
-              onClick={() => setShow(!show)}
-              className={style['btn-navbar']}
-            >
+            <button onClick={() => setShow(!show)} className={style['btn-navbar']}>
               <Image src={listIcon} alt="icon-list" />
             </button>
           </div>
-          <div
-            className={`${style['navbar-menu-right']} ${
-              show ? style['show-navbar'] : ''
-            }`}
-          >
+          <div className={`${style['navbar-menu-right']} ${show ? style['show-navbar'] : ''}`}>
             <ul className={style['navbar-menu']}>
               <li className={`${style['li-menu']}`}>
                 <Link href="/">
-                  <a
-                    className={`${style['li-menu-a']} ${
-                      router.pathname === '/' ? style['li-menu-a-active'] : ''
-                    }`}
-                  >
+                  <a className={`${style['li-menu-a']} ${router.pathname === '/' ? style['li-menu-a-active'] : ''}`}>
                     Home
                   </a>
                 </Link>
@@ -72,9 +55,7 @@ const Navbar = (props) => {
                 <Link href="/products">
                   <a
                     className={`${style['li-menu-a']} ${
-                      router.pathname === '/products'
-                        ? style['li-menu-a-active']
-                        : ''
+                      router.pathname === '/products' ? style['li-menu-a-active'] : ''
                     }`}
                   >
                     Product
@@ -82,35 +63,19 @@ const Navbar = (props) => {
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
-                <Link
-                  href={
-                    props?.user?.roles === 'member'
-                      ? '/orders'
-                      : '/admin/orders'
-                  }
-                >
+                <Link href={props?.user?.roles === 'member' ? '/orders' : '/admin/orders'}>
                   <a
-                    className={`${style['li-menu-a']} ${
-                      router.pathname === '/cart'
-                        ? style['li-menu-a-active']
-                        : ''
-                    }`}
+                    className={`${style['li-menu-a']} ${router.pathname === '/cart' ? style['li-menu-a-active'] : ''}`}
                   >
                     {props?.user?.roles === 'member' ? 'Your Cart' : 'Orders'}
                   </a>
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
-                <Link
-                  href={
-                    props?.user?.roles === 'member' ? '/history' : '/dashboard'
-                  }
-                >
+                <Link href={props?.user?.roles === 'member' ? '/history' : '/dashboard'}>
                   <a
                     className={`${style['li-menu-a']} ${
-                      router.pathname === '/history'
-                        ? style['li-menu-a-active']
-                        : ''
+                      router.pathname === '/history' ? style['li-menu-a-active'] : ''
                     }`}
                   >
                     {props?.user?.roles === 'member' ? 'History' : 'Dashboard'}
@@ -121,18 +86,12 @@ const Navbar = (props) => {
               {!props.auth && (
                 <>
                   <li className="li-menu">
-                    <button
-                      onClick={() => router.push('/auth/login')}
-                      className={`${style['btn-white']}`}
-                    >
+                    <button onClick={() => router.push('/auth/login')} className={`${style['btn-white']}`}>
                       Login
                     </button>
                   </li>
                   <li className="li-menu">
-                    <button
-                      onClick={() => router.push('/auth/register')}
-                      className={style['btn-orange']}
-                    >
+                    <button onClick={() => router.push('/auth/register')} className={style['btn-orange']}>
                       Register
                     </button>
                   </li>
@@ -142,14 +101,26 @@ const Navbar = (props) => {
               {props.auth && (
                 <AuthProfile>
                   <div className="btn searching">
-                    <input type="text" placeholder="Search" />
-                    <Image
-                      className="icon-search"
-                      src={IC_Search}
-                      alt="icon"
-                      width={25}
-                      height={25}
+                    <input
+                      type="text"
+                      placeholder="Search"
+                      onChange={(e)=> setSearch(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === 'Enter'
+                          ? router.push(
+                              {
+                                pathname: '/products',
+                                query: {
+                                  search,
+                                },
+                              },
+                              undefined,
+                              { shallow: true }
+                            )
+                          : ''
+                      }
                     />
+                    <Image className="icon-search" src={IC_Search} alt="icon" width={25} height={25} />
                   </div>
                   <div className="btn">
                     <Image src={IC_Message} alt="icon" layout="fill" />
@@ -160,22 +131,14 @@ const Navbar = (props) => {
                       <img
                         src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`}
                         alt="username"
-                        onClick={() =>
-                          showPopover
-                            ? setShowPopover(false)
-                            : setShowPopover(true)
-                        }
+                        onClick={() => (showPopover ? setShowPopover(false) : setShowPopover(true))}
                       />
                     ) : (
                       <Image
                         src={IMG_AvatarDefault}
                         alt="username"
                         layout="fill"
-                        onClick={() =>
-                          showPopover
-                            ? setShowPopover(false)
-                            : setShowPopover(true)
-                        }
+                        onClick={() => (showPopover ? setShowPopover(false) : setShowPopover(true))}
                       />
                     )}
                     {showPopover && (
