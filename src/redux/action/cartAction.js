@@ -45,3 +45,82 @@ export const addOrderCart = (cartParam) => async (dispatch, getState) => {
     ////
   }
 };
+
+export const deleteOrderCart = (product_id, deliver_id, size_id) => (dispatch, getState) => {
+  try {
+    let {
+      cart: { cart_multi: oldCarts },
+    } = getState();
+    const index = oldCarts.findIndex(
+      (oldCart) =>
+        oldCart.cart_product_id === product_id &&
+        oldCart.cart_deliver_id === deliver_id &&
+        oldCart.cart_size_id === size_id
+    );
+    oldCarts.splice(index, 1);
+    dispatch({ type: 'CART_MUTLI', payload: oldCarts });
+    toast.success('Successful delete cart');
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const decQuantity = (product_id, deliver_id, size_id) => async (dispatch, getState) => {
+  try {
+    const { data: detailProduct } = await (await axios.get(`/products/${product_id}`)).data;
+    let {
+      cart: { cart_multi: oldCarts },
+    } = getState();
+    oldCarts.forEach((oldCart) => {
+      if (
+        oldCart.cart_product_id === product_id &&
+        oldCart.cart_deliver_id === deliver_id &&
+        oldCart.cart_size_id === size_id
+      ) {
+        if (oldCart.cart_stock === 1) {
+          return false;
+        } else if (oldCart.cart_stock > 1) {
+          oldCart.cart_stock -= 1;
+          oldCart.total_price -= parseInt(detailProduct.price, 10);
+        }
+      }
+    });
+    dispatch({ type: 'CART_MUTLI', payload: oldCarts });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const incQuantity = (product_id, deliver_id, size_id) => async (dispatch, getState) => {
+  try {
+    const { data: detailProduct } = await (await axios.get(`/products/${product_id}`)).data;
+    let {
+      cart: { cart_multi: oldCarts },
+    } = getState();
+    let oldProductQuantity = 0;
+    oldCarts.forEach((oldCart) => {
+      if (oldCart.cart_product_id === product_id) {
+        oldProductQuantity += oldCart.cart_stock;
+      }
+    });
+    if (oldProductQuantity + 1 <= detailProduct.stock) {
+      oldCarts.forEach((oldCart) => {
+        if (
+          oldCart.cart_product_id === product_id &&
+          oldCart.cart_deliver_id === deliver_id &&
+          oldCart.cart_size_id === size_id
+        ) {
+          if (oldCart.cart_stock + 1 > detailProduct.stock) {
+            return false;
+          } else if (oldCart.cart_stock + 1 <= detailProduct.stock) {
+            oldCart.cart_stock += 1;
+            oldCart.total_price += parseInt(detailProduct.price, 10);
+          }
+        }
+      });
+    }
+    dispatch({ type: 'CART_MUTLI', payload: oldCarts });
+  } catch (error) {
+    console.log(error);
+  }
+};
