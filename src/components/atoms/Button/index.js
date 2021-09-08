@@ -38,12 +38,12 @@ export default Button;
 
 const StyledButton = styled.button`
   background: ${({ theme, disabled }) => {
+    if (disabled) return '#a3a3a3';
     if (theme === 'orange') return '#FFBA33';
     if (theme === 'brown') return '#6A4029';
     if (theme === 'white') return '#FFFFFF';
     if (theme === 'black') return '#0B132A';
     if (theme === 'gray') return 'rgba(186, 186, 186, 0.35)';
-    if (disabled) return '#a3a3a3';
     return '#FFBA33';
   }};
   color: ${({ theme, disabled }) => {

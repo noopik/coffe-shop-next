@@ -33,7 +33,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
     cart_deliver_id: null,
     cart_deliver_name: '',
     cart_size_id: null,
-    card_size_name: '',
+    cart_size_name: '',
     cart_stock: 1,
     cart_time_dineIn: null,
     product_price: detailProduct.price,
@@ -118,7 +118,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
                           setCart((oldVal) => ({
                             ...oldVal,
                             cart_size_id: size.size_id,
-                            card_size_name: size.size_name,
+                            cart_size_name: size.size_name,
                           }))
                         }
                         type="radio"
