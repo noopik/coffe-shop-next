@@ -82,7 +82,7 @@ const Dashboard = () => {
                                         <div className="dot"></div>
                                     </div>
                                 </div>
-                                
+
                                 <h3 className="date">Last 6 months</h3>
 
 
@@ -117,7 +117,7 @@ const Dashboard = () => {
                         <div className="right">
                             <div className="top-right">
                                 <div className="staff">
-                                    <div className="ava"><Image className="imgava" src={IMG_Ava} alt="image"/></div>
+                                    <div className="ava"><Image className="imgava" src={IMG_Ava} alt="image" /></div>
                                     <div className="name">
                                         <h1>Christine Lauren</h1>
                                         <h2>Keep up the good work <br /> and spread love</h2>
@@ -187,8 +187,8 @@ const Dashboard = () => {
     );
 };
 
-// export default PrivateRoute(Dashboard);
-export default Dashboard;
+export default PrivateRoute(Dashboard,['admin']);
+
 
 // START === STYLING CURRENT PAGE
 
