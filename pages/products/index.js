@@ -9,8 +9,15 @@ import { useState, useEffect } from 'react';
 import router from 'next/router';
 import Pagination from 'rc-pagination';
 import 'rc-pagination/assets/index.css';
-import { getProducts, getProductsById, getCategories } from '../../src/redux/action/productAction';
-import { localePagination, buttonItemRender } from '../../src/utils/utilityPaginantion';
+import {
+  getProducts,
+  getProductsById,
+  getCategories,
+} from '../../src/redux/action/productAction';
+import {
+  localePagination,
+  buttonItemRender,
+} from '../../src/utils/utilityPaginantion';
 
 const ProductsPage = ({ user, auth }) => {
   const [dataProducts, setDataProduct] = useState({});
@@ -51,7 +58,9 @@ const ProductsPage = ({ user, auth }) => {
     <StyledProductsPage className="container">
       <aside className="side-left">
         <h3>Promo for you</h3>
-        <p className="paragraph">Coupons will be updated every weeks. Check them out! </p>
+        <p className="paragraph">
+          Coupons will be updated every weeks. Check them out!{' '}
+        </p>
         <div className="card-promo-wrapper">
           <div className="card">
             <div className="image-wrapper">
@@ -59,7 +68,9 @@ const ProductsPage = ({ user, auth }) => {
             </div>
             <h2 className="heading">Beef Spaghetti</h2>
             <h2 className="heading">20% OFF</h2>
-            <p className="paragraph promo-desc">Buy 1 Choco Oreo and get 20% off for Beef Spaghetti</p>
+            <p className="paragraph promo-desc">
+              Buy 1 Choco Oreo and get 20% off for Beef Spaghetti
+            </p>
             <div className="divider" />
             <p className="paragraph">COUPON CODE</p>
             <h3 className="heading-bold">FNPR15RG</h3>
@@ -79,22 +90,36 @@ const ProductsPage = ({ user, auth }) => {
       </aside>
       <main>
         <div className="navigation-category">
-          <div onClick={() => setCategoryId(null)} className={`item ${categoryId === null ? 'active' : ''}`}>
+          <div
+            onClick={() => setCategoryId(null)}
+            className={`item ${categoryId === null ? 'active' : ''}`}
+          >
             <h5 className="heading-nav ">All Products</h5>
           </div>
           {dataCategories?.data?.map((category, index) => (
             <div
               key={index}
               onClick={() => setCategoryId(category.category_id)}
-              className={`item ${category.category_id === categoryId ? 'active' : ''}`}
+              className={`item ${
+                category.category_id === categoryId ? 'active' : ''
+              }`}
             >
               <h5 className="heading-nav ">{category.category_name}</h5>
             </div>
           ))}
         </div>
         <SortFilter asc={sortASC}>
-          <div className="icon" onClick={() => (sortASC ? setSortASC(false) : setSortASC(true))}>
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div
+            className="icon"
+            onClick={() => (sortASC ? setSortASC(false) : setSortASC(true))}
+          >
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <path
                 d="M7.46958 0H5.33419L0.105469 14.9391H3.07779L3.86332 12.6947H8.88152L9.6558 14.9391H12.6235L7.46958 0ZM4.84523 9.88924L6.39042 5.47425L7.91367 9.88924H4.84523Z"
                 fill="#6A4029"
@@ -117,8 +142,12 @@ const ProductsPage = ({ user, auth }) => {
                 name={product.product_name}
                 price={parseInt(product.price)}
                 image={`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`}
-                onClickCard={() => router.push(`/products/${product.product_id}`)}
-                onClickEdit={() => router.push(`/admin/products/${product.product_id}`)}
+                onClickCard={() =>
+                  router.push(`/products/${product.product_id}`)
+                }
+                onClickEdit={() =>
+                  router.push(`/admin/products/${product.product_id}`)
+                }
                 key={index}
                 className="item"
                 access={auth && user && user.roles === 'admin' ? true : false}
@@ -132,13 +161,27 @@ const ProductsPage = ({ user, auth }) => {
             <Pagination
               current={page}
               total={dataProducts.pagination.countData}
-              pageSize={dataProducts.pagination.limit ? dataProducts.pagination.limit : 1}
+              pageSize={
+                dataProducts.pagination.limit
+                  ? dataProducts.pagination.limit
+                  : 1
+              }
               itemRender={buttonItemRender}
               onChange={(current, pageSize) => setPage(current)}
               locale={localePagination}
             />
           )}
         </div>
+        {auth && user && user.roles === 'admin' && (
+          <div className="btn-create-product-wrapper">
+            <Button
+              theme="brown"
+              onClick={() => router.push('/admin/products')}
+            >
+              Add new product
+            </Button>
+          </div>
+        )}
       </main>
     </StyledProductsPage>
   );
@@ -325,16 +368,10 @@ const StyledProductsPage = styled.div`
         grid-template-columns: auto auto auto; 
       `}
       ${Breakpoints.lessThan('xl')`
-        grid-template-columns: auto auto auto;
-      `}
-      ${Breakpoints.lessThan('lg')`
-        grid-template-columns: auto auto;
-      `}
-      ${Breakpoints.lessThan('md')`
-        grid-template-columns: auto auto auto;
+        grid-template-columns: auto auto ;
       `}
       ${Breakpoints.lessThan('sm')`
-        grid-template-columns: auto auto;
+        grid-template-columns: auto ;
       `}
       .item {
         width: 100%;
@@ -344,6 +381,10 @@ const StyledProductsPage = styled.div`
       margin-top: 50px;
       display: flex;
       justify-content: flex-end;
+    }
+    .btn-create-product-wrapper {
+      background-color: yellow;
+      margin: 50px 0;
     }
   }
   /* GLOBAL CURRENT PAGE */
