@@ -1,22 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import styled from 'styled-components';
-import PublicRoute from '../../src/components/hoc/PublicRoute';
-import { Breakpoints } from '../../src/utils';
 import Image from 'next/image';
-import { Button, CardProduct } from '../../src/components/atoms';
-import { IMG_DummyProductCard } from '../../src/assets';
-import { useState, useEffect } from 'react';
 import router from 'next/router';
 import Pagination from 'rc-pagination';
 import 'rc-pagination/assets/index.css';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { IMG_DummyProductCard } from '../../src/assets';
+import { Button, CardProduct } from '../../src/components/atoms';
+import PublicRoute from '../../src/components/hoc/PublicRoute';
 import {
+  getCategories,
   getProducts,
   getProductsById,
-  getCategories,
 } from '../../src/redux/action/productAction';
+
+import { Breakpoints } from '../../src/utils';
+
 import {
-  localePagination,
   buttonItemRender,
+  localePagination,
 } from '../../src/utils/utilityPaginantion';
 
 const ProductsPage = ({ user, auth }) => {
