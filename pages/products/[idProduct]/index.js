@@ -12,6 +12,7 @@ import { ModalAlertValidation } from '../../../src/components/molecules';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { addOrderCart } from '../../../src/redux/action/cartAction';
+import { deleteProduct } from '../../../src/redux/action/productAction';
 
 export const getServerSideProps = async (ctx) => {
   try {
@@ -217,7 +218,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
         onClose={() => setShowModal(false)}
         actionDelete={() => {
           // Menghapus data terpilih
-          console.log('delete item 1');
+          deleteProduct(detailProduct.product_id,router)
           setShowModal(false);
         }}
       />
