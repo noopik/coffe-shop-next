@@ -214,7 +214,7 @@ const AddProducts = (props) => {
                   Take a Picture
                 </Button>
                 <div className="btn-upload-image">
-                  <Button type='button' className="">Choose from Gallery</Button>
+                  <Button type='button' className="">Choose from Gallery
                   <input
                     type="file"
                     className="input-file"
@@ -235,6 +235,7 @@ const AddProducts = (props) => {
                     }}
                     name="image"
                   />
+                  </Button>
                 </div>
                 <div className="select-section">
                   <h3 className="heading">Delivery Hour :</h3>
