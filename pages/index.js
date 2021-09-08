@@ -4,12 +4,7 @@ import { Breakpoints } from '../src/utils';
 import Image from 'next/image';
 import PublicRoute from '../src/components/hoc/PublicRoute';
 import IMG_TeamWork from '../src/assets/images/IMG_TeamWork.png';
-import IMG_Global from '../src/assets/images/IMG_Global.png';
-import IMG_Sponsored from '../src/assets/images/IMG_Sponsored.png';
 import { Button, CardWraper } from '../src/components/atoms';
-import person from '../src/assets/icons/person.png';
-import location from '../src/assets/icons/location.png';
-import love from '../src/assets/icons/love.png';
 import {
   ICAvatar,
   ICChecklistGreen,
@@ -21,16 +16,17 @@ import {
   IMGDummyProduct3,
   IMGGLobe,
   IMG_AvatarDefault,
-  IMG_DummyProduct,
   LogoAmazon,
   LogoDiscord,
   LogoNetflix,
   LogoReddit,
   LogoSpotify,
 } from '../src/assets';
+import { useState } from 'react';
 import router from 'next/router';
 
 function Home() {
+  const [search, setSearch] = useState(router.query.search || '');
   return (
     <StyledHomePage>
       <div className="header-section">
@@ -39,24 +35,37 @@ function Home() {
             <div className="search-icon">
               <Image src={IC_Search} alt="icon search" width={24} height={24} />
               <div className="input-wrapper">
-                <input type="text" placeholder="Search" />
+                <input
+                  value={search}
+                  type="text"
+                  placeholder="Search"
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === 'Enter'
+                      ? router.push(
+                          {
+                            pathname: '/products',
+                            query: {
+                              search,
+                            },
+                          },
+                          undefined,
+                          { shallow: true }
+                        )
+                      : ''
+                  }
+                />
               </div>
             </div>
           </div>
           <div className="content">
             <div className="wrapper">
-              <h1 className="heading-page">
-                Start Your Day with Coffee and Good Meals
-              </h1>
+              <h1 className="heading-page">Start Your Day with Coffee and Good Meals</h1>
               <h4 className="sub-heading">
-                We provide high quality beans, good taste, and healthy meals
-                made by love just for you. Start your day with us for a bigger
-                smile!
+                We provide high quality beans, good taste, and healthy meals made by love just for you. Start your day
+                with us for a bigger smile!
               </h4>
-              <Button
-                className="button"
-                onClick={() => router.push('/products')}
-              >
+              <Button className="button" onClick={() => router.push('/products')}>
                 Get Started
               </Button>
             </div>
@@ -77,12 +86,7 @@ function Home() {
             </div>
             <div className="item">
               <div className="icon location">
-                <Image
-                  src={ICLocation}
-                  alt="checklist"
-                  width={55}
-                  height={55}
-                />
+                <Image src={ICLocation} alt="checklist" width={55} height={55} />
               </div>
               <div className="desc">
                 <p className="text-bold">30+</p>
@@ -104,63 +108,29 @@ function Home() {
               <Image src={IMG_TeamWork} alt="globe" layout="fill" />
             </div>
             <div className="service-description">
-              <h2 className="heading-section">
-                We Provide Good Coffee and Healthy Meals
-              </h2>
+              <h2 className="heading-section">We Provide Good Coffee and Healthy Meals</h2>
               <p className="text">
-                You can explore the menu that we provide with fun and have their
-                own taste and make your day better.
+                You can explore the menu that we provide with fun and have their own taste and make your day better.
               </p>
               <div className="list-service">
                 <div className="item-list">
-                  <Image
-                    src={ICChecklistGreen}
-                    alt="checklist"
-                    width={24}
-                    height={24}
-                  />
+                  <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                   <span className="text">High quality beans</span>
                 </div>
                 <div className="item-list">
-                  <Image
-                    src={ICChecklistGreen}
-                    alt="checklist"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text">
-                    Healthy meals, you can request the ingredients
-                  </span>
+                  <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
+                  <span className="text">Healthy meals, you can request the ingredients</span>
                 </div>
                 <div className="item-list">
-                  <Image
-                    src={ICChecklistGreen}
-                    alt="checklist"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text">
-                    Chat with our staff to get better experience for ordering
-                  </span>
+                  <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
+                  <span className="text">Chat with our staff to get better experience for ordering</span>
                 </div>
                 <div className="item-list">
-                  <Image
-                    src={ICChecklistGreen}
-                    alt="checklist"
-                    width={24}
-                    height={24}
-                  />
-                  <span className="text">
-                    Free member card with a minimum purchase of IDR 200.000.
-                  </span>
+                  <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
+                  <span className="text">Free member card with a minimum purchase of IDR 200.000.</span>
                 </div>
                 <div className="item-list">
-                  <Image
-                    src={ICChecklistGreen}
-                    alt="checklist"
-                    width={24}
-                    height={24}
-                  />
+                  <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                   <span className="text">High quality beans</span>
                 </div>
               </div>
@@ -169,10 +139,7 @@ function Home() {
         </section>
         <section className="menu-favorite-section">
           <h2 className="heading-section">Here is People’s Favorite</h2>
-          <p className="sub-heading">
-            Let’s choose and have a bit taste of poeple’s favorite. It might be
-            yours too!
-          </p>
+          <p className="sub-heading">Let’s choose and have a bit taste of poeple’s favorite. It might be yours too!</p>
           <div className="menus">
             <div className="menu-item">
               <div className="image-product-wrapper">
@@ -182,49 +149,26 @@ function Home() {
                 <h5 className="product-name">Hazelnut Latte</h5>
                 <ul>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">HazelnutSyrup</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Wanilla Whipped Cream</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Ice / Hot</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Sliced Banana on Top</span>
                   </li>
                 </ul>
               </div>
               <div className="price-wrapper">
                 <p className="price-bold">IDR 25.000</p>
-                <button
-                  className="btn-checkout"
-                  onClick={() => router.push('/products')}
-                >
+                <button className="btn-checkout" onClick={() => router.push('/products')}>
                   Order Now
                 </button>
               </div>
@@ -237,58 +181,30 @@ function Home() {
                 <h5 className="product-name">Pinky Promise</h5>
                 <ul>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">1 Shot of Coffee</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Vanilla Whipped Cream</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Chocolate Biscuits</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Strawberry Syrup</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Sliced strawberry on Top</span>
                   </li>
                 </ul>
               </div>
               <div className="price-wrapper">
                 <p className="price-bold">IDR IDR 30.000</p>
-                <button
-                  className="btn-checkout "
-                  onClick={() => router.push('/products')}
-                >
+                <button className="btn-checkout " onClick={() => router.push('/products')}>
                   Order Now
                 </button>
               </div>
@@ -301,49 +217,26 @@ function Home() {
                 <h5 className="product-name">Chicken Wings</h5>
                 <ul>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Wings</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Drum Sticks</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Mayonaise and Lemon</span>
                   </li>
                   <li>
-                    <Image
-                      src={ICChecklistGreen}
-                      alt="checklist"
-                      width={24}
-                      height={24}
-                    />
+                    <Image src={ICChecklistGreen} alt="checklist" width={24} height={24} />
                     <span className="text">Hot Fried</span>
                   </li>
                 </ul>
               </div>
               <div className="price-wrapper">
                 <p className="price-bold">IDR 25.000</p>
-                <button
-                  className="btn-checkout"
-                  onClick={() => router.push('/products')}
-                >
+                <button className="btn-checkout" onClick={() => router.push('/products')}>
                   Order Now
                 </button>
               </div>
@@ -351,12 +244,9 @@ function Home() {
           </div>
         </section>
         <section className="store-section">
-          <h2 className="heading-page">
-            Visit Our Store in the Spot on the Map Below
-          </h2>
+          <h2 className="heading-page">Visit Our Store in the Spot on the Map Below</h2>
           <p className="sub-heading">
-            See our store in every city on the spot and spen your good day
-            there. See you soon!
+            See our store in every city on the spot and spen your good day there. See you soon!
           </p>
           <div className="image-wrapper">
             <div className="image-location">
@@ -385,69 +275,46 @@ function Home() {
           </div>
         </section>
         <section className="testimony-section">
-          <h2 className="heading-section">
-            Loved by Thousands of Happy Customer
-          </h2>
-          <p className="sub-heading">
-            These are the stories of our customers who have visited us with
-            great pleasure.
-          </p>
+          <h2 className="heading-section">Loved by Thousands of Happy Customer</h2>
+          <p className="sub-heading">These are the stories of our customers who have visited us with great pleasure.</p>
           <div className="testimony-wrapper">
             <div className="customer">
               <div className="profile">
-                <Image
-                  src={IMG_AvatarDefault}
-                  alt="user"
-                  width={50}
-                  height={50}
-                />
+                <Image src={IMG_AvatarDefault} alt="user" width={50} height={50} />
                 <div className="desc">
                   <h5 className="username">Viezh Robert</h5>
                   <p className="text">Shanxi, China</p>
                 </div>
               </div>
               <p className="text">
-                “Wow... I am very happy to spend my whole day here. the Wi-fi is
-                good, and the coffee and meals tho. I like it here!! Very
-                recommended!
+                “Wow... I am very happy to spend my whole day here. the Wi-fi is good, and the coffee and meals tho. I
+                like it here!! Very recommended!
               </p>
             </div>
             <div className="customer">
               <div className="profile">
-                <Image
-                  src={IMG_AvatarDefault}
-                  alt="user"
-                  width={50}
-                  height={50}
-                />
+                <Image src={IMG_AvatarDefault} alt="user" width={50} height={50} />
                 <div className="desc">
                   <h5 className="username">Viezh Robert</h5>
                   <p className="text">Shanxi, China</p>
                 </div>
               </div>
               <p className="text">
-                “Wow... I am very happy to spend my whole day here. the Wi-fi is
-                good, and the coffee and meals tho. I like it here!! Very
-                recommended!
+                “Wow... I am very happy to spend my whole day here. the Wi-fi is good, and the coffee and meals tho. I
+                like it here!! Very recommended!
               </p>
             </div>
             <div className="customer">
               <div className="profile">
-                <Image
-                  src={IMG_AvatarDefault}
-                  alt="user"
-                  width={50}
-                  height={50}
-                />
+                <Image src={IMG_AvatarDefault} alt="user" width={50} height={50} />
                 <div className="desc">
                   <h5 className="username">Viezh Robert</h5>
                   <p className="text">Shanxi, China</p>
                 </div>
               </div>
               <p className="text">
-                “Wow... I am very happy to spend my whole day here. the Wi-fi is
-                good, and the coffee and meals tho. I like it here!! Very
-                recommended!
+                “Wow... I am very happy to spend my whole day here. the Wi-fi is good, and the coffee and meals tho. I
+                like it here!! Very recommended!
               </p>
             </div>
           </div>
