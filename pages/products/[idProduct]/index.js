@@ -3,12 +3,8 @@ import styled from 'styled-components';
 import React, { useState } from 'react';
 import router from 'next/router';
 import Link from 'next/link';
-import Image from 'next/image';
-import Navbar from '../../../src/components/molecules/Navbar/Navbar';
-import Footer from '../../../src/components/molecules/Footer';
 import { Breadcrumb, Button, Breadcrumbs } from '../../../src/components/atoms';
 import PublicRoute from '../../../src/components/hoc/PublicRoute';
-import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
 import axiosConfig from '../../../src/config/Axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -18,26 +14,18 @@ import { ModalAlertValidation } from '../../../src/components/molecules';
 export const getServerSideProps = async (ctx) => {
   try {
     const { params } = ctx;
-    // console.log(params);
-    const { data } = await (
-      await axiosConfig.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/${params.idProducts}`
-      )
-    ).data;
-    console.log(data);
-
+    const { data } = await (await axiosConfig.get(`/products/${params.idProduct}`)).data;
     return {
-      props: {},
+      props: { detailProduct: data },
     };
   } catch (error) {
-    console.log(error.response);
     return {
-      props: {},
+      notFound: true,
     };
   }
 };
 
-const ProductDetailPage = () => {
+const ProductDetailPage = ({ detailProduct, user, auth }) => {
   const dummyData = {
     product_id: 15,
     product_name: 'white coffee v1',
@@ -45,8 +33,7 @@ const ProductDetailPage = () => {
     description: 'white coffee dengan citarasa yang enak dan mantap',
     stock: 2,
     price: '100000',
-    img_product:
-      'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg',
+    img_product: 'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg',
     delivery_start_date: '2021-09-05T00:37:14.000Z',
     delivery_end_date: '2021-09-05T00:37:14.000Z',
     size: [
@@ -81,41 +68,48 @@ const ProductDetailPage = () => {
   // Date Converter
   const start = new Date(dummyData.delivery_start_date);
   const startDay = start.getDay();
-  console.log('startDay', startDay);
-
+  const addCart = () => {
+    if (!auth) {
+      router.push('/auth/login');
+    }
+  };
   return (
     <StyledProductDetailPage>
       <div className="container">
         <Breadcrumbs>
           <Breadcrumb title="Products" to="/products" />
-          <Breadcrumb title="> Cold Brew" to="#" active />
+          <Breadcrumb title={`> ${detailProduct.product_name}`} to="#" active />
         </Breadcrumbs>
         <BodyWrapper>
           <BodyLeft>
             <div className="image">
-              {/* <Image src={IMG_Product} alt="" /> */}
-              <img src={dummyData.img_product} alt={dummyData.product_name} />
+              <img
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${detailProduct.img_product}`}
+                alt={detailProduct.product_name}
+              />
             </div>
             <div className="desc">
-              <h1 className="title-product">{dummyData.product_name}</h1>
-              <h2>IDR {formatter.format(dummyData.price)}</h2>
+              <h1 className="title-product">{detailProduct.product_name}</h1>
+              <h2>IDR {formatter.format(detailProduct.price)}</h2>
             </div>
             <div className="button-action">
-              <Button className="btn btn-add">Add To Cart</Button>
-
-              {/* Conditinal rendering : Ini untuk role customer */}
-              <Button className="btn btn-ask">Ask the Staff</Button>
-
-              {/* Conditinal rendering : Ini untuk role admin */}
-              <Button className="btn btn-ask">Edit Product</Button>
-              {/* Conditinal rendering : Ini untuk role admin udah terintegrasi modal coba ditesting dulu*/}
-              <Button
-                className="btn btn-ask"
-                theme="black"
-                onClick={() => setShowModal(true)}
-              >
-                Delete Menu
+              <Button className="btn btn-add" onClick={addCart}>
+                Add To Cart
               </Button>
+              <Button className="btn btn-ask">Ask the Staff</Button>
+              {auth && user.roles === 'admin' && (
+                <Button
+                  className="btn btn-ask"
+                  onClick={() => router.push(`/admin/products/${router.query.idProduct}`)}
+                >
+                  Edit Product
+                </Button>
+              )}
+              {auth && user.roles === 'admin' && (
+                <Button className="btn btn-ask" theme="black" onClick={() => setShowModal(true)}>
+                  Delete Menu
+                </Button>
+              )}
             </div>
           </BodyLeft>
           <BodyRight>
@@ -128,13 +122,7 @@ const ProductDetailPage = () => {
                   </span>{' '}
                   at <span> 1 - 7 pm</span>{' '}
                 </h3>
-                <h3 className="desc-detail">
-                  Cold brewing is a method of brewing that combines ground
-                  coffee and cool water and uses time instead of heat to extract
-                  the flavor. It is brewed in small batches and steeped for as
-                  long as 48 hours.
-                </h3>
-
+                <h3 className="desc-detail">{detailProduct.description}</h3>
                 <h4>Choose a size</h4>
                 <div className="size-check">
                   <label htmlFor={`size_name_R`}>
@@ -180,11 +168,7 @@ const ProductDetailPage = () => {
                 </label>
 
                 <label htmlFor={`delivery_take_away`}>
-                  <input
-                    type="radio"
-                    name="delivery"
-                    id={`delivery_take_away`}
-                  />
+                  <input type="radio" name="delivery" id={`delivery_take_away`} />
                   <span className="btn-check">
                     <p>Take away</p>
                   </span>
@@ -218,28 +202,13 @@ const ProductDetailPage = () => {
               </div>
               <div className="counter-wrapper">
                 <div className="counter min">
-                  <svg
-                    width="12"
-                    height="5"
-                    viewBox="0 0 12 5"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z"
-                      fill="#6A4029"
-                    />
+                  <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z" fill="#6A4029" />
                   </svg>
                 </div>
                 <div className="result">50</div>
                 <div className="counter plus">
-                  <svg
-                    width="14"
-                    height="13"
-                    viewBox="0 0 14 13"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                  <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M13.3902 9.05H9.66524V12.875H4.34023V9.05H0.615234V3.975H4.34023V0.125H9.66524V3.975H13.3902V9.05Z"
                       fill="#6A4029"
@@ -248,10 +217,7 @@ const ProductDetailPage = () => {
                 </div>
               </div>
             </div>
-            <Button
-              className="btn-checkout"
-              onClick={() => router.push('/orders')}
-            >
+            <Button className="btn-checkout" onClick={() => router.push('/orders')}>
               Checkout
             </Button>
           </div>
@@ -270,7 +236,7 @@ const ProductDetailPage = () => {
   );
 };
 
-export default PrivateRoute(ProductDetailPage, ['member', 'admin']);
+export default PublicRoute(ProductDetailPage);
 
 // START === STYLING CURRENT PAGE
 
