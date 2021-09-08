@@ -403,7 +403,7 @@ const EditProduct = (props) => {
                     <path d="M21 8V15.0687H3V8H21Z" fill="#9F9F9F" />
                   </svg>
                 </div>
-                <Button>Add to Cart</Button>
+                <Button type='button'>Add to Cart</Button>
               </div>
               {formik.errors.stock && <p className="input-invalid">{formik.errors.stock}</p>}
               <div className="btn-saved-wrapper">

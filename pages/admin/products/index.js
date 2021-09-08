@@ -210,7 +210,7 @@ const AddProducts = (props) => {
                   </div>
                 </div>
                 {errImg && <label className="error text-center block mb-5">{errImg}</label>}
-                <Button className="btn" theme="black">
+                <Button type='button' className="btn" theme="black">
                   Take a Picture
                 </Button>
                 <div className="btn-upload-image">
