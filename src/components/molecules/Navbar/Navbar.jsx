@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from 'next/image';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -13,11 +14,16 @@ import style from './navbar.module.css';
 import styled from 'styled-components';
 import { IMG_AvatarDefault } from '../../../assets';
 import { Breakpoints } from '../../../utils';
+import { LogoBrand } from '../../atoms';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/action/userAction';
 
 const Navbar = (props) => {
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
   const router = useRouter();
+  const [search, setSearch] = useState(router.query.search || '');
   const formatUrl = ([first, ...last]) => {
     return first.toUpperCase() + last.join('');
   };
@@ -32,9 +38,12 @@ const Navbar = (props) => {
       <div className={style.navbar}>
         <div className={`${style['navbar-container']} container`}>
           <div className={style['navbar-menu-left']}>
+            <LogoBrand click />
+          </div>
+          {/* <div className={style['navbar-menu-left']}>
             <Image src={logo} width="25px" height="25px" alt="icon-logo" />
             <p className={style['navbar-text-brand']}>Coffee Shop</p>
-          </div>
+          </div> */}
           <div className={style['button-show-hide-navbar']}>
             <button
               onClick={() => setShow(!show)}
@@ -74,7 +83,13 @@ const Navbar = (props) => {
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
-                <Link href={props?.role === 'customer' ? '/carts' : '/orders'}>
+                <Link
+                  href={
+                    props?.user?.roles === 'member'
+                      ? '/orders'
+                      : '/admin/orders'
+                  }
+                >
                   <a
                     className={`${style['li-menu-a']} ${
                       router.pathname === '/cart'
@@ -82,13 +97,15 @@ const Navbar = (props) => {
                         : ''
                     }`}
                   >
-                    {props?.role === 'customer' ? 'Your Cart' : 'Orders'}
+                    {props?.user?.roles === 'member' ? 'Your Cart' : 'Orders'}
                   </a>
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
                 <Link
-                  href={props?.role === 'customer' ? '/history' : '/dashboard'}
+                  href={
+                    props?.user?.roles === 'member' ? '/history' : '/dashboard'
+                  }
                 >
                   <a
                     className={`${style['li-menu-a']} ${
@@ -97,12 +114,12 @@ const Navbar = (props) => {
                         : ''
                     }`}
                   >
-                    {props?.role === 'customer' ? 'History' : 'Dashboard'}
+                    {props?.user?.roles === 'member' ? 'History' : 'Dashboard'}
                   </a>
                 </Link>
               </li>
               {/* User belum login */}
-              {false && (
+              {!props.auth && (
                 <>
                   <li className="li-menu">
                     <button
@@ -123,34 +140,73 @@ const Navbar = (props) => {
                 </>
               )}
               {/* User sudah login */}
-              {true && (
+              {props.auth && (
                 <AuthProfile>
-                  <div className="btn">
-                    <Image src={IC_Search} alt="icon" layout="fill" />
+                  <div className="btn searching">
+                    <input
+                      value={search}
+                      type="text"
+                      placeholder="Search"
+                      onChange={(e) => setSearch(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === 'Enter'
+                          ? router.push(
+                              {
+                                pathname: '/products',
+                                query: {
+                                  search,
+                                },
+                              },
+                              undefined,
+                              { shallow: true }
+                            )
+                          : ''
+                      }
+                    />
+                    <Image
+                      className="icon-search"
+                      src={IC_Search}
+                      alt="icon"
+                      width={25}
+                      height={25}
+                    />
                   </div>
                   <div className="btn">
                     <Image src={IC_Message} alt="icon" layout="fill" />
                     <div className="notification">1</div>
                   </div>
                   <div className="btn avatar-wrapper">
-                    <Image
-                      src={IMG_AvatarDefault}
-                      alt="username"
-                      layout="fill"
-                      onClick={() =>
-                        showPopover
-                          ? setShowPopover(false)
-                          : setShowPopover(true)
-                      }
-                    />
+                    {props.user?.avatar ? (
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`}
+                        alt="username"
+                        className="avatar"
+                        onClick={() =>
+                          showPopover
+                            ? setShowPopover(false)
+                            : setShowPopover(true)
+                        }
+                      />
+                    ) : (
+                      <Image
+                        src={IMG_AvatarDefault}
+                        alt="username"
+                        layout="fill"
+                        onClick={() =>
+                          showPopover
+                            ? setShowPopover(false)
+                            : setShowPopover(true)
+                        }
+                      />
+                    )}
                     {showPopover && (
                       <div className="popover">
                         <Link href="/profile">
                           <a>Edit Profile</a>
                         </Link>
-                        <Link href="/auth/login">
+                        <div onClick={() => dispatch(logout(router))}>
                           <a>Logout</a>
-                        </Link>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -184,7 +240,9 @@ const AuthProfile = styled.div`
       border: 3px solid #6a4029;
       border-radius: 100%;
       img {
-        object-fit: contain;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
         border-radius: 100%;
         &:hover {
           cursor: pointer;
@@ -221,6 +279,28 @@ const AuthProfile = styled.div`
       position: absolute;
       left: -10px;
       top: -8px;
+    }
+    &.searching {
+      width: 250px;
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      border: 1px solid #4f5665;
+      border-radius: 8px;
+      padding: 4px;
+      input {
+        background-color: transparent;
+        height: 100%;
+        top: 0;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        left: 0;
+        padding-left: 10px;
+        &:focus {
+          outline: none;
+        }
+      }
     }
   }
 `;
