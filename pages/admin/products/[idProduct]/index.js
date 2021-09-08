@@ -33,24 +33,25 @@ export const getServerSideProps = async (context) => {
   } catch (error) {
     console.log(error);
     return {
-      props: {},
+      // props: {},
+      redirect: {
+        permanent: false,
+        destination: '/404',
+      },
     };
   }
 };
 
 const EditProduct = (props) => {
   const {push, query} = useRouter();
-  const {idProduct} = query
-  if (!props.product) {
-    push('/404');
-  }
+  const {idProduct} = query;
   const {product} = props;
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
   const [defaultImage, setDefaultImage] = useState(`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`);
-  const [stockCounter, setStockCounter] = useState(1);
+  const [stockCounter, setStockCounter] = useState(product.stock);
   const [sizeProduct, setsizeProduct] = useState(product.size);
   const [deliveryProduct, setdeliveryProduct] = useState(product.delivery);
 
@@ -69,6 +70,9 @@ const EditProduct = (props) => {
     if (method === 'slice') {
       const index = sizeProduct.indexOf(data);
       sizeProduct.splice(index, 1);
+      setsizeProduct((old) => {
+        return [...old];
+      });
     } else {
       const found = sizeProduct.find((element) => element.size_id === data.size_id);
       if (found === undefined) {
@@ -89,6 +93,9 @@ const EditProduct = (props) => {
     if (method === 'slice') {
       const index = deliveryProduct.indexOf(data);
       deliveryProduct.splice(index, 1);
+      setdeliveryProduct((old) => {
+        return [...old]
+      })
     } else {
       const found = deliveryProduct.find((element) => element.delivery_id === data.delivery_id);
       if (found === undefined) {
@@ -164,14 +171,15 @@ const EditProduct = (props) => {
           // for (let [key, value] of formData.entries()) {
           //   console.log(`${key}: ${value}`);
           // }
-          axiosConfig.post(`/products/${idProduct}`, formData)
-          .then(() => {
-            Toastify('Update product successfull', 'success');
-          })
-          .catch((err) => {
-            console.log(err.response);
-            Toastify('Update product failed, please try again later', 'error');
-          })
+          axiosConfig
+            .post(`/products/${idProduct}`, formData)
+            .then(() => {
+              Toastify('Update product successfull', 'success');
+            })
+            .catch((err) => {
+              console.log(err.response);
+              Toastify('Update product failed, please try again later', 'error');
+            });
         }}
       >
         {(formik) => (
@@ -214,7 +222,13 @@ const EditProduct = (props) => {
                         <rect x="10" width="4" height="24" rx="2" fill="#6A4029" />
                         <rect x="24" y="10" width="4" height="24" rx="2" transform="rotate(90 24 10)" fill="#6A4029" />
                       </svg>
-                      <input accept="image/jpeg, image/png" type="file" name="image" className="input-file" onChange={(e) => handlePreviewImage(e)} />
+                      <input
+                        accept="image/jpeg, image/png"
+                        type="file"
+                        name="image"
+                        className="input-file"
+                        onChange={(e) => handlePreviewImage(e)}
+                      />
                     </div>
                   )}
                 </div>
@@ -294,7 +308,9 @@ const EditProduct = (props) => {
                       <>
                         <div className="item">
                           {item.size_name}
-                          <button onClick={() => handleSize('slice', item)}>X</button>
+                          <button type="button" onClick={() => handleSize('slice', item)}>
+                            X
+                          </button>
                         </div>
                       </>
                     ))
@@ -330,7 +346,7 @@ const EditProduct = (props) => {
                       <>
                         <div className="item">
                           {item.delivery_name}
-                          <button onClick={() => handleDelivery('slice', item)}>X</button>
+                          <button type='button' onClick={() => handleDelivery('slice', item)}>X</button>
                         </div>
                       </>
                     ))
@@ -387,7 +403,7 @@ const EditProduct = (props) => {
                     <path d="M21 8V15.0687H3V8H21Z" fill="#9F9F9F" />
                   </svg>
                 </div>
-                <Button>Add to Cart</Button>
+                <Button type='button'>Add to Cart</Button>
               </div>
               {formik.errors.stock && <p className="input-invalid">{formik.errors.stock}</p>}
               <div className="btn-saved-wrapper">
@@ -630,7 +646,8 @@ const ItemWrapper = styled.div`
     border-radius: 50px;
   }
 
-  button {
+  button,
+  span {
     background-color: grey;
     color: white;
     position: absolute;
