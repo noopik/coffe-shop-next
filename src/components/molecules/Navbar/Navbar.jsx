@@ -84,29 +84,21 @@ const Navbar = (props) => {
               </li>
               <li className={`${style['li-menu']}`}>
                 <Link
-                  href={
-                    props?.user?.roles === 'member'
-                      ? '/orders'
-                      : '/admin/orders'
-                  }
+                  href={props?.user?.roles === 'member' ? '/carts' : '/carts'}
                 >
                   <a
                     className={`${style['li-menu-a']} ${
-                      router.pathname === '/cart'
+                      router.pathname === '/carts'
                         ? style['li-menu-a-active']
                         : ''
                     }`}
                   >
-                    {props?.user?.roles === 'member' ? 'Your Cart' : 'Orders'}
+                    {props?.user?.roles === 'member' ? 'Your Cart' : 'Carts'}
                   </a>
                 </Link>
               </li>
               <li className={`${style['li-menu']}`}>
-                <Link
-                  href={
-                    props?.user?.roles === 'member' ? '/history' : '/dashboard'
-                  }
-                >
+                <Link href={'/history'}>
                   <a
                     className={`${style['li-menu-a']} ${
                       router.pathname === '/history'
@@ -114,10 +106,25 @@ const Navbar = (props) => {
                         : ''
                     }`}
                   >
-                    {props?.user?.roles === 'member' ? 'History' : 'Dashboard'}
+                    History
                   </a>
                 </Link>
               </li>
+              {props?.user?.roles === 'admin' && (
+                <li className={`${style['li-menu']}`}>
+                  <Link href={'/dashboard'}>
+                    <a
+                      className={`${style['li-menu-a']} ${
+                        router.pathname === '/dasboard'
+                          ? style['li-menu-a-active']
+                          : ''
+                      }`}
+                    >
+                      Dashboard
+                    </a>
+                  </Link>
+                </li>
+              )}
               {/* User belum login */}
               {!props.auth && (
                 <>
