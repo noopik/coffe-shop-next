@@ -57,7 +57,7 @@ const CardProduct = ({
 CardProduct.propTypes = {
   image: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  price: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
   className: PropTypes.string,
 };
 CardProduct.defaultProps = {
