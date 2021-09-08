@@ -18,7 +18,11 @@ import Button from '../../src/components/atoms/Button/index';
 import Image from 'next/image';
 import { IMG_Ava } from '../../src/assets';
 
-const Dashboard = () => {
+const Dashboard = (props) => {
+  console.log('props', props);
+
+  // const defaultImageValue =
+  //   'https://www.voanews.com/themes/custom/voa/images/Author__Placeholder.png';
   const data = [
     {
       name: 'Jan',
@@ -144,7 +148,9 @@ const Dashboard = () => {
                     <Image className="imgava" src={IMG_Ava} alt="image" />
                   </div>
                   <div className="name">
-                    <h1>Christine Lauren</h1>
+                    <h1>
+                      {props?.user?.first} {props?.user?.lastname}
+                    </h1>
                     <h2>
                       Keep up the good work <br /> and spread love
                     </h2>
