@@ -2,15 +2,12 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const CardProduct = ({ idProduct, image, name, price, className }) => {
+const CardProduct = ({ idProduct, image, name, price, className, onClickCard, access, onClickEdit }) => {
   // Mata Uang Rupiah
   const formatter = new Intl.NumberFormat(['ban', 'id']);
 
   return (
-    <StyledCardProduct
-      className={className}
-      onClick={() => router.push(`/products/${idProduct}`)}
-    >
+    <StyledCardProduct className={className} onClick={onClickCard}>
       <div className="content">
         <div className="image">
           {/* <Image
@@ -24,18 +21,9 @@ const CardProduct = ({ idProduct, image, name, price, className }) => {
         <h4 className="title-product">{name}</h4>
         <p className="price">IDR {formatter.format(price)}</p>
         {/* Jika role sebagai admin */}
-        {true && (
-          <div
-            className="btn-edit"
-            onClick={() => router.push(`/admin/products/${idProduct}`)}
-          >
-            <svg
-              width="14"
-              height="15"
-              viewBox="0 0 14 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+        {access && (
+          <div className="btn-edit" onClick={onClickEdit}>
+            <svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.0779 1.54314C10.2368 1.37094 10.4255 1.23435 10.6332 1.14116C10.8409 1.04796 11.0635 1 11.2883 1C11.513 1 11.7356 1.04796 11.9433 1.14116C12.151 1.23435 12.3397 1.37094 12.4986 1.54314C12.6576 1.71533 12.7837 1.91976 12.8697 2.14474C12.9557 2.36973 13 2.61086 13 2.85439C13 3.09791 12.9557 3.33904 12.8697 3.56403C12.7837 3.78901 12.6576 3.99344 12.4986 4.16563L4.32855 13.0166L1 14L1.90779 10.3941L10.0779 1.54314Z"
                 stroke="white"
@@ -52,7 +40,6 @@ const CardProduct = ({ idProduct, image, name, price, className }) => {
 };
 
 CardProduct.propTypes = {
-  idProduct: PropTypes.string.isRequired,
   image: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
