@@ -5,12 +5,16 @@ import { Breakpoints } from '../../../src/utils';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import router from 'next/router';
-import Link from 'next/link';
+import axios from '../../../src/config/Axios'
+import { resetPassword } from '../../../src/redux/action/userAction';
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
-const resetPasswordPage = () => {
+
+const ResetPasswordPage = (props) => {
   const validate = Yup.object({
     password: Yup.string()
-      .min(6, 'Password must be at least 6 charaters')
+      .min(8, 'Password must be at least 8 charaters')
+      .max(255, 'Password must be at least 255 charaters')
       .required('Password is required'),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Password must match')
@@ -30,7 +34,7 @@ const resetPasswordPage = () => {
           }}
           validationSchema={validate}
           onSubmit={(values, { resetForm }) => {
-            console.log(values);
+            resetPassword(values, router, props.token);
             resetForm();
           }}
         >
@@ -50,9 +54,7 @@ const resetPasswordPage = () => {
                   type="password"
                   placeholder="Confirmation new password"
                 />
-                <Button disabled={!(formik.isValid && formik.dirty)}>
-                  Submit
-                </Button>
+                <Button disabled={!(formik.isValid && formik.dirty)}>Submit</Button>
               </Form>
             </>
           )}
@@ -62,7 +64,39 @@ const resetPasswordPage = () => {
   );
 };
 
-export default resetPasswordPage;
+export default AuthRoute(ResetPasswordPage);
+
+export const getServerSideProps = async (context) => {
+  let resetPassword = false;
+  const headers = {
+    headers: {
+      Cookie: `tokenPassword=${context.params.token};`,
+    },
+  };
+  try {
+    const checkToken = await axios.patch('/users/check-token', { token: 'password' }, headers);
+    if (checkToken.data.statusCode === 200) {
+      resetPassword = true;
+    } else {
+      return {
+        redirect: {
+          destination: '/auth/register',
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    return {
+      redirect: {
+        destination: '/auth/register',
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: { resetPassword, token: context.params.token },
+  };
+};
 
 // START === STYLING CURRENT PAGE
 

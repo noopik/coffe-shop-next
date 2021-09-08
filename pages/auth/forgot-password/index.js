@@ -7,6 +7,8 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useEffect, useState } from 'react';
 import router from 'next/router';
+import { forgotPassword as forgotPasswordUser } from '../../../src/redux/action/userAction';
+import AuthRoute from '../../../src/components/hoc/AuthRoute';
 
 const ForgotPasswordPage = () => {
   const [reSend, setReSend] = useState();
@@ -15,7 +17,6 @@ const ForgotPasswordPage = () => {
   const [btnSend, setbtnSend] = useState('');
   const [bntResend, setbntResend] = useState('');
   const reSendEmail = () => {
-    console.log('send email again');
     setReSend(true);
     countDown();
   };
@@ -70,7 +71,7 @@ const ForgotPasswordPage = () => {
             }}
             validationSchema={validate}
             onSubmit={(values, { resetForm }) => {
-              console.log(values);
+              forgotPasswordUser(values, router);
               setEmail(values.email);
               setReSend(true);
               setCounter('Wait 2 minute again');
@@ -93,13 +94,12 @@ const ForgotPasswordPage = () => {
                     <p className="text-error">Email Invalid</p>
                   )}
                 </div>
-
                 {/* router.push('/auth/reset-password') */}
                 <Button
                   theme="orange"
                   className="button"
                   type="submit"
-                  onClick={() => countDown()}
+                  onClick={() => (formik.isValid && formik.dirty ? countDown() : '')}
                   disabled={btnSend}
                 >
                   Send
@@ -130,7 +130,7 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default AuthRoute(ForgotPasswordPage);
 
 // START === STYLING CURRENT PAGE
 
