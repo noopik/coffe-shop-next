@@ -23,7 +23,7 @@ const Navbar = (props) => {
   const [show, setShow] = useState(false);
   const [showPopover, setShowPopover] = useState(false);
   const router = useRouter();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(router.query.search || '');
   const formatUrl = ([first, ...last]) => {
     return first.toUpperCase() + last.join('');
   };
@@ -144,6 +144,7 @@ const Navbar = (props) => {
                 <AuthProfile>
                   <div className="btn searching">
                     <input
+                      value={search}
                       type="text"
                       placeholder="Search"
                       onChange={(e) => setSearch(e.target.value)}
