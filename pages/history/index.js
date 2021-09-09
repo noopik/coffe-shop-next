@@ -1,11 +1,12 @@
 import Pagination from '@material-ui/lab/Pagination';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { IMG_BGHistoryPage, IMG_DummyProductCard } from '../../src/assets';
+import { IMGDummyProduct1, IMG_BGHistoryPage, IMG_DummyProductCard } from '../../src/assets';
 import PrivateRoute from '../../src/components/hoc/PrivateRoute';
 import { ModalAlertValidation } from '../../src/components/molecules';
 import { Breakpoints } from '../../src/utils';
+import axiosConfig from '../../src/config/Axios'
 
 const HistoryPage = () => {
   const [page, setPage] = useState(1);
@@ -15,9 +16,18 @@ const HistoryPage = () => {
   };
   const [showModal, setShowModal] = useState(false);
 
-  const [dataHistory, setDataHistory] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
+  const [dataHistory, setDataHistory] = useState([]);
+
+  useEffect(() => {
+    axiosConfig.get('/history/?limit=10')
+    .then((res) => {
+      console.log(res.data.data);
+      setDataHistory(res.data.data)
+    })
+    .catch(err => {
+      console.log(err.response);
+    })
+  }, [])
 
   return (
     <StyledHistoryPage>
@@ -31,7 +41,7 @@ const HistoryPage = () => {
         <h1 className="heading">Let’s see what you have bought!</h1>
         <p className="sub-heading">Click card to delete item</p>
         <div className="content-history">
-          {dataHistory.map((index) => {
+          {dataHistory.map((history,index) => {
             return (
               <div
                 className="item"
@@ -42,15 +52,15 @@ const HistoryPage = () => {
               >
                 <div className="image-product">
                   <Image
-                    src={IMG_DummyProductCard}
+                    src={IMGDummyProduct1}
                     alt="name product"
                     layout="fill"
                   />
                 </div>
                 <div className="desc">
-                  <h4 className="title-product">Veggie tomato mix</h4>
-                  <p className="text">IDR 34.000</p>
-                  <p className="text">Delivered to Table 4</p>
+                  <h4 className="title-product">{history.product_name}</h4>
+                  <p className="text">IDR {history.total_price}</p>
+                  <p className="text">{history.status_order}</p>
                 </div>
                 {selected === index && (
                   <div className="btn-wrapper">
