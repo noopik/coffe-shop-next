@@ -1,65 +1,59 @@
 /* eslint-disable @next/next/no-img-element */
-import Pagination from '@material-ui/lab/Pagination';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { IMGDummyProduct1, IMG_BGHistoryPage, IMG_DummyProductCard } from '../../src/assets';
+import { IMG_BGHistoryPage } from '../../src/assets';
 import PrivateRoute from '../../src/components/hoc/PrivateRoute';
-import { ModalAlertValidation } from '../../src/components/molecules';
 import { Breakpoints } from '../../src/utils';
-import axiosConfig from '../../src/config/Axios'
+import axiosConfig from '../../src/config/Axios';
 import { toast } from 'react-toastify';
+import { buttonItemRender, localePagination } from '../../src/utils/utilityPaginantion';
+import Pagination from 'rc-pagination';
+import 'rc-pagination/assets/index.css';
 
 const HistoryPage = () => {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState('');
-  const handlePagination = (event, value) => {
-    setPage(value);
-  };
-  const [showModal, setShowModal] = useState(false);
-
   const [dataHistory, setDataHistory] = useState([]);
+  const [pagination, setPagination] = useState({});
 
   useEffect(() => {
-    axiosConfig.get('/history/?limit=10')
-    .then((res) => {
-      console.log(res.data.data);
-      setDataHistory(res.data.data)
-    })
-    .catch(err => {
-      console.log(err.response);
-    })
-  }, [])
+    axiosConfig
+      .get(`/history/?limit=10&page=${page}`)
+      .then((res) => {
+        setDataHistory(res.data.data);
+        setPagination(res.data.pagination);
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  }, [page]);
   const deleteHIstory = async (id) => {
     try {
       await axiosConfig.delete(`/history/${id}`);
       axiosConfig
-        .get('/history/?limit=10')
+        .get(`/history/?limit=10&page=${page}`)
         .then((res) => {
           console.log(res.data.data);
           setDataHistory(res.data.data);
+          setPagination(res.data.pagination);
         })
         .catch((err) => {
           console.log(err.response);
         });
-      toast.success('successfull delete history')
+      toast.success('successfull delete history');
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   return (
     <StyledHistoryPage>
-      <Image
-        src={IMG_BGHistoryPage}
-        alt="background page"
-        layout="fill"
-        className="bg-page"
-      />
+      <Image src={IMG_BGHistoryPage} alt="background page" layout="fill" className="bg-page" />
       <div className="container">
         <h1 className="heading">Let’s see what you have bought!</h1>
         <p className="sub-heading">Click card to delete item</p>
         <div className="content-history">
-          {dataHistory.map((history,index) => {
+          {dataHistory.map((history, index) => {
             return (
               <div
                 className="item"
@@ -107,26 +101,22 @@ const HistoryPage = () => {
         </div>
       </div>
       <div className="pagination">
-        <Pagination
-          className="page"
-          count={10}
-          page={page}
-          onChange={handlePagination}
-        />
+        {Object.keys(pagination).length > 0 && (
+          <Pagination
+            current={page}
+            total={pagination.countData}
+            pageSize={pagination.limit ? pagination.limit : 1}
+            itemRender={buttonItemRender}
+            onChange={(current, pageSize) => setPage(current)}
+            locale={localePagination}
+          />
+        )}
       </div>
-      <ModalAlertValidation
-        show={showModal}
-        onClose={() => setShowModal(false)}
-        actionDelete={() => {
-          console.log('delete item 1');
-          setShowModal(false);
-        }}
-      />
     </StyledHistoryPage>
   );
 };
 
-export default PrivateRoute(HistoryPage,['member','admin']);
+export default PrivateRoute(HistoryPage, ['member', 'admin']);
 
 // START === STYLING CURRENT PAGE
 
@@ -259,6 +249,8 @@ const StyledHistoryPage = styled.div`
     }
   }
   .pagination {
+    position: relative;
+    z-index: 100;
     margin-top: 50px;
     padding: 16px 0;
     display: flex;
