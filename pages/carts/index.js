@@ -55,7 +55,7 @@ const CartsPage = () => {
                     Quantity : {cartValue.cart_stock}
                   </p>
                   <p className="text-utility">
-                    Size : {cartValue.card_size_name}
+                    Size : {cartValue.cart_size_name}
                   </p>
                   <p className="text-utility">
                     Delivery method : {cartValue.cart_deliver_name}

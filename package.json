@@ -32,6 +32,7 @@
     "redux-persist": "^6.0.0",
     "redux-persist-cookie-storage": "^1.0.0",
     "redux-thunk": "^2.3.0",
+    "simple-react-validator": "^1.6.1",
     "socket.io-client": "^4.2.0",
     "styled-components": "^5.3.1",
     "styled-media-query": "^2.1.2",

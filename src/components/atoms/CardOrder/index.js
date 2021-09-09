@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-const CardOrder = ({ nameProduct, total, price, imageProduct }) => {
+const CardOrder = ({ nameProduct, total, price, imageProduct,size }) => {
   // Mata Uang Rupiah
   const formatter = new Intl.NumberFormat(['ban', 'id']);
 
@@ -12,7 +12,7 @@ const CardOrder = ({ nameProduct, total, price, imageProduct }) => {
       <div className="desc-product">
         <p className="paragraph">{nameProduct}</p>
         <p className="paragraph">x {total}</p>
-        <p className="paragraph">Regular</p>
+        <p className="paragraph">{size}</p>
       </div>
       <p className="price">IDR {formatter.format(price)}</p>
     </StyledCardOrder>
@@ -24,13 +24,14 @@ CardOrder.propTypes = {
   total: PropTypes.number.isRequired,
   price: PropTypes.number,
   imageProduct: PropTypes.string.isRequired,
+  size: PropTypes.string.isRequired,
 };
 CardOrder.defaultProps = {
   nameProduct: 'Product Name',
   total: 20,
   price: 15000,
-  imageProduct:
-    'https://upload.wikimedia.org/wikipedia/commons/a/a5/Homemade_Dalgona_Coffee.jpg',
+  imageProduct: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Homemade_Dalgona_Coffee.jpg',
+  size: 'Regular',
 };
 
 export default CardOrder;

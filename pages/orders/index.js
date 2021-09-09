@@ -1,34 +1,36 @@
-import Pagination from '@material-ui/lab/Pagination';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import styled from 'styled-components';
-import {
-  ICBank,
-  ICCars,
-  ICHall,
-  IMG_BGHistoryPage,
-  IMG_DummyProduct,
-  IMG_DummyProductCard,
-} from '../../src/assets';
+import { ICBank, ICCars, ICHall } from '../../src/assets';
 import { CardWraper, Button, CardOrder } from '../../src/components/atoms';
 import PrivateRoute from '../../src/components/hoc/PrivateRoute';
-import { ModalAlertValidation } from '../../src/components/molecules';
 import { Breakpoints } from '../../src/utils';
+import { useSelector } from 'react-redux';
+import SimpleReactValidator from 'simple-react-validator';
+import { createOrder } from '../../src/redux/action/orderAction';
+import router from 'next/router';
+import { useDispatch } from 'react-redux';
 
-const OrdersPage = () => {
-  const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState('');
-  const handlePagination = (event, value) => {
-    setPage(value);
+const OrdersPage = ({ user, auth }) => {
+  const dispatch = useDispatch();
+  const validator = useRef(new SimpleReactValidator({ className: 'text-validator' }));
+  const [formOrder, setFormOrder] = useState({
+    address: user.address,
+    phone_number: user.phone_number,
+    payment: '',
+  });
+  const formOrderHandler = (e) => {
+    setFormOrder((oldValue) => ({ ...oldValue, [e.target.name]: e.target.value }));
   };
-  const [showModal, setShowModal] = useState(false);
-
-  const [dataHistory, setDataHistory] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
-  // Mata Uang Rupiah
+  const { cart_multi } = useSelector((state) => state.cart);
+  const totalPrice = (cart_multi) => {
+    let price = 0;
+    cart_multi.forEach((cartValue) => {
+      price += cartValue.total_price;
+    });
+    return price;
+  };
   const formatter = new Intl.NumberFormat(['ban', 'id']);
-
   return (
     <StyledHistoryPage>
       <div className="container">
@@ -37,28 +39,21 @@ const OrdersPage = () => {
           <CardWraper className="order-summary-wrapper">
             <h3 className="heading-summary">Order Summary</h3>
             <div className="body-card-summary">
-              <CardOrder nameProduct="Soto" total={20} price={25000} />
-              <CardOrder nameProduct="Soto" total={20} price={25000} />
-              <CardOrder nameProduct="Soto" total={20} price={25000} />
-              <CardOrder nameProduct="Bakso" total={20} price={25000} />
-              <CardOrder nameProduct="Ayam" total={20} price={25000} />
+              {cart_multi.map((cartValue, index) => (
+                <CardOrder
+                  nameProduct={cartValue.product_name}
+                  key={index}
+                  imageProduct={`${process.env.NEXT_PUBLIC_API_URL}/${cartValue.product_img_product}`}
+                  total={cartValue.cart_stock}
+                  price={cartValue.total_price}
+                  size={`Size : ${cartValue.cart_size_name}`}
+                />
+              ))}
             </div>
             <div className="divider" />
-            <div className="row">
-              <p className="sub-heading">SUBTOTAL</p>
-              <p className="sub-heading">IDR {formatter.format(100000)}</p>
-            </div>
-            <div className="row">
-              <p className="sub-heading">TAX & FEES</p>
-              <p className="sub-heading">IDR {formatter.format(100000)}</p>
-            </div>
-            <div className="row">
-              <p className="sub-heading">SHIPPING</p>
-              <p className="sub-heading">IDR {formatter.format(100000)}</p>
-            </div>
             <div className="total">
               <p className="text-bold">TOTAL</p>
-              <p className="text-bold">IDR {formatter.format(50000)}</p>
+              <p className="text-bold">IDR {formatter.format(totalPrice(cart_multi))}</p>
             </div>
           </CardWraper>
         </div>
@@ -71,25 +66,23 @@ const OrdersPage = () => {
               </div>
               <div className="body-section-row">
                 <CardWraper className="address-wrapper">
-                  <div className="row">
-                    <label htmlFor="receiver">Delivery to</label>
-                    <input
-                      type="text"
-                      name="receiver"
-                      id="receiver"
-                      defaultValue=" Iskandar Street"
-                      placeholder="Receiver name"
-                    />
-                  </div>
-                  <textarea name="address" placeholder="Address">
-                    Km 5 refinery road oppsite re public road, effurun, Jakarta
-                  </textarea>
+                  <textarea
+                    onChange={formOrderHandler}
+                    onFocus={() => validator.current.showMessageFor('address')}
+                    value={formOrder.address}
+                    name="address"
+                    placeholder="Address"
+                  ></textarea>
+                  {validator.current.message('address', formOrder.address, 'required|min:10')}
                   <input
+                    onChange={formOrderHandler}
+                    onFocus={() => validator.current.showMessageFor(`phone_number`)}
                     type="text"
-                    name="phone"
-                    defaultValue="0895658745"
+                    name="phone_number"
+                    value={formOrder.phone_number}
                     placeholder="Your phone number"
                   />
+                  {validator.current.message('phone_number', formOrder.phone_number, 'required|numeric|min:11|max:13')}
                 </CardWraper>
               </div>
             </div>
@@ -100,7 +93,7 @@ const OrdersPage = () => {
               <div className="body-section-row">
                 <CardWraper className="method-wrapper">
                   <label htmlFor="card">
-                    <input type="radio" name="receiver" id="card" />
+                    <input type="radio" onChange={formOrderHandler} name="payment" value="credit_card" id="card" />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
@@ -108,7 +101,7 @@ const OrdersPage = () => {
                     <p>Card</p>
                   </label>
                   <label htmlFor="bankAccount">
-                    <input type="radio" name="receiver" id="bankAccount" />
+                    <input type="radio" onChange={formOrderHandler} name="payment" value="bank" id="bankAccount" />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
@@ -116,15 +109,22 @@ const OrdersPage = () => {
                     <p>Bank account</p>
                   </label>
                   <label htmlFor="cod">
-                    <input type="radio" name="receiver" id="cod" />
+                    <input type="radio" onChange={formOrderHandler} name="payment" value="delivery" id="cod" />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
                     <Image src={ICCars} alt="bank" width={40} height={40} />
                     <p>Cash on delivery</p>
                   </label>
+                  {validator.current.message('payment', formOrder.payment, 'required')}
                 </CardWraper>
-                <Button theme="brown" className="button-pay">
+                <Button
+                  type="button"
+                  onClick={() => dispatch(createOrder(cart_multi, formOrder, totalPrice(cart_multi), router))}
+                  disabled={validator.current.allValid() && totalPrice(cart_multi) > 0 ? false : true}
+                  theme="brown"
+                  className="button-pay"
+                >
                   Confirm and Pay
                 </Button>
               </div>
@@ -160,6 +160,10 @@ const StyledHistoryPage = styled.div`
     ${Breakpoints.lessThan('xsm')`
       background-color: pink;
     `} */
+  .text-validator {
+    color: red;
+    fonr-size: 10px;
+  }
   .container {
     background-image: url('/BGPaymentsPage.png');
     background-repeat: no-repeat;

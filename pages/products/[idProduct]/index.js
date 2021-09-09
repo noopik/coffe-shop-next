@@ -12,6 +12,7 @@ import { ModalAlertValidation } from '../../../src/components/molecules';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
 import { addOrderCart } from '../../../src/redux/action/cartAction';
+import { deleteProduct } from '../../../src/redux/action/productAction';
 
 export const getServerSideProps = async (ctx) => {
   try {
@@ -33,7 +34,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
     cart_deliver_id: null,
     cart_deliver_name: '',
     cart_size_id: null,
-    card_size_name: '',
+    cart_size_name: '',
     cart_stock: 1,
     cart_time_dineIn: null,
     product_price: detailProduct.price,
@@ -118,7 +119,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
                           setCart((oldVal) => ({
                             ...oldVal,
                             cart_size_id: size.size_id,
-                            card_size_name: size.size_name,
+                            cart_size_name: size.size_name,
                           }))
                         }
                         type="radio"
@@ -217,7 +218,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
         onClose={() => setShowModal(false)}
         actionDelete={() => {
           // Menghapus data terpilih
-          console.log('delete item 1');
+          deleteProduct(detailProduct.product_id,router)
           setShowModal(false);
         }}
       />
