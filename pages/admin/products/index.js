@@ -1,22 +1,24 @@
 import styled from 'styled-components';
-import {Breakpoints} from '../../../src/utils';
+import { Breakpoints } from '../../../src/utils';
 import PrivateRoute from '../../../src/components/hoc/PrivateRoute';
-import {Breadcrumb, Breadcrumbs, Button} from '../../../src/components/atoms';
-import {IL_IMGDefaultCamera} from '../../../src/assets';
+import { Breadcrumb, Breadcrumbs, Button } from '../../../src/components/atoms';
+import { IL_IMGDefaultCamera } from '../../../src/assets';
 import Image from 'next/image';
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
-import {Formik, Form} from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import 'react-datepicker/dist/react-datepicker.css';
 // import axios from 'axios';
 import axiosConfig from '../../../src/config/Axios';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 
 export const getServerSideProps = async () => {
   try {
-    const resultSizes = await axiosConfig.get(`${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`);
+    const resultSizes = await axiosConfig.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
+    );
     const resultDeliveries = await axiosConfig.get(
       `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
     );
@@ -43,7 +45,7 @@ export const getServerSideProps = async () => {
 
 const AddProducts = (props) => {
   const sizes = props.sizes;
-  const {push} = useRouter()
+  const { push } = useRouter();
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [startDate, setStartDate] = useState('');
@@ -57,9 +59,16 @@ const AddProducts = (props) => {
 
   const validate = Yup.object({
     name: Yup.string().required('Please insert product name').min(3).max(50),
-    price: Yup.number().typeError('Price must be number').required('Please insert product price'),
-    description: Yup.string().required('Please insert product description').min(10).max(150),
-    stock: Yup.number('').typeError('Stock must be number').required('Please insert product stock'),
+    price: Yup.number()
+      .typeError('Price must be number')
+      .required('Please insert product price'),
+    description: Yup.string()
+      .required('Please insert product description')
+      .min(10)
+      .max(150),
+    stock: Yup.number('')
+      .typeError('Stock must be number')
+      .required('Please insert product stock'),
     // sizes: Yup.array().min(1),
     // deliveries: Yup.array().min(1),
     category: Yup.string().required('Please select product category'),
@@ -71,14 +80,16 @@ const AddProducts = (props) => {
       setarrSize((old) => {
         return old + 1;
       });
-      document.getElementById(`itemSize${e.target.value}`).className += ' select';
+      document.getElementById(`itemSize${e.target.value}`).className +=
+        ' select';
     } else {
       const index = arrSize.indexOf(+e.target.value);
       arrSize.splice(index, 1);
       setarrSize((old) => {
         return old - 1;
       });
-      document.getElementById(`itemSize${e.target.value}`).className = 'size-item';
+      document.getElementById(`itemSize${e.target.value}`).className =
+        'size-item';
     }
   };
 
@@ -89,14 +100,16 @@ const AddProducts = (props) => {
       setArrDelivery((old) => {
         return old + 1;
       });
-      document.getElementById(`methodItem${e.target.value}`).className += ' select';
+      document.getElementById(`methodItem${e.target.value}`).className +=
+        ' select';
     } else {
       const index = arrDeliveries.indexOf(+e.target.value);
       arrDeliveries.splice(index, 1);
       setArrDelivery((old) => {
         return old - 1;
       });
-      document.getElementById(`methodItem${e.target.value}`).className = 'method-item';
+      document.getElementById(`methodItem${e.target.value}`).className =
+        'method-item';
     }
   };
 
@@ -146,7 +159,7 @@ const AddProducts = (props) => {
             category: '',
           }}
           validationSchema={validate}
-          onSubmit={(values, {resetForm}) => {
+          onSubmit={(values, { resetForm }) => {
             values.image = image;
             values.startDate = startDate;
             values.endDate = endDate;
@@ -172,7 +185,7 @@ const AddProducts = (props) => {
               .post(`${process.env.NEXT_PUBLIC_API_URL}/products`, formData)
               .then(() => {
                 toast.success('Successfully add product');
-                push('/products')
+                push('/products');
                 resetForm();
                 // setImage('');
                 // values.sizes.map((idSize) => {
@@ -210,13 +223,23 @@ const AddProducts = (props) => {
                   <div className="image">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     {/* <img src={IL_IMGDefaultCamera} alt="image product" /> */}
-                    <Image src={image ? URL.createObjectURL(image) : IL_IMGDefaultCamera} alt="image" layout="fill" />
+                    <Image
+                      src={
+                        image ? URL.createObjectURL(image) : IL_IMGDefaultCamera
+                      }
+                      alt="image"
+                      layout="fill"
+                    />
                   </div>
                 </div>
-                {errImg && <label className="error text-center block mb-5">{errImg}</label>}
-                <Button type="button" className="btn" theme="black">
+                {errImg && (
+                  <label className="error text-center block mb-5">
+                    {errImg}
+                  </label>
+                )}
+                {/* <Button type="button" className="btn" theme="black">
                   Take a Picture
-                </Button>
+                </Button> */}
                 <div className="btn-upload-image">
                   <Button type="button" className="">
                     Choose from Gallery
@@ -225,7 +248,10 @@ const AddProducts = (props) => {
                       className="input-file"
                       accept="image/jpeg, image/png"
                       onChange={(e) => {
-                        if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+                        if (
+                          e.target.files[0].type === 'image/png' ||
+                          e.target.files[0].type === 'image/jpeg'
+                        ) {
                           if (e.target.files[0].size > 1048576 * 2) {
                             seterrImg('max size file is 2mb');
                             setImage('');
@@ -245,7 +271,11 @@ const AddProducts = (props) => {
                 <div className="select-section">
                   <h3 className="heading">Delivery Hour :</h3>
                   <div className="select-date-time">
-                    {startDate === '' && <label className="error">Please select start date delivery</label>}
+                    {startDate === '' && (
+                      <label className="error">
+                        Please select start date delivery
+                      </label>
+                    )}
                     <DatePicker
                       className="select-custom"
                       id="startDate"
@@ -262,7 +292,11 @@ const AddProducts = (props) => {
                     />
                   </div>
                   <div className="select-date-time">
-                    {endDate === '' && <label className="error">Please select end date delivery</label>}
+                    {endDate === '' && (
+                      <label className="error">
+                        Please select end date delivery
+                      </label>
+                    )}
                     <DatePicker
                       className="select-custom"
                       id="endDate"
@@ -288,7 +322,9 @@ const AddProducts = (props) => {
                     value={formik.values.stock}
                   />
                 </div>
-                {formik.errors.stock && <label className="error">{formik.errors.stock}</label>}
+                {formik.errors.stock && (
+                  <label className="error">{formik.errors.stock}</label>
+                )}
               </div>
               <div className="right-side">
                 <div className="input-wrapper">
@@ -301,8 +337,14 @@ const AddProducts = (props) => {
                     value={formik.values.name}
                     placeholder="Type product name min. 50 characters"
                   />
-                  <div className={`line-bottom ${formik.errors.name && 'is-invalid'}`} />
-                  {formik.errors.name && <label className="error">{formik.errors.name}</label>}
+                  <div
+                    className={`line-bottom ${
+                      formik.errors.name && 'is-invalid'
+                    }`}
+                  />
+                  {formik.errors.name && (
+                    <label className="error">{formik.errors.name}</label>
+                  )}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Price :</label>
@@ -314,8 +356,14 @@ const AddProducts = (props) => {
                     value={formik.values.price}
                     placeholder="Type the price"
                   />
-                  <div className={`line-bottom ${formik.errors.price && 'is-invalid'}`} />
-                  {formik.errors.price && <label className="error">{formik.errors.price}</label>}
+                  <div
+                    className={`line-bottom ${
+                      formik.errors.price && 'is-invalid'
+                    }`}
+                  />
+                  {formik.errors.price && (
+                    <label className="error">{formik.errors.price}</label>
+                  )}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Description :</label>
@@ -327,18 +375,29 @@ const AddProducts = (props) => {
                     value={formik.values.description}
                     placeholder="Describe your product min. 150 characters"
                   />
-                  <div className={`line-bottom ${formik.errors.description && 'is-invalid'}`} />
-                  {formik.errors.description && <label className="error">{formik.errors.description}</label>}
+                  <div
+                    className={`line-bottom ${
+                      formik.errors.description && 'is-invalid'
+                    }`}
+                  />
+                  {formik.errors.description && (
+                    <label className="error">{formik.errors.description}</label>
+                  )}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input product size :</label>
-                  <p className="paragraph">Click size you want to use for this product</p>
+                  <p className="paragraph">
+                    Click size you want to use for this product
+                  </p>
                   <div className="select-group">
                     {sizes &&
                       sizes.map((size, index) => (
                         <div key={index}>
                           <label htmlFor={`size${size.size_id}`}>
-                            <div className="size-item" id={`itemSize${size.size_id}`}>
+                            <div
+                              className="size-item"
+                              id={`itemSize${size.size_id}`}
+                            >
                               <p>{size.size_name}</p>
                             </div>
                           </label>
@@ -352,17 +411,26 @@ const AddProducts = (props) => {
                         </div>
                       ))}
                   </div>
-                  {ArrSize < 1 && <label className="error">Please select size for this product</label>}
+                  {ArrSize < 1 && (
+                    <label className="error">
+                      Please select size for this product
+                    </label>
+                  )}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input delivery methods :</label>
-                  <p className="paragraph">Click methods you want to use for this product</p>
+                  <p className="paragraph">
+                    Click methods you want to use for this product
+                  </p>
                   <div className="select-group">
                     {deliveries &&
                       deliveries.map((delivery, index) => (
                         <div key={index}>
                           <label htmlFor={`delivery${delivery.delivery_id}`}>
-                            <div className="method-item" id={`methodItem${delivery.delivery_id}`}>
+                            <div
+                              className="method-item"
+                              id={`methodItem${delivery.delivery_id}`}
+                            >
                               <p>{delivery.delivery_name}</p>
                             </div>
                           </label>
@@ -375,13 +443,23 @@ const AddProducts = (props) => {
                         </div>
                       ))}
                   </div>
-                  {ArrDelivery < 1 && <label className="error">Please select delivery for this product</label>}
+                  {ArrDelivery < 1 && (
+                    <label className="error">
+                      Please select delivery for this product
+                    </label>
+                  )}
                 </div>
                 <div className="input-wrapper">
                   <label className="heading">Input category :</label>
-                  <p className="paragraph">Select category you want to use for this product</p>
+                  <p className="paragraph">
+                    Select category you want to use for this product
+                  </p>
                   <div className="input-wrapper">
-                    <StyledSelect name="category" id="" onChange={formik.handleChange}>
+                    <StyledSelect
+                      name="category"
+                      id=""
+                      onChange={formik.handleChange}
+                    >
                       <option id="category-opt" value="" selected>
                         select category
                       </option>
@@ -392,7 +470,9 @@ const AddProducts = (props) => {
                           </option>
                         ))}
                     </StyledSelect>
-                    {formik.errors.category && <label className="error">{formik.errors.category}</label>}
+                    {formik.errors.category && (
+                      <label className="error">{formik.errors.category}</label>
+                    )}
                   </div>
                 </div>
                 <div className="button-action">
@@ -400,13 +480,21 @@ const AddProducts = (props) => {
                   {/* <button type="submit">Submit</button> */}
                   <Button
                     theme={
-                      !(formik.isValid && formik.dirty) || !image || ArrSize < 1 || ArrDelivery < 1 || startDate === ''
+                      !(formik.isValid && formik.dirty) ||
+                      !image ||
+                      ArrSize < 1 ||
+                      ArrDelivery < 1 ||
+                      startDate === ''
                         ? 'gray'
                         : 'brown'
                     }
                     type="submit"
                     disabled={
-                      !(formik.isValid && formik.dirty) || !image || ArrSize < 1 || ArrDelivery < 1 || startDate === ''
+                      !(formik.isValid && formik.dirty) ||
+                      !image ||
+                      ArrSize < 1 ||
+                      ArrDelivery < 1 ||
+                      startDate === ''
                     }
                   >
                     Save Product
