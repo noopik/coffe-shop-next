@@ -5,7 +5,6 @@ import IMG_DummyProductCard from './IMG_DummyCard.png';
 import IMG_AvatarDefault from './user-default.png';
 import IMG_BGHistoryPage from './IMG_BgHistoryPage.png';
 import IMG_DefaultProduct from './default.jpg';
-import IMG_Ava from './IMG_Ava.png'
 import IMG_Ava from './IMG_Ava.png';
 import IMGGLobe from './IMG_Global.png';
 import LogoNetflix from './logo-netflix.png';
