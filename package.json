@@ -37,6 +37,7 @@
     "styled-components": "^5.3.1",
     "styled-media-query": "^2.1.2",
     "sweetalert": "^2.1.2",
+    "swiper": "^7.0.3",
     "yup": "^0.32.9"
   },
   "devDependencies": {
