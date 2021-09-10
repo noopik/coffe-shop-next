@@ -1,22 +1,61 @@
-import styled from 'styled-components';
-import PublicRoute from '../../src/components/hoc/PublicRoute';
-import { Breakpoints } from '../../src/utils';
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image from 'next/image';
-import { Button } from '../../src/components/atoms';
-import { IMG_DummyProductCard } from '../../src/assets';
-import { useState } from 'react';
 import router from 'next/router';
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from 'rc-pagination';
+import 'rc-pagination/assets/index.css';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { IMG_DummyProductCard } from '../../src/assets';
+import { Button, CardProduct } from '../../src/components/atoms';
+import PublicRoute from '../../src/components/hoc/PublicRoute';
+import {
+  getCategories,
+  getProducts,
+  getProductsById,
+} from '../../src/redux/action/productAction';
 
-const ProductsPage = () => {
-  const [dataProducts, setDataProduct] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+import { Breakpoints } from '../../src/utils';
+
+import {
+  buttonItemRender,
+  localePagination,
+} from '../../src/utils/utilityPaginantion';
+
+const ProductsPage = ({ user, auth }) => {
+  const [dataProducts, setDataProduct] = useState({});
+  const [dataCategories, setDataCategories] = useState({});
   const [page, setPage] = useState(1);
-
-  // START === HANDLE PAGINATION
-  const handlePagination = (event, value) => {
-    setPage(value);
-  };
-  // END === HANDLE PAGINATION
+  const [sortASC, setSortASC] = useState(true);
+  const [categoryId, setCategoryId] = useState(null);
+  useEffect(() => {
+    setPage(1);
+  }, [categoryId]);
+  useEffect(async () => {
+    if (categoryId === null) {
+      const { data, pagination } = await getProducts(
+        10,
+        sortASC ? 'ASC' : 'DESC ',
+        page,
+        router.query.search || '',
+        ''
+      );
+      setDataProduct((oldVal) => ({ ...oldVal, data, pagination }));
+    } else if (categoryId !== null) {
+      const { data, pagination } = await getProductsById(
+        categoryId,
+        10,
+        sortASC ? 'ASC' : 'DESC ',
+        page,
+        router.query.search || '',
+        ''
+      );
+      setDataProduct((oldVal) => ({ ...oldVal, data, pagination }));
+    }
+  }, [categoryId, page, sortASC, router.query?.search]);
+  useEffect(async () => {
+    const { data } = await getCategories('DESC', 'off');
+    setDataCategories((oldVal) => ({ ...oldVal, data }));
+  }, []);
   return (
     <StyledProductsPage className="container">
       <aside className="side-left">
@@ -39,20 +78,6 @@ const ProductsPage = () => {
             <h3 className="heading-bold">FNPR15RG</h3>
             <p className="paragraph">Valid untill October 10th 2020</p>
           </div>
-          {/* <div className="card layer">
-            <div className="image-wrapper">
-              <Image src={IMG_DummyProductCard} alt="image" layout="fill" />
-            </div>
-            <h2 className="heading">Beef Spaghetti</h2>
-            <h2 className="heading">20% OFF</h2>
-            <p className="paragraph promo-desc">
-              Buy 1 Choco Oreo and get 20% off for Beef Spaghetti
-            </p>
-            <div className="divider" />
-            <p className="paragraph">COUPON CODE</p>
-            <h3 className="heading-bold">FNPR15RG</h3>
-            <p className="paragraph">Valid untill October 10th 2020</p>
-          </div> */}
         </div>
         <Button theme="brown">Apply Coupon</Button>
         <div className="term-section">
@@ -67,75 +92,98 @@ const ProductsPage = () => {
       </aside>
       <main>
         <div className="navigation-category">
-          <div className="item active">
-            <h5 className="heading-nav ">Favorite Product</h5>
+          <div
+            onClick={() => setCategoryId(null)}
+            className={`item ${categoryId === null ? 'active' : ''}`}
+          >
+            <h5 className="heading-nav ">All Products</h5>
           </div>
-          <div className="item">
-            <h5 className="heading-nav ">Coffee</h5>
-          </div>
-          <div className="item">
-            <h5 className="heading-nav ">Non Coffee</h5>
-          </div>
-          <div className="item">
-            <h5 className="heading-nav ">Foods</h5>
-          </div>
-          <div className="item">
-            <h5 className="heading-nav ">Add-on</h5>
-          </div>
+          {dataCategories?.data?.map((category, index) => (
+            <div
+              key={index}
+              onClick={() => setCategoryId(category.category_id)}
+              className={`item ${
+                category.category_id === categoryId ? 'active' : ''
+              }`}
+            >
+              <h5 className="heading-nav ">{category.category_name}</h5>
+            </div>
+          ))}
         </div>
+        <SortFilter asc={sortASC}>
+          <div
+            className="icon"
+            onClick={() => (sortASC ? setSortASC(false) : setSortASC(true))}
+          >
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7.46958 0H5.33419L0.105469 14.9391H3.07779L3.86332 12.6947H8.88152L9.6558 14.9391H12.6235L7.46958 0ZM4.84523 9.88924L6.39042 5.47425L7.91367 9.88924H4.84523Z"
+                fill="#6A4029"
+              />
+              <path
+                d="M33.9812 25.2994L28.6508 30.6298V0H25.8454V30.6298L20.515 25.2994L18.5312 27.2831L27.2481 36L35.965 27.2831L33.9812 25.2994Z"
+                fill="#6A4029"
+              />
+              <path
+                d="M12.8 21.041H0.0351562V23.8465H8.58094L0.0351562 33.7764V35.9803H12.6597V33.1748H4.25419L12.8 23.245V21.041Z"
+                fill="#6A4029"
+              />
+            </svg>
+          </div>
+        </SortFilter>
         <div className="content-products">
-          {dataProducts.map((index) => {
+          {dataProducts?.data?.map((product, index) => {
             return (
-              <div
-                className="card"
+              <CardProduct
+                name={product.product_name}
+                price={parseInt(product.price)}
+                image={`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`}
+                onClickCard={() =>
+                  router.push(`/products/${product.product_id}`)
+                }
+                onClickEdit={() =>
+                  router.push(`/admin/products/${product.product_id}`)
+                }
                 key={index}
-                onClick={() => router.push(`/products/${index}`)}
-              >
-                <div className="image">
-                  <Image
-                    src={IMG_DummyProductCard}
-                    alt="name product"
-                    layout="fill"
-                  />
-                </div>
-                <h4 className="title-product">Veggie tomato mix</h4>
-                <p className="price">IDR 34.000</p>
-                {/* Jika role sebagai admin */}
-                {true && (
-                  <div
-                    className="btn-edit"
-                    onClick={() => router.push(`/admin/products/${index}`)}
-                  >
-                    <svg
-                      width="14"
-                      height="15"
-                      viewBox="0 0 14 15"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10.0779 1.54314C10.2368 1.37094 10.4255 1.23435 10.6332 1.14116C10.8409 1.04796 11.0635 1 11.2883 1C11.513 1 11.7356 1.04796 11.9433 1.14116C12.151 1.23435 12.3397 1.37094 12.4986 1.54314C12.6576 1.71533 12.7837 1.91976 12.8697 2.14474C12.9557 2.36973 13 2.61086 13 2.85439C13 3.09791 12.9557 3.33904 12.8697 3.56403C12.7837 3.78901 12.6576 3.99344 12.4986 4.16563L4.32855 13.0166L1 14L1.90779 10.3941L10.0779 1.54314Z"
-                        stroke="white"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
+                className="item"
+                access={auth && user && user.roles === 'admin' ? true : false}
+              />
             );
           })}
           {dataProducts.length === 0 && <h1>No Product</h1>}
         </div>
         <div className="pagination">
-          <Pagination
-            className="page"
-            count={10}
-            page={page}
-            onChange={handlePagination}
-          />
+          {dataProducts?.pagination && (
+            <Pagination
+              current={page}
+              total={dataProducts.pagination.countData}
+              pageSize={
+                dataProducts.pagination.limit
+                  ? dataProducts.pagination.limit
+                  : 1
+              }
+              itemRender={buttonItemRender}
+              onChange={(current, pageSize) => setPage(current)}
+              locale={localePagination}
+            />
+          )}
         </div>
+        {auth && user && user.roles === 'admin' && (
+          <div className="btn-create-product-wrapper">
+            <Button
+              theme="brown"
+              onClick={() => router.push('/admin/products')}
+            >
+              Add new product
+            </Button>
+          </div>
+        )}
       </main>
     </StyledProductsPage>
   );
@@ -274,7 +322,7 @@ const StyledProductsPage = styled.div`
     `}
     .navigation-category {
       display: flex;
-      margin-bottom: 70px;
+      margin-bottom: 20px;
       justify-content: space-between;
       ${Breakpoints.lessThan('xl')`
         flex-wrap: wrap;
@@ -312,86 +360,33 @@ const StyledProductsPage = styled.div`
         }
       }
     }
+
     .content-products {
       display: grid;
       grid-template-columns: auto auto auto auto auto;
       width: 100%;
-      gap: 55px;
+      gap: 50px;
       ${Breakpoints.lessThan('2xl')`
-        grid-template-columns: auto auto auto auto;
+        grid-template-columns: auto auto auto; 
       `}
       ${Breakpoints.lessThan('xl')`
-        grid-template-columns: auto auto auto;
-      `}
-      ${Breakpoints.lessThan('lg')`
-        grid-template-columns: auto auto;
-      `}
-      ${Breakpoints.lessThan('md')`
-        grid-template-columns: auto auto auto;
+        grid-template-columns: auto auto ;
       `}
       ${Breakpoints.lessThan('sm')`
-        grid-template-columns: auto auto;
+        grid-template-columns: auto ;
       `}
-      .card {
-        background: #ffffff;
-        box-shadow: 0px 30px 60px rgba(57, 57, 57, 0.1);
-        border-radius: 30px;
-        width: max-content;
-        padding: 21px;
-        font-family: Poppins;
-        position: relative;
-        .image {
-          position: relative;
-          margin: 0 auto;
-          margin-top: -50px;
-          width: 100px;
-          height: 100px;
-          img {
-            object-fit: cover;
-            border-radius: 100%;
-          }
-        }
-        .title-product {
-          width: 150px;
-          font-style: normal;
-          font-weight: 900;
-          font-size: 22px;
-          line-height: 101.34%;
-          text-align: center;
-          color: #000000;
-          margin: 10px 0;
-        }
-        .price {
-          font-weight: bold;
-          font-size: 17px;
-          line-height: 25px;
-          text-align: center;
-          color: #6a4029;
-        }
-        .btn-edit {
-          width: 40px;
-          height: 40px;
-          background-color: #6a4029;
-          position: absolute;
-          bottom: -10px;
-          right: -10px;
-          border-radius: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          &:hover {
-            cursor: pointer;
-          }
-        }
-        &:hover {
-          cursor: pointer;
-        }
+      .item {
+        width: 100%;
       }
     }
     .pagination {
       margin-top: 50px;
       display: flex;
       justify-content: flex-end;
+    }
+    .btn-create-product-wrapper {
+      background-color: yellow;
+      margin: 50px 0;
     }
   }
   /* GLOBAL CURRENT PAGE */
@@ -403,5 +398,17 @@ const StyledProductsPage = styled.div`
     line-height: 18px;
     text-align: center;
     color: #000000;
+  }
+`;
+
+const SortFilter = styled.div`
+  margin-bottom: 60px;
+  .icon {
+    svg {
+      transform: ${({ asc }) => asc && 'rotate(180deg)'};
+    }
+    &:hover {
+      cursor: pointer;
+    }
   }
 `;

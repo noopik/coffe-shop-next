@@ -14,57 +14,118 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import axiosConfig from '../../../../src/config/Axios';
 import { ErrorMessage } from 'formik';
+import { useRouter } from 'next/router';
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (context) => {
   try {
-    const resultSizes = await axiosConfig.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/sizes/getsizes?pagination=off`
-    );
+    const { idProduct } = context.query;
+    const resultSizes = await axiosConfig.get('/sizes/getsizes?pagination=off');
     const resultDeliveries = await axiosConfig.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/deliveries/getdeliveries?pagination=off`
+      '/deliveries/getdeliveries?pagination=off'
     );
     const resultCategories = await axiosConfig.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/categories/getcategory?pagination=off`
+      '/categories/getcategory?pagination=off'
     );
+    const resultDataProduct = await axiosConfig.get(`/products/${idProduct}`);
     const sizes = resultSizes.data.data;
     const deliveries = resultDeliveries.data.data;
     const categories = resultCategories.data.data;
+    const product = resultDataProduct.data.data;
     return {
       props: {
         sizes,
         deliveries,
         categories,
+        product,
       },
     };
   } catch (error) {
     console.log(error);
     return {
-      props: {},
+      // props: {},
+      redirect: {
+        permanent: false,
+        destination: '/404',
+      },
     };
   }
 };
 
 const EditProduct = (props) => {
+  const { push, query } = useRouter();
+  const { idProduct } = query;
+  const { product } = props;
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
   const [defaultImage, setDefaultImage] = useState(
-    'https://statik.tempo.co/data/2018/06/03/id_709908/709908_720.jpg'
+    `${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`
   );
-  const [stockCounter, setStockCounter] = useState(1);
+  const [stockCounter, setStockCounter] = useState(product.stock);
+  const [sizeProduct, setsizeProduct] = useState(product.size);
+  const [deliveryProduct, setdeliveryProduct] = useState(product.delivery);
 
   // START = VALIDATION FORM
   const validate = Yup.object({
     name: Yup.string().required('Name product is required'),
     price: Yup.number().required('Price is required'),
     description: Yup.string().required('Description is required'),
-    size: Yup.string().required('Size is required'),
-    method: Yup.string().required('Method payment is required'),
-    category: Yup.string().required('Category is required'),
+    // size: Yup.array().min(1),
+    // method: Yup.array().min(1),
+    // category: Yup.string().required('Please select category product')
   });
   // END = VALIDATION FORM
 
+  const handleSize = (method, data) => {
+    if (method === 'slice') {
+      const index = sizeProduct.indexOf(data);
+      sizeProduct.splice(index, 1);
+      setsizeProduct((old) => {
+        return [...old];
+      });
+    } else {
+      const found = sizeProduct.find(
+        (element) => element.size_id === data.size_id
+      );
+      if (found === undefined) {
+        setsizeProduct((old) => {
+          return [...old, data];
+        });
+        document.getElementById('size-opt').selected = true;
+      } else {
+        setsizeProduct((old) => {
+          return [...old];
+        });
+        document.getElementById('size-opt').selected = true;
+      }
+    }
+  };
+
+  const handleDelivery = (method, data) => {
+    if (method === 'slice') {
+      const index = deliveryProduct.indexOf(data);
+      deliveryProduct.splice(index, 1);
+      setdeliveryProduct((old) => {
+        return [...old];
+      });
+    } else {
+      const found = deliveryProduct.find(
+        (element) => element.delivery_id === data.delivery_id
+      );
+      if (found === undefined) {
+        setdeliveryProduct((old) => {
+          return [...old, data];
+        });
+        document.getElementById('delivery-opt').selected = true;
+      } else {
+        setdeliveryProduct((old) => {
+          return [...old];
+        });
+        document.getElementById('delivery-opt').selected = true;
+      }
+    }
+  };
   // START = HANDLE STOCK LOGIC
   const stockIncrement = () => {
     const increment = stockCounter + 1;
@@ -89,24 +150,22 @@ const EditProduct = (props) => {
   return (
     <StyledEditProduct className="container main">
       <Breadcrumbs>
-        <Breadcrumb title="Favorite & Promo" to="#" />
-        <Breadcrumb title="> Cold Brew" to="#" active />
+        <Breadcrumb title="Products" to="/products" />
+        <Breadcrumb title={`> ${product.product_name}`} to="#" active />
         <Breadcrumb title="> Edit product" to="#" active />
       </Breadcrumbs>
       <Formik
         initialValues={{
-          name: 'COLD BREW',
-          price: 1000,
-          description:
-            'Cold brewing is a method of brewing that combines ground coffee and cool water and uses time instead of heat to extract the flavor. It is brewed in small batches and steeped for as long as 48 hours.',
-          size: '',
-          method: '',
-          category: '',
+          name: product.product_name,
+          price: product.price,
+          description: product.description,
+          size: sizeProduct,
+          method: deliveryProduct,
+          category: product.category_id,
         }}
         validationSchema={validate}
         onSubmit={(values, { resetForm }) => {
           const image = priviewImage ? priviewImage : defaultImage;
-
           if (!image) {
             return Toastify('Images required!', 'error');
           }
@@ -117,23 +176,28 @@ const EditProduct = (props) => {
           formData.append('category_id', values.category);
           formData.append('description', values.description);
           formData.append('stock', stockCounter);
-          formData.append('delivery_id', values.method);
-          formData.append('size_id', values.size);
-          formData.append('img_product', image);
-
-          const checkDataSend = {
-            product_name: values.name,
-            price: values.price,
-            category_id: values.category,
-            description: values.description,
-            stock: stockCounter,
-            delivery_id: values.method,
-            size_id: values.size,
-            img_product: image,
-          };
-          console.log('checkDataSend:', checkDataSend);
-
-          resetForm();
+          for (let itr = 0; itr < deliveryProduct.length; itr++) {
+            formData.append('delivery_id', deliveryProduct[itr].delivery_id);
+          }
+          for (let i = 0; i < sizeProduct.length; i++) {
+            formData.append('size_id', sizeProduct[i].size_id);
+          }
+          image !== defaultImage && formData.append('img_product', image);
+          // for (let [key, value] of formData.entries()) {
+          //   console.log(`${key}: ${value}`);
+          // }
+          axiosConfig
+            .post(`/products/${idProduct}`, formData)
+            .then(() => {
+              Toastify('Update product successfull', 'success');
+            })
+            .catch((err) => {
+              console.log(err.response);
+              Toastify(
+                'Update product failed, please try again later',
+                'error'
+              );
+            });
         }}
       >
         {(formik) => (
@@ -213,6 +277,7 @@ const EditProduct = (props) => {
                         />
                       </svg>
                       <input
+                        accept="image/jpeg, image/png"
                         type="file"
                         name="image"
                         className="input-file"
@@ -282,45 +347,92 @@ const EditProduct = (props) => {
                 <select
                   name="size"
                   type="text"
-                  onChange={formik.handleChange}
-                  value={formik.values.size}
+                  // onChange={formik.handleChange}
+                  // value={formik.values.size}
                   id="size"
                   placeholder="Select Size"
                 >
-                  <option value="">Select Size</option>
+                  <option value="" id="size-opt">
+                    Select Size
+                  </option>
                   {sizes &&
                     sizes.map((size) => (
                       <>
-                        <option value={size.size_id}>{size.size_name}</option>
+                        <option
+                          value={size.size_id}
+                          onClick={() => handleSize('push', size, formik)}
+                        >
+                          {size.size_name}
+                        </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.size && (
-                  <p className="input-invalid">{formik.errors.size}</p>
-                )}
+                {/* <span>Current size : </span> */}
+                <ItemWrapper>
+                  {sizeProduct.length > 0 ? (
+                    sizeProduct.map((item) => (
+                      <>
+                        <div className="item">
+                          {item.size_name}
+                          <button
+                            type="button"
+                            onClick={() => handleSize('slice', item)}
+                          >
+                            X
+                          </button>
+                        </div>
+                      </>
+                    ))
+                  ) : (
+                    <p className="input-invalid">Please select product size</p>
+                  )}
+                </ItemWrapper>
               </div>
               <div className="row">
                 <select
                   name="method"
                   id="method"
                   type="text"
-                  onChange={formik.handleChange}
-                  value={formik.values.method}
+                  // onChange={formik.handleChange}
+                  // value={formik.values.method}
                   placeholder="Select Delivery Methods"
                 >
-                  <option value="">Select Delivery Methods</option>
+                  <option value="" id="delivery-opt">
+                    Select Delivery Methods
+                  </option>
                   {deliveries &&
                     deliveries.map((delivery) => (
                       <>
-                        <option value={delivery.delivery_id}>
+                        <option
+                          value={delivery.delivery_id}
+                          onClick={() => handleDelivery('push', delivery)}
+                        >
                           {delivery.delivery_name}
                         </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.method && (
-                  <p className="input-invalid">{formik.errors.method}</p>
-                )}
+                <ItemWrapper>
+                  {deliveryProduct.length > 0 ? (
+                    deliveryProduct.map((item) => (
+                      <>
+                        <div className="item">
+                          {item.delivery_name}
+                          <button
+                            type="button"
+                            onClick={() => handleDelivery('slice', item)}
+                          >
+                            X
+                          </button>
+                        </div>
+                      </>
+                    ))
+                  ) : (
+                    <p className="input-invalid">
+                      Please select product delivery method
+                    </p>
+                  )}
+                </ItemWrapper>
               </div>
               <div className="row">
                 <select
@@ -335,7 +447,10 @@ const EditProduct = (props) => {
                   {categories &&
                     categories.map((category) => (
                       <>
-                        <option value={category.category_id}>
+                        <option
+                          id={category.category_id}
+                          value={category.category_id}
+                        >
                           {category.category_name}
                         </option>
                       </>
@@ -372,14 +487,19 @@ const EditProduct = (props) => {
                     <path d="M21 8V15.0687H3V8H21Z" fill="#9F9F9F" />
                   </svg>
                 </div>
-                <Button>Add to Cart</Button>
+                <Button type="button">Add to Cart</Button>
               </div>
               {formik.errors.stock && (
                 <p className="input-invalid">{formik.errors.stock}</p>
               )}
               <div className="btn-saved-wrapper">
+                {/* <Button disabled={!(formik.isValid && formik.dirty)} type="submit" className={formik.errors}> */}
                 <Button
-                  disabled={!(formik.isValid && formik.dirty)}
+                  disabled={
+                    !formik.isValid ||
+                    sizeProduct.length < 1 ||
+                    deliveryProduct.length < 1
+                  }
                   type="submit"
                   className={formik.errors}
                 >
@@ -394,7 +514,7 @@ const EditProduct = (props) => {
   );
 };
 
-export default PrivateRoute(EditProduct,['admin']);
+export default PrivateRoute(EditProduct, ['admin']);
 
 // START === STYLING CURRENT PAGE
 
@@ -593,5 +713,37 @@ const StyledEditProduct = styled.div`
         margin-bottom: 10px;
       }
     }
+  }
+`;
+
+const ItemWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 5px;
+
+  .item {
+    height: 35px;
+    background-color: #ffba33;
+    min-width: 100px;
+    padding: 2px 5px;
+    padding-left: 20px;
+    padding-right: 40px;
+    margin: 5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 50px;
+  }
+
+  button,
+  span {
+    background-color: grey;
+    color: white;
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50px;
   }
 `;

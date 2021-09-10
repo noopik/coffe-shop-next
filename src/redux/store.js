@@ -16,7 +16,7 @@ const persistConfig = {
       secure: true,
     },
   }),
-  whitelist: ['user'],
+  whitelist: ['user','cart'],
 };
 
 export let store;
