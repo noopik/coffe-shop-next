@@ -70,7 +70,7 @@ CardProduct.defaultProps = {
 export default CardProduct;
 
 const StyledCardProduct = styled.div`
-  height: 225px;
+  /* height: 225px; */
   display: flex;
   position: relative;
   .content {
