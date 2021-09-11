@@ -1,31 +1,22 @@
 import styled from 'styled-components';
-import { IMG_DefaultProduct, IMG_DummyProduct } from '../../../../src/assets';
-import {
-  Breadcrumb,
-  Breadcrumbs,
-  Button,
-  TextFieldAdmin,
-} from '../../../../src/components/atoms';
+import {IMG_DefaultProduct, IMG_DummyProduct} from '../../../../src/assets';
+import {Breadcrumb, Breadcrumbs, Button, TextFieldAdmin} from '../../../../src/components/atoms';
 import PrivateRoute from '../../../../src/components/hoc/PrivateRoute';
-import { Breakpoints, Toastify } from '../../../../src/utils';
+import {Breakpoints, Toastify} from '../../../../src/utils';
 import Image from 'next/image';
-import { useState } from 'react';
-import { Formik, Form } from 'formik';
+import {useEffect, useState} from 'react';
+import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import axiosConfig from '../../../../src/config/Axios';
-import { ErrorMessage } from 'formik';
-import { useRouter } from 'next/router';
+import {ErrorMessage} from 'formik';
+import {useRouter} from 'next/router';
 
 export const getServerSideProps = async (context) => {
   try {
-    const { idProduct } = context.query;
+    const {idProduct} = context.query;
     const resultSizes = await axiosConfig.get('/sizes/getsizes?pagination=off');
-    const resultDeliveries = await axiosConfig.get(
-      '/deliveries/getdeliveries?pagination=off'
-    );
-    const resultCategories = await axiosConfig.get(
-      '/categories/getcategory?pagination=off'
-    );
+    const resultDeliveries = await axiosConfig.get('/deliveries/getdeliveries?pagination=off');
+    const resultCategories = await axiosConfig.get('/categories/getcategory?pagination=off');
     const resultDataProduct = await axiosConfig.get(`/products/${idProduct}`);
     const sizes = resultSizes.data.data;
     const deliveries = resultDeliveries.data.data;
@@ -52,16 +43,14 @@ export const getServerSideProps = async (context) => {
 };
 
 const EditProduct = (props) => {
-  const { push, query } = useRouter();
-  const { idProduct } = query;
-  const { product } = props;
+  const {query} = useRouter();
+  const {idProduct} = query;
+  const {product} = props;
   const sizes = props.sizes;
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
-  const [defaultImage, setDefaultImage] = useState(
-    `${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`
-  );
+  const [defaultImage, setDefaultImage] = useState(`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`);
   const [stockCounter, setStockCounter] = useState(product.stock);
   const [sizeProduct, setsizeProduct] = useState(product.size);
   const [deliveryProduct, setdeliveryProduct] = useState(product.delivery);
@@ -77,55 +66,41 @@ const EditProduct = (props) => {
   });
   // END = VALIDATION FORM
 
-  const handleSize = (method, data) => {
-    if (method === 'slice') {
-      const index = sizeProduct.indexOf(data);
-      sizeProduct.splice(index, 1);
+  const handleSize = (e, data) => {
+    if (e.target.checked) {
       setsizeProduct((old) => {
-        return [...old];
+        return [...old, data];
       });
+      document.getElementById(`itemSize${e.target.value}`).className =
+        'size-item select';
     } else {
-      const found = sizeProduct.find(
-        (element) => element.size_id === data.size_id
-      );
-      if (found === undefined) {
-        setsizeProduct((old) => {
-          return [...old, data];
-        });
-        document.getElementById('size-opt').selected = true;
-      } else {
-        setsizeProduct((old) => {
-          return [...old];
-        });
-        document.getElementById('size-opt').selected = true;
-      }
+      const index = sizeProduct.findIndex((element) => {
+        return element.size_id === data.size_id;
+      });
+      sizeProduct.splice(index, 1);
+      document.getElementById(`itemSize${e.target.value}`).className =
+        'size-item';
     }
   };
 
-  const handleDelivery = (method, data) => {
-    if (method === 'slice') {
-      const index = deliveryProduct.indexOf(data);
-      deliveryProduct.splice(index, 1);
+  const handleDelivery = (e, data) => {
+    if (e.target.checked) {
       setdeliveryProduct((old) => {
-        return [...old];
+        return [...old, data];
       });
+      document.getElementById(`method${e.target.value}`).className =
+      'method-item select';
     } else {
-      const found = deliveryProduct.find(
-        (element) => element.delivery_id === data.delivery_id
-      );
-      if (found === undefined) {
-        setdeliveryProduct((old) => {
-          return [...old, data];
-        });
-        document.getElementById('delivery-opt').selected = true;
-      } else {
-        setdeliveryProduct((old) => {
-          return [...old];
-        });
-        document.getElementById('delivery-opt').selected = true;
-      }
+      // const index = deliveryProduct.indexOf(data);
+      const index = deliveryProduct.findIndex((element) => {
+        return element.delivery_id === data.delivery_id;
+      });
+      deliveryProduct.splice(index, 1);
+      document.getElementById(`method${e.target.value}`).className =
+      'method-item';
     }
   };
+  // };
   // START = HANDLE STOCK LOGIC
   const stockIncrement = () => {
     const increment = stockCounter + 1;
@@ -164,7 +139,7 @@ const EditProduct = (props) => {
           category: product.category_id,
         }}
         validationSchema={validate}
-        onSubmit={(values, { resetForm }) => {
+        onSubmit={(values, {resetForm}) => {
           const image = priviewImage ? priviewImage : defaultImage;
           if (!image) {
             return Toastify('Images required!', 'error');
@@ -176,11 +151,11 @@ const EditProduct = (props) => {
           formData.append('category_id', values.category);
           formData.append('description', values.description);
           formData.append('stock', stockCounter);
-          for (let itr = 0; itr < deliveryProduct.length; itr++) {
-            formData.append('delivery_id', deliveryProduct[itr].delivery_id);
-          }
           for (let i = 0; i < sizeProduct.length; i++) {
             formData.append('size_id', sizeProduct[i].size_id);
+          }
+          for (let itr = 0; itr < deliveryProduct.length; itr++) {
+            formData.append('delivery_id', deliveryProduct[itr].delivery_id);
           }
           image !== defaultImage && formData.append('img_product', image);
           // for (let [key, value] of formData.entries()) {
@@ -193,10 +168,7 @@ const EditProduct = (props) => {
             })
             .catch((err) => {
               console.log(err.response);
-              Toastify(
-                'Update product failed, please try again later',
-                'error'
-              );
+              Toastify('Update product failed, please try again later', 'error');
             });
         }}
       >
@@ -204,24 +176,14 @@ const EditProduct = (props) => {
           <Form>
             <div className="side-left">
               <div className="image-wrapper">
-                {!defaultImage && !priviewImage && (
-                  <Image
-                    src={IMG_DefaultProduct}
-                    alt="image name"
-                    layout="fill"
-                  />
-                )}
+                {!defaultImage && !priviewImage && <Image src={IMG_DefaultProduct} alt="image name" layout="fill" />}
                 {defaultImage && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={defaultImage} alt="image" className="image" />
                 )}
                 {priviewImage && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={URL?.createObjectURL(priviewImage)}
-                    alt="image"
-                    className="image"
-                  />
+                  <img src={URL?.createObjectURL(priviewImage)} alt="image" className="image" />
                 )}
 
                 <div className="btn-circle-wrapper">
@@ -233,13 +195,7 @@ const EditProduct = (props) => {
                         setPreviewImage(false);
                       }}
                     >
-                      <svg
-                        width="23"
-                        height="24"
-                        viewBox="0 0 23 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                      <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M2 6H4.11111M4.11111 6H21M4.11111 6V20C4.11111 20.5304 4.33353 21.0391 4.72944 21.4142C5.12535 21.7893 5.66232 22 6.22222 22H16.7778C17.3377 22 17.8746 21.7893 18.2706 21.4142C18.6665 21.0391 18.8889 20.5304 18.8889 20V6H4.11111ZM7.27778 6V4C7.27778 3.46957 7.5002 2.96086 7.89611 2.58579C8.29202 2.21071 8.82899 2 9.38889 2H13.6111C14.171 2 14.708 2.21071 15.1039 2.58579C15.4998 2.96086 15.7222 3.46957 15.7222 4V6M9.38889 11V17M13.6111 11V17"
                           stroke="#6A4029"
@@ -252,29 +208,9 @@ const EditProduct = (props) => {
                   )}
                   {!(priviewImage || defaultImage) && (
                     <div className="btn upload">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect
-                          x="10"
-                          width="4"
-                          height="24"
-                          rx="2"
-                          fill="#6A4029"
-                        />
-                        <rect
-                          x="24"
-                          y="10"
-                          width="4"
-                          height="24"
-                          rx="2"
-                          transform="rotate(90 24 10)"
-                          fill="#6A4029"
-                        />
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" width="4" height="24" rx="2" fill="#6A4029" />
+                        <rect x="24" y="10" width="4" height="24" rx="2" transform="rotate(90 24 10)" fill="#6A4029" />
                       </svg>
                       <input
                         accept="image/jpeg, image/png"
@@ -289,8 +225,7 @@ const EditProduct = (props) => {
               </div>
               <div className="date-wrapper">
                 <p className="text">
-                  Delivery only on{' '}
-                  <span className="bold">Monday to friday at 1 - 7 pm</span>
+                  Delivery only on <span className="bold">Monday to friday at 1 - 7 pm</span>
                 </p>
               </div>
             </div>
@@ -306,9 +241,7 @@ const EditProduct = (props) => {
                   className="heading-name-product"
                 />
                 <div className="line" />
-                {formik.errors.name && (
-                  <p className="input-invalid">{formik.errors.name}</p>
-                )}
+                {formik.errors.name && <p className="input-invalid">{formik.errors.name}</p>}
               </div>
               <div className="row price-wrapper">
                 <p className="price">IDR</p>
@@ -323,11 +256,7 @@ const EditProduct = (props) => {
                 />
                 <div className="line" />
               </div>
-              {formik.errors.price && (
-                <p className="input-invalid outside-form">
-                  {formik.errors.price}
-                </p>
-              )}
+              {formik.errors.price && <p className="input-invalid outside-form">{formik.errors.price}</p>}
               <div className="row">
                 <textarea
                   // id=" "
@@ -339,100 +268,140 @@ const EditProduct = (props) => {
                   defaultValue={formik.values.description}
                 ></textarea>
                 <div className="line" />
-                {formik.errors.description && (
-                  <p className="input-invalid">{formik.errors.description}</p>
-                )}
+                {formik.errors.description && <p className="input-invalid">{formik.errors.description}</p>}
               </div>
               <div className="row">
-                <select
-                  name="size"
-                  type="text"
-                  // onChange={formik.handleChange}
-                  // value={formik.values.size}
-                  id="size"
-                  placeholder="Select Size"
-                >
-                  <option value="" id="size-opt">
-                    Select Size
-                  </option>
+                {/* {sizes &&
+                  sizes.map((size, index) => (
+                    <>
+                      {sizeProduct.find((element) => element.size_id === size.size_id) ? (
+                        <>
+                          <span>{size.size_name}</span>
+                          <input
+                            onChange={(e) => handleSize(e, size)}
+                            id={`size${size.size_id}`}
+                            key={index}
+                            value={size.size_id}
+                            type="checkbox"
+                            defaultChecked
+                          />
+                          <br />
+                        </>
+                      ) : (
+                        <>
+                          <span>{size.size_name}</span>
+                          <input
+                            onChange={(e) => handleSize(e, size)}
+                            id={`size${size.size_id}`}
+                            key={index}
+                            value={size.size_id}
+                            type="checkbox"
+                          />
+                          <br />
+                        </>
+                      )}
+                    </>
+                  ))} */}
+                  <div className="select-group">
                   {sizes &&
-                    sizes.map((size) => (
-                      <>
-                        <option
-                          value={size.size_id}
-                          onClick={() => handleSize('push', size, formik)}
-                        >
-                          {size.size_name}
-                        </option>
-                      </>
-                    ))}
-                </select>
-                {/* <span>Current size : </span> */}
-                <ItemWrapper>
-                  {sizeProduct.length > 0 ? (
-                    sizeProduct.map((item) => (
-                      <>
-                        <div className="item">
-                          {item.size_name}
-                          <button
-                            type="button"
-                            onClick={() => handleSize('slice', item)}
-                          >
-                            X
-                          </button>
+                  sizes.map((size, index) => (
+                    <>
+                      {sizeProduct.find((element) => element.size_id === size.size_id) ? (
+                        <>
+                          <div key={index}>
+                          <label htmlFor={`size${size.size_id}`}>
+                            <div
+                              className="size-item select"
+                              id={`itemSize${size.size_id}`}
+                            >
+                              <p>{size.size_name}</p>
+                            </div>
+                          </label>
+                          <Checkbox
+                            type="checkbox"
+                            name="size"
+                            id={`size${size.size_id}`}
+                            value={size.size_id}
+                            onChange={(e) => handleSize(e, size)}
+                            defaultChecked
+                          />
                         </div>
-                      </>
-                    ))
-                  ) : (
-                    <p className="input-invalid">Please select product size</p>
-                  )}
-                </ItemWrapper>
+                        </>
+                      ) : (
+                        <>
+                          <div key={index}>
+                          <label htmlFor={`size${size.size_id}`}>
+                            <div
+                              className="size-item"
+                              id={`itemSize${size.size_id}`}
+                            >
+                              <p>{size.size_name}</p>
+                            </div>
+                          </label>
+                          <Checkbox
+                            type="checkbox"
+                            name="size"
+                            id={`size${size.size_id}`}
+                            value={size.size_id}
+                            onChange={(e) => handleSize(e, size)}
+                          />
+                        </div>
+                        </>
+                      )}
+                    </>
+                  ))}
+                  </div>
               </div>
               <div className="row">
-                <select
-                  name="method"
-                  id="method"
-                  type="text"
-                  // onChange={formik.handleChange}
-                  // value={formik.values.method}
-                  placeholder="Select Delivery Methods"
-                >
-                  <option value="" id="delivery-opt">
-                    Select Delivery Methods
-                  </option>
-                  {deliveries &&
-                    deliveries.map((delivery) => (
-                      <>
-                        <option
-                          value={delivery.delivery_id}
-                          onClick={() => handleDelivery('push', delivery)}
-                        >
-                          {delivery.delivery_name}
-                        </option>
-                      </>
-                    ))}
-                </select>
-                <ItemWrapper>
-                  {deliveryProduct.length > 0 ? (
-                    deliveryProduct.map((item) => (
-                      <>
-                        <div className="item">
-                          {item.delivery_name}
-                          <button
-                            type="button"
-                            onClick={() => handleDelivery('slice', item)}
-                          >
-                            X
-                          </button>
+              <div className="select-group">
+                {deliveries &&
+                  deliveries.map((delivery, index) => (
+                    <>
+                      {deliveryProduct.find((element) => element.delivery_id === delivery.delivery_id) ? (
+                        <>
+                          <div key={index}>
+                          <label htmlFor={`delivery${delivery.delivery_id}`}>
+                            <div
+                              className="method-item select"
+                              id={`method${delivery.delivery_id}`}
+                            >
+                              <p>{delivery.delivery_name}</p>
+                            </div>
+                          </label>
+                          <Checkbox
+                            type="checkbox"
+                            name="delivery"
+                            id={`delivery${delivery.delivery_id}`}
+                            value={delivery.delivery_id}
+                            onChange={(e) => handleDelivery(e, delivery)}
+                            defaultChecked
+                          />
                         </div>
-                      </>
-                    ))
-                  ) : (
-                    <p className="input-invalid">
-                      Please select product delivery method
-                    </p>
-                  )}
-                </ItemWrapper>
+                        </>
+                      ) : (
+                        <>
+                          <div key={index}>
+                          <label htmlFor={`delivery${delivery.delivery_id}`}>
+                            <div
+                              className="method-item"
+                              id={`method${delivery.delivery_id}`}
+                            >
+                              <p>{delivery.delivery_name}</p>
+                            </div>
+                          </label>
+                          <Checkbox
+                            type="checkbox"
+                            name="delivery"
+                            id={`delivery${delivery.delivery_id}`}
+                            value={delivery.delivery_id}
+                            onChange={(e) => handleDelivery(e, delivery)}
+                          />
+                        </div>
+                        </>
+                      )}
+                    </>
+                  ))}
+              </div>
               </div>
               <div className="row">
                 <select
@@ -447,18 +416,13 @@ const EditProduct = (props) => {
                   {categories &&
                     categories.map((category) => (
                       <>
-                        <option
-                          id={category.category_id}
-                          value={category.category_id}
-                        >
+                        <option id={category.category_id} value={category.category_id}>
                           {category.category_name}
                         </option>
                       </>
                     ))}
                 </select>
-                {formik.errors.category && (
-                  <p className="input-invalid">{formik.errors.category}</p>
-                )}
+                {formik.errors.category && <p className="input-invalid">{formik.errors.category}</p>}
               </div>
               <div className="row button-wrapper">
                 <div className="counter-wrapper">
@@ -489,17 +453,11 @@ const EditProduct = (props) => {
                 </div>
                 <Button type="button">Add to Cart</Button>
               </div>
-              {formik.errors.stock && (
-                <p className="input-invalid">{formik.errors.stock}</p>
-              )}
+              {formik.errors.stock && <p className="input-invalid">{formik.errors.stock}</p>}
               <div className="btn-saved-wrapper">
                 {/* <Button disabled={!(formik.isValid && formik.dirty)} type="submit" className={formik.errors}> */}
                 <Button
-                  disabled={
-                    !formik.isValid ||
-                    sizeProduct.length < 1 ||
-                    deliveryProduct.length < 1
-                  }
+                  disabled={!formik.isValid || sizeProduct.length < 1 || deliveryProduct.length < 1}
                   type="submit"
                   className={formik.errors}
                 >
@@ -713,6 +671,64 @@ const StyledEditProduct = styled.div`
         margin-bottom: 10px;
       }
     }
+    .select-group {
+            width: 415px;
+            overflow: auto;
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 1rem;
+            ${Breakpoints.lessThan('lg')`
+              flex-wrap: wrap;
+            `}
+            ${Breakpoints.lessThan('sm')`
+              flex-wrap: wrap;
+              width: 100%;
+            `}
+            .size-item {
+              width: 70px;
+              height: 70px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background: rgba(186, 186, 186, 0.35);
+              border-radius: 100%;
+              font-family: Poppins;
+              font-style: normal;
+              font-weight: bold;
+              font-size: 15px;
+              line-height: 22px;
+              text-align: center;
+              color: #4f5665;
+              &:hover {
+                cursor: pointer;
+                opacity: 0.5;
+              }
+              &.select {
+                font-weight: bold;
+                font-size: 30px;
+              }
+            }
+            .method-item {
+              padding: 18px 24px;
+              font-family: Rubik;
+              font-style: normal;
+              font-size: 20px;
+              line-height: 24px;
+              border-radius: 20px;
+              background: rgba(186, 186, 186, 0.35);
+              &.select {
+                color: #6a4029;
+                font-weight: bold;
+              }
+              &:hover {
+                cursor: pointer;
+                opacity: 0.5;
+              }
+            }
+            .select {
+              background: #ffba33;
+            }
+          }
   }
 `;
 
@@ -746,4 +762,8 @@ const ItemWrapper = styled.div`
     height: 30px;
     border-radius: 50px;
   }
+`;
+
+const Checkbox = styled.input`
+  display: none;
 `;
