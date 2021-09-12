@@ -17,7 +17,9 @@ import { deleteProduct } from '../../../src/redux/action/productAction';
 export const getServerSideProps = async (ctx) => {
   try {
     const { params } = ctx;
-    const { data } = await (await axiosConfig.get(`/products/${params.idProduct}`)).data;
+    const { data } = await (
+      await axiosConfig.get(`/products/${params.idProduct}`)
+    ).data;
     return {
       props: { detailProduct: data },
     };
@@ -56,7 +58,10 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
   };
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN == cart.cart_deliver_id) {
-      setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: moment(new Date()).format('HH:mm') }));
+      setCart((oldVal) => ({
+        ...oldVal,
+        cart_time_dineIn: moment(new Date()).format('HH:mm'),
+      }));
     }
   }, [cart.cart_deliver_id]);
   return (
@@ -82,17 +87,25 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
               <Button className="btn btn-add" onClick={() => addCart()}>
                 Add To Cart
               </Button>
-              <Button className="btn btn-ask">Ask the Staff</Button>
+              <Button className="btn btn-ask" disabled={true}>
+                Ask the Staff
+              </Button>
               {auth && user.roles === 'admin' && (
                 <Button
                   className="btn btn-ask"
-                  onClick={() => router.push(`/admin/products/${router.query.idProduct}`)}
+                  onClick={() =>
+                    router.push(`/admin/products/${router.query.idProduct}`)
+                  }
                 >
                   Edit Product
                 </Button>
               )}
               {auth && user.roles === 'admin' && (
-                <Button className="btn btn-ask" theme="black" onClick={() => setShowModal(true)}>
+                <Button
+                  className="btn btn-ask"
+                  theme="black"
+                  onClick={() => setShowModal(true)}
+                >
                   Delete Menu
                 </Button>
               )}
@@ -158,7 +171,8 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
                   </label>
                 ))}
               </div>
-              {process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN == cart.cart_deliver_id && (
+              {process.env.NEXT_PUBLIC_ID_DELIVER_DINE_IN ==
+                cart.cart_deliver_id && (
                 <div className="time">
                   <h1>Set Time:</h1>
                   <TimeField
@@ -167,9 +181,15 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
                       const currentTime = moment(new Date(), 'HH:mm');
                       const currentTimeInput = moment(value, 'HH:mm');
                       if (currentTimeInput.isBefore(currentTime) === true) {
-                        setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: moment(new Date()).format('HH:mm') }));
+                        setCart((oldVal) => ({
+                          ...oldVal,
+                          cart_time_dineIn: moment(new Date()).format('HH:mm'),
+                        }));
                       } else {
-                        setCart((oldVal) => ({ ...oldVal, cart_time_dineIn: value }));
+                        setCart((oldVal) => ({
+                          ...oldVal,
+                          cart_time_dineIn: value,
+                        }));
                       }
                     }}
                     colon=":"
@@ -180,45 +200,66 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
             </div>
           </BodyRight>
         </BodyWrapper>
-        <BodyBottom>
-          <div className="content">
-            <div className="item">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/IMG_Product.png" alt="" />
-              <div className="detail">
-                <h1 className="title">Cold Brew</h1>
-                <h2 className="list">1x Large</h2>
-                <h2 className="list">1x Regular</h2>
-              </div>
-              <div className="counter-wrapper">
-                <div className="counter min">
-                  <svg width="12" height="5" viewBox="0 0 12 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z" fill="#6A4029" />
-                  </svg>
+        {/* Feature in development */}
+        {false && (
+          <BodyBottom>
+            <div className="content">
+              <div className="item">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/IMG_Product.png" alt="" />
+                <div className="detail">
+                  <h1 className="title">Cold Brew</h1>
+                  <h2 className="list">1x Large</h2>
+                  <h2 className="list">1x Regular</h2>
                 </div>
-                <div className="result">50</div>
-                <div className="counter plus">
-                  <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M13.3902 9.05H9.66524V12.875H4.34023V9.05H0.615234V3.975H4.34023V0.125H9.66524V3.975H13.3902V9.05Z"
-                      fill="#6A4029"
-                    />
-                  </svg>
+                <div className="counter-wrapper">
+                  <div className="counter min">
+                    <svg
+                      width="12"
+                      height="5"
+                      viewBox="0 0 12 5"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M11.9479 0.175049V4.75005H0.297852V0.175049H11.9479Z"
+                        fill="#6A4029"
+                      />
+                    </svg>
+                  </div>
+                  <div className="result">50</div>
+                  <div className="counter plus">
+                    <svg
+                      width="14"
+                      height="13"
+                      viewBox="0 0 14 13"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M13.3902 9.05H9.66524V12.875H4.34023V9.05H0.615234V3.975H4.34023V0.125H9.66524V3.975H13.3902V9.05Z"
+                        fill="#6A4029"
+                      />
+                    </svg>
+                  </div>
                 </div>
               </div>
+              <Button
+                className="btn-checkout"
+                onClick={() => router.push('/orders')}
+              >
+                Checkout
+              </Button>
             </div>
-            <Button className="btn-checkout" onClick={() => router.push('/orders')}>
-              Checkout
-            </Button>
-          </div>
-        </BodyBottom>
+          </BodyBottom>
+        )}
       </div>
       <ModalAlertValidation
         show={showModal}
         onClose={() => setShowModal(false)}
         actionDelete={() => {
           // Menghapus data terpilih
-          deleteProduct(detailProduct.product_id,router)
+          deleteProduct(detailProduct.product_id, router);
           setShowModal(false);
         }}
       />

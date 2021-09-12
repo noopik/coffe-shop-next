@@ -87,6 +87,7 @@ const StyledForgotPasswordPage = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  background-color: #00000036;
 
   .bg-layer-image {
     position: absolute;
@@ -100,18 +101,19 @@ const StyledForgotPasswordPage = styled.div`
   .container {
     font-family: Poppins;
     color: #ffffff;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     .heading {
       font-style: normal;
       font-weight: bold;
       font-size: 64px;
-      line-height: 96px;
     }
     .heading-1 {
       font-style: normal;
       font-weight: bold;
       font-size: 40px;
-      line-height: 96px;
     }
     .sub-heading {
       font-size: 27px;

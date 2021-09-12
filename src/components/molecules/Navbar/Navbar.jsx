@@ -180,7 +180,7 @@ const Navbar = (props) => {
                   </div>
                   <div className="btn">
                     <Image src={IC_Message} alt="icon" layout="fill" />
-                    <div className="notification">1</div>
+                    {/* <div className="notification">1</div> */}
                   </div>
                   <div className="btn avatar-wrapper">
                     {props.user?.avatar ? (

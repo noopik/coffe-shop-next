@@ -31,7 +31,7 @@ const ProfileUser = (props) => {
     }));
   }, [props.user]);
   const defaultImageValue =
-    'https://www.voanews.com/themes/custom/voa/images/Author__Placeholder.png';
+    'https://prairietherapy.ca/wp-content/uploads/2017/03/Blank-Profile-pic.png';
   const validate = Yup.object({
     firstname: Yup.string().required('First name is required'),
     lastname: Yup.string().required('Last name is required'),

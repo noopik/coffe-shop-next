@@ -14,6 +14,7 @@ import {
   Cell,
   Label,
 } from 'recharts';
+
 import Button from '../../src/components/atoms/Button/index';
 import Image from 'next/image';
 import { IMG_Ava } from '../../src/assets';

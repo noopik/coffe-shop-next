@@ -13,14 +13,19 @@ import { useDispatch } from 'react-redux';
 
 const OrdersPage = ({ user, auth }) => {
   const dispatch = useDispatch();
-  const validator = useRef(new SimpleReactValidator({ className: 'text-validator' }));
+  const validator = useRef(
+    new SimpleReactValidator({ className: 'text-validator' })
+  );
   const [formOrder, setFormOrder] = useState({
     address: user.address,
     phone_number: user.phone_number,
     payment: '',
   });
   const formOrderHandler = (e) => {
-    setFormOrder((oldValue) => ({ ...oldValue, [e.target.name]: e.target.value }));
+    setFormOrder((oldValue) => ({
+      ...oldValue,
+      [e.target.name]: e.target.value,
+    }));
   };
   const { cart_multi } = useSelector((state) => state.cart);
   const totalPrice = (cart_multi) => {
@@ -53,7 +58,9 @@ const OrdersPage = ({ user, auth }) => {
             <div className="divider" />
             <div className="total">
               <p className="text-bold">TOTAL</p>
-              <p className="text-bold">IDR {formatter.format(totalPrice(cart_multi))}</p>
+              <p className="text-bold">
+                IDR {formatter.format(totalPrice(cart_multi))}
+              </p>
             </div>
           </CardWraper>
         </div>
@@ -73,16 +80,26 @@ const OrdersPage = ({ user, auth }) => {
                     name="address"
                     placeholder="Address"
                   ></textarea>
-                  {validator.current.message('address', formOrder.address, 'required|min:10')}
+                  {validator.current.message(
+                    'address',
+                    formOrder.address,
+                    'required|min:10'
+                  )}
                   <input
                     onChange={formOrderHandler}
-                    onFocus={() => validator.current.showMessageFor(`phone_number`)}
+                    onFocus={() =>
+                      validator.current.showMessageFor(`phone_number`)
+                    }
                     type="text"
                     name="phone_number"
                     value={formOrder.phone_number}
                     placeholder="Your phone number"
                   />
-                  {validator.current.message('phone_number', formOrder.phone_number, 'required|numeric|min:11|max:13')}
+                  {validator.current.message(
+                    'phone_number',
+                    formOrder.phone_number,
+                    'required|numeric|min:11|max:13'
+                  )}
                 </CardWraper>
               </div>
             </div>
@@ -93,7 +110,13 @@ const OrdersPage = ({ user, auth }) => {
               <div className="body-section-row">
                 <CardWraper className="method-wrapper">
                   <label htmlFor="card">
-                    <input type="radio" onChange={formOrderHandler} name="payment" value="credit_card" id="card" />
+                    <input
+                      type="radio"
+                      onChange={formOrderHandler}
+                      name="payment"
+                      value="credit_card"
+                      id="card"
+                    />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
@@ -101,7 +124,13 @@ const OrdersPage = ({ user, auth }) => {
                     <p>Card</p>
                   </label>
                   <label htmlFor="bankAccount">
-                    <input type="radio" onChange={formOrderHandler} name="payment" value="bank" id="bankAccount" />
+                    <input
+                      type="radio"
+                      onChange={formOrderHandler}
+                      name="payment"
+                      value="bank"
+                      id="bankAccount"
+                    />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
@@ -109,19 +138,42 @@ const OrdersPage = ({ user, auth }) => {
                     <p>Bank account</p>
                   </label>
                   <label htmlFor="cod">
-                    <input type="radio" onChange={formOrderHandler} name="payment" value="delivery" id="cod" />
+                    <input
+                      type="radio"
+                      onChange={formOrderHandler}
+                      name="payment"
+                      value="delivery"
+                      id="cod"
+                    />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
                     <Image src={ICCars} alt="bank" width={40} height={40} />
                     <p>Cash on delivery</p>
                   </label>
-                  {validator.current.message('payment', formOrder.payment, 'required')}
+                  {validator.current.message(
+                    'payment',
+                    formOrder.payment,
+                    'required'
+                  )}
                 </CardWraper>
                 <Button
                   type="button"
-                  onClick={() => dispatch(createOrder(cart_multi, formOrder, totalPrice(cart_multi), router))}
-                  disabled={validator.current.allValid() && totalPrice(cart_multi) > 0 ? false : true}
+                  onClick={() =>
+                    dispatch(
+                      createOrder(
+                        cart_multi,
+                        formOrder,
+                        totalPrice(cart_multi),
+                        router
+                      )
+                    )
+                  }
+                  disabled={
+                    validator.current.allValid() && totalPrice(cart_multi) > 0
+                      ? false
+                      : true
+                  }
                   theme="brown"
                   className="button-pay"
                 >
@@ -159,17 +211,17 @@ const StyledHistoryPage = styled.div`
     `}
     ${Breakpoints.lessThan('xsm')`
       background-color: pink;
-    `} */
+      `} */
+  background-image: url('/BGPaymentsPage.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
   .text-validator {
     color: red;
     fonr-size: 10px;
   }
   .container {
-    background-image: url('/BGPaymentsPage.png');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
     display: flex;
     padding-top: 125px;
     padding-bottom: 100px;

@@ -9,7 +9,7 @@ import {
 import PrivateRoute from '../../../../src/components/hoc/PrivateRoute';
 import { Breakpoints, Toastify } from '../../../../src/utils';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import axiosConfig from '../../../../src/config/Axios';
@@ -52,7 +52,7 @@ export const getServerSideProps = async (context) => {
 };
 
 const EditProduct = (props) => {
-  const { push, query } = useRouter();
+  const { query } = useRouter();
   const { idProduct } = query;
   const { product } = props;
   const sizes = props.sizes;
@@ -77,55 +77,41 @@ const EditProduct = (props) => {
   });
   // END = VALIDATION FORM
 
-  const handleSize = (method, data) => {
-    if (method === 'slice') {
-      const index = sizeProduct.indexOf(data);
-      sizeProduct.splice(index, 1);
+  const handleSize = (e, data) => {
+    if (e.target.checked) {
       setsizeProduct((old) => {
-        return [...old];
+        return [...old, data];
       });
+      document.getElementById(`itemSize${e.target.value}`).className =
+        'size-item select';
     } else {
-      const found = sizeProduct.find(
-        (element) => element.size_id === data.size_id
-      );
-      if (found === undefined) {
-        setsizeProduct((old) => {
-          return [...old, data];
-        });
-        document.getElementById('size-opt').selected = true;
-      } else {
-        setsizeProduct((old) => {
-          return [...old];
-        });
-        document.getElementById('size-opt').selected = true;
-      }
+      const index = sizeProduct.findIndex((element) => {
+        return element.size_id === data.size_id;
+      });
+      sizeProduct.splice(index, 1);
+      document.getElementById(`itemSize${e.target.value}`).className =
+        'size-item';
     }
   };
 
-  const handleDelivery = (method, data) => {
-    if (method === 'slice') {
-      const index = deliveryProduct.indexOf(data);
-      deliveryProduct.splice(index, 1);
+  const handleDelivery = (e, data) => {
+    if (e.target.checked) {
       setdeliveryProduct((old) => {
-        return [...old];
+        return [...old, data];
       });
+      document.getElementById(`method${e.target.value}`).className =
+        'method-item select';
     } else {
-      const found = deliveryProduct.find(
-        (element) => element.delivery_id === data.delivery_id
-      );
-      if (found === undefined) {
-        setdeliveryProduct((old) => {
-          return [...old, data];
-        });
-        document.getElementById('delivery-opt').selected = true;
-      } else {
-        setdeliveryProduct((old) => {
-          return [...old];
-        });
-        document.getElementById('delivery-opt').selected = true;
-      }
+      // const index = deliveryProduct.indexOf(data);
+      const index = deliveryProduct.findIndex((element) => {
+        return element.delivery_id === data.delivery_id;
+      });
+      deliveryProduct.splice(index, 1);
+      document.getElementById(`method${e.target.value}`).className =
+        'method-item';
     }
   };
+  // };
   // START = HANDLE STOCK LOGIC
   const stockIncrement = () => {
     const increment = stockCounter + 1;
@@ -176,11 +162,11 @@ const EditProduct = (props) => {
           formData.append('category_id', values.category);
           formData.append('description', values.description);
           formData.append('stock', stockCounter);
-          for (let itr = 0; itr < deliveryProduct.length; itr++) {
-            formData.append('delivery_id', deliveryProduct[itr].delivery_id);
-          }
           for (let i = 0; i < sizeProduct.length; i++) {
             formData.append('size_id', sizeProduct[i].size_id);
+          }
+          for (let itr = 0; itr < deliveryProduct.length; itr++) {
+            formData.append('delivery_id', deliveryProduct[itr].delivery_id);
           }
           image !== defaultImage && formData.append('img_product', image);
           // for (let [key, value] of formData.entries()) {
@@ -344,95 +330,146 @@ const EditProduct = (props) => {
                 )}
               </div>
               <div className="row">
-                <select
-                  name="size"
-                  type="text"
-                  // onChange={formik.handleChange}
-                  // value={formik.values.size}
-                  id="size"
-                  placeholder="Select Size"
-                >
-                  <option value="" id="size-opt">
-                    Select Size
-                  </option>
+                {/* {sizes &&
+                  sizes.map((size, index) => (
+                    <>
+                      {sizeProduct.find((element) => element.size_id === size.size_id) ? (
+                        <>
+                          <span>{size.size_name}</span>
+                          <input
+                            onChange={(e) => handleSize(e, size)}
+                            id={`size${size.size_id}`}
+                            key={index}
+                            value={size.size_id}
+                            type="checkbox"
+                            defaultChecked
+                          />
+                          <br />
+                        </>
+                      ) : (
+                        <>
+                          <span>{size.size_name}</span>
+                          <input
+                            onChange={(e) => handleSize(e, size)}
+                            id={`size${size.size_id}`}
+                            key={index}
+                            value={size.size_id}
+                            type="checkbox"
+                          />
+                          <br />
+                        </>
+                      )}
+                    </>
+                  ))} */}
+                <div className="select-group">
                   {sizes &&
-                    sizes.map((size) => (
+                    sizes.map((size, index) => (
                       <>
-                        <option
-                          value={size.size_id}
-                          onClick={() => handleSize('push', size, formik)}
-                        >
-                          {size.size_name}
-                        </option>
+                        {sizeProduct.find(
+                          (element) => element.size_id === size.size_id
+                        ) ? (
+                          <>
+                            <div key={index}>
+                              <label htmlFor={`size${size.size_id}`}>
+                                <div
+                                  className="size-item select"
+                                  id={`itemSize${size.size_id}`}
+                                >
+                                  <p>{size.size_name}</p>
+                                </div>
+                              </label>
+                              <Checkbox
+                                type="checkbox"
+                                name="size"
+                                id={`size${size.size_id}`}
+                                value={size.size_id}
+                                onChange={(e) => handleSize(e, size)}
+                                defaultChecked
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div key={index}>
+                              <label htmlFor={`size${size.size_id}`}>
+                                <div
+                                  className="size-item"
+                                  id={`itemSize${size.size_id}`}
+                                >
+                                  <p>{size.size_name}</p>
+                                </div>
+                              </label>
+                              <Checkbox
+                                type="checkbox"
+                                name="size"
+                                id={`size${size.size_id}`}
+                                value={size.size_id}
+                                onChange={(e) => handleSize(e, size)}
+                              />
+                            </div>
+                          </>
+                        )}
                       </>
                     ))}
-                </select>
-                {/* <span>Current size : </span> */}
-                <ItemWrapper>
-                  {sizeProduct.length > 0 ? (
-                    sizeProduct.map((item) => (
-                      <>
-                        <div className="item">
-                          {item.size_name}
-                          <button
-                            type="button"
-                            onClick={() => handleSize('slice', item)}
-                          >
-                            X
-                          </button>
-                        </div>
-                      </>
-                    ))
-                  ) : (
-                    <p className="input-invalid">Please select product size</p>
-                  )}
-                </ItemWrapper>
+                </div>
               </div>
               <div className="row">
-                <select
-                  name="method"
-                  id="method"
-                  type="text"
-                  // onChange={formik.handleChange}
-                  // value={formik.values.method}
-                  placeholder="Select Delivery Methods"
-                >
-                  <option value="" id="delivery-opt">
-                    Select Delivery Methods
-                  </option>
+                <div className="select-group">
                   {deliveries &&
-                    deliveries.map((delivery) => (
+                    deliveries.map((delivery, index) => (
                       <>
-                        <option
-                          value={delivery.delivery_id}
-                          onClick={() => handleDelivery('push', delivery)}
-                        >
-                          {delivery.delivery_name}
-                        </option>
+                        {deliveryProduct.find(
+                          (element) =>
+                            element.delivery_id === delivery.delivery_id
+                        ) ? (
+                          <>
+                            <div key={index}>
+                              <label
+                                htmlFor={`delivery${delivery.delivery_id}`}
+                              >
+                                <div
+                                  className="method-item select"
+                                  id={`method${delivery.delivery_id}`}
+                                >
+                                  <p>{delivery.delivery_name}</p>
+                                </div>
+                              </label>
+                              <Checkbox
+                                type="checkbox"
+                                name="delivery"
+                                id={`delivery${delivery.delivery_id}`}
+                                value={delivery.delivery_id}
+                                onChange={(e) => handleDelivery(e, delivery)}
+                                defaultChecked
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div key={index}>
+                              <label
+                                htmlFor={`delivery${delivery.delivery_id}`}
+                              >
+                                <div
+                                  className="method-item"
+                                  id={`method${delivery.delivery_id}`}
+                                >
+                                  <p>{delivery.delivery_name}</p>
+                                </div>
+                              </label>
+                              <Checkbox
+                                type="checkbox"
+                                name="delivery"
+                                id={`delivery${delivery.delivery_id}`}
+                                value={delivery.delivery_id}
+                                onChange={(e) => handleDelivery(e, delivery)}
+                              />
+                            </div>
+                          </>
+                        )}
                       </>
                     ))}
-                </select>
-                <ItemWrapper>
-                  {deliveryProduct.length > 0 ? (
-                    deliveryProduct.map((item) => (
-                      <>
-                        <div className="item">
-                          {item.delivery_name}
-                          <button
-                            type="button"
-                            onClick={() => handleDelivery('slice', item)}
-                          >
-                            X
-                          </button>
-                        </div>
-                      </>
-                    ))
-                  ) : (
-                    <p className="input-invalid">
-                      Please select product delivery method
-                    </p>
-                  )}
-                </ItemWrapper>
+                </div>
               </div>
               <div className="row">
                 <select
@@ -545,8 +582,14 @@ const StyledEditProduct = styled.div`
     display: flex;
     gap: 61px;
     margin-top: 60px;
+    ${Breakpoints.lessThan('lg')`
+      flex-direction: column; 
+    `}
     .side-left {
       width: 50%;
+      ${Breakpoints.lessThan('lg')`
+        width: 100%;
+      `}
       ${Breakpoints.lessThan('md')`
         width: 100%;
         height: 500px;
@@ -603,7 +646,7 @@ const StyledEditProduct = styled.div`
     }
     .side-right {
       width: 50%;
-      ${Breakpoints.lessThan('md')`
+      ${Breakpoints.lessThan('lg')`
         width: 100%;
       `}
       .heading-name-product {
@@ -713,6 +756,66 @@ const StyledEditProduct = styled.div`
         margin-bottom: 10px;
       }
     }
+    .select-group {
+      /* width: 415px; */
+      overflow: auto;
+      display: flex;
+      /* flex-direction: row-reverse; */
+      /* background-color: yellow; */
+      width: 100%;
+      gap: 1rem;
+      ${Breakpoints.lessThan('lg')`
+              flex-wrap: wrap;
+            `}
+      ${Breakpoints.lessThan('sm')`
+              flex-wrap: wrap;
+              width: 100%;
+            `}
+            .size-item {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(186, 186, 186, 0.35);
+        border-radius: 100%;
+        font-family: Poppins;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 15px;
+        line-height: 22px;
+        text-align: center;
+        color: #4f5665;
+        &:hover {
+          cursor: pointer;
+          opacity: 0.5;
+        }
+        &.select {
+          font-weight: bold;
+          font-size: 30px;
+        }
+      }
+      .method-item {
+        padding: 18px 24px;
+        font-family: Rubik;
+        font-style: normal;
+        font-size: 20px;
+        line-height: 24px;
+        border-radius: 20px;
+        background: rgba(186, 186, 186, 0.35);
+        &.select {
+          color: #6a4029;
+          font-weight: bold;
+        }
+        &:hover {
+          cursor: pointer;
+          opacity: 0.5;
+        }
+      }
+      .select {
+        background: #ffba33;
+      }
+    }
   }
 `;
 
@@ -746,4 +849,8 @@ const ItemWrapper = styled.div`
     height: 30px;
     border-radius: 50px;
   }
+`;
+
+const Checkbox = styled.input`
+  display: none;
 `;
