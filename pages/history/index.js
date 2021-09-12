@@ -126,7 +126,7 @@ const HistoryPage = () => {
         </div>
       </div>
       <div className="pagination">
-        {Object.keys(pagination).length > 0 && (
+        {pagination && Object.keys(pagination).length > 0 && (
           <Pagination
             current={page}
             total={pagination.countData}
