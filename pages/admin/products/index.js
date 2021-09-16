@@ -637,10 +637,11 @@ const StyledAddProducts = styled.div`
             margin-bottom: 20px;
           }
           .select-group {
-            width: 415px;
+            width: 100%;
             overflow: auto;
             display: flex;
-            flex-direction: row-reverse;
+            justify-content: flex-start;
+            /* flex-direction: row-reverse; */
             gap: 1rem;
             ${Breakpoints.lessThan('lg')`
               flex-wrap: wrap;

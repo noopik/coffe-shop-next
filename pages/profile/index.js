@@ -73,10 +73,7 @@ const ProfileUser = (props) => {
                     {props.user.avatar &&
                       props.user.avatar.length > 10 &&
                       !users.avatar && (
-                        <img
-                          src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`}
-                          alt="img-profile"
-                        />
+                        <img src={`${props.user.avatar}`} alt="img-profile" />
                       )}
                     {users.avatar && !props.user.avatar && (
                       <img

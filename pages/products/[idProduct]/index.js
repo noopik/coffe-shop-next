@@ -75,7 +75,7 @@ const ProductDetailPage = ({ detailProduct, user, auth }) => {
           <BodyLeft>
             <div className="image">
               <img
-                src={`${process.env.NEXT_PUBLIC_API_URL}/${detailProduct.img_product}`}
+                src={detailProduct.img_product}
                 alt={detailProduct.product_name}
               />
             </div>

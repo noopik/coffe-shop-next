@@ -18,7 +18,9 @@ export const register = async (formData, history) => {
 
 export const login = (formData, history) => async (dispatch) => {
   try {
-    const { data } = await (await axios.post('/users/auth/login', formData)).data;
+    const { data } = await (
+      await axios.post('/users/auth/login', formData)
+    ).data;
     dispatch({ type: 'LOGIN', payload: data });
     toast.success('Login successful');
     history.push('/');
@@ -32,7 +34,7 @@ export const logout = (history) => async (dispatch, getState) => {
   try {
     await axios.delete('/users/logout');
     dispatch({ type: 'LOGOUT', payload: {} });
-    dispatch({ type: 'CART_MUTLI',payload:[] });
+    dispatch({ type: 'CART_MUTLI', payload: [] });
     history.push('/auth/login');
   } catch (error) {
     toast.error('Error', 'Logout failed', 'error');
@@ -60,7 +62,10 @@ export const forgotPassword = async (formData) => {
 
 export const resetPassword = async (formData, history, token) => {
   try {
-    await axios.patch('/users/reset-password', { password: formData.password, tokenPassword: token });
+    await axios.patch('/users/reset-password', {
+      password: formData.password,
+      tokenPassword: token,
+    });
     toast.success('Successfully reset password!');
     history.push('/auth/login');
   } catch (error) {
@@ -68,7 +73,6 @@ export const resetPassword = async (formData, history, token) => {
     console.log(error);
   }
 };
-
 
 export const updateProfile = (formData) => async (dispatch, getState) => {
   try {
@@ -82,15 +86,20 @@ export const updateProfile = (formData) => async (dispatch, getState) => {
     dataUpdate.append('phone_number', formData.phone);
     dataUpdate.append('gender', formData.gender);
     dataUpdate.append('date_of_birth', formData.birth);
-    const { data } = await (await axios.post(`/users/${getState().user.user.user_id}`, dataUpdate)).data;
-    dispatch({ type: 'PROFILE', payload: { ...getState().user.user, ...data } });
+    const { data } = await (
+      await axios.post(`/users/${getState().user.user.user_id}`, dataUpdate)
+    ).data;
+    dispatch({
+      type: 'PROFILE',
+      payload: { ...getState().user.user, ...data },
+    });
     toast.success('Successfully changed profile');
   } catch (error) {
     if (error.response?.data?.statusCode === 422) {
       toast.error(error?.response?.data?.error[0].msg);
     } else {
       toast.error('Update profile failed');
-      console.log(error);
+      console.log(error.response);
     }
   }
 };
