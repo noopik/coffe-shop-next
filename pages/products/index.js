@@ -143,7 +143,7 @@ const ProductsPage = ({ user, auth }) => {
               <CardProduct
                 name={product.product_name}
                 price={parseInt(product.price)}
-                image={`${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`}
+                image={product.img_product}
                 onClickCard={() =>
                   router.push(`/products/${product.product_id}`)
                 }

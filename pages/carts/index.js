@@ -44,7 +44,7 @@ const CartsPage = () => {
               >
                 <div className="image-product">
                   <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/${cartValue.product_img_product}`}
+                    src={`${cartValue.product_img_product}`}
                     alt="name product"
                   />
                 </div>

@@ -59,9 +59,7 @@ const EditProduct = (props) => {
   const deliveries = props.deliveries;
   const categories = props.categories;
   const [priviewImage, setPreviewImage] = useState('');
-  const [defaultImage, setDefaultImage] = useState(
-    `${process.env.NEXT_PUBLIC_API_URL}/${product.img_product}`
-  );
+  const [defaultImage, setDefaultImage] = useState(`${product.img_product}`);
   const [stockCounter, setStockCounter] = useState(product.stock);
   const [sizeProduct, setsizeProduct] = useState(product.size);
   const [deliveryProduct, setdeliveryProduct] = useState(product.delivery);
