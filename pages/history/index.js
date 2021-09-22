@@ -72,7 +72,7 @@ const HistoryPage = () => {
               >
                 <div className="image-product">
                   <img
-                    src={`${history.img_product}`}
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${history.img_product}`}
                     alt="name product"
                     layout="fill"
                   />
