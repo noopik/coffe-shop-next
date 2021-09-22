@@ -34,6 +34,7 @@ Coffee Shop is a Foods & Beverages ordering application. This apps give you (cus
 - NextJs
 - JavaScript
 - Styled Component
+-boot
 
 ### Packages
 
