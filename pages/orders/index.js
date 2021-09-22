@@ -48,7 +48,7 @@ const OrdersPage = ({ user, auth }) => {
                 <CardOrder
                   nameProduct={cartValue.product_name}
                   key={index}
-                  imageProduct={`${cartValue.product_img_product}`}
+                  imageProduct={`${process.env.NEXT_PUBLIC_API_URL}/${cartValue.product_img_product}`}
                   total={cartValue.cart_stock}
                   price={cartValue.total_price}
                   size={`Size : ${cartValue.cart_size_name}`}
