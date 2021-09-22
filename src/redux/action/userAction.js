@@ -99,7 +99,7 @@ export const updateProfile = (formData) => async (dispatch, getState) => {
       toast.error(error?.response?.data?.error[0].msg);
     } else {
       toast.error('Update profile failed');
-      console.log(error.response);
+      console.log(error);
     }
   }
 };

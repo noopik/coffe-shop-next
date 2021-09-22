@@ -185,7 +185,7 @@ const Navbar = (props) => {
                   <div className="btn avatar-wrapper">
                     {props.user?.avatar ? (
                       <img
-                        src={`${props.user.avatar}`}
+                        src={`${process.env.NEXT_PUBLIC_API_URL}/${props.user.avatar}`}
                         alt="username"
                         className="avatar"
                         onClick={() =>
