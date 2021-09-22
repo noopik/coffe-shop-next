@@ -92,7 +92,7 @@ npm install
 4. Add .env file at root folder project, and add following
 ```sh
 NEXT_PUBLIC_API_URL=[BACKEND_API]
-NEXT_PUBLIC_ID_DELIVER_DINE_IN = [ADMIN_ID]
+NEXT_PUBLIC_ID_DELIVER_DINE_IN = [19]
 ```
 5. Start website
 ```sh
