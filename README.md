@@ -13,7 +13,7 @@
     <a href="https://github.com/dwinovic/coffe-shop-next"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://coffe-shop-next.vercel.app/">View Demo</a>
+    <a href="https://coffee-shop-next.vercel.app/">View Demo</a>
     ·
     <a href="https://github.com/dwinovic/coffe-shop-next">Report Bug</a>
     ·
