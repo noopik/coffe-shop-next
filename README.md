@@ -108,8 +108,20 @@ npm run dev
 ## Screenshots
 
 <div align="center">
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">   
-    <img width="350" src="https://www.bastiaanmulder.nl/wp-content/uploads/2013/11/dummy-image-portrait.jpg">
+    <img width="700" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277469/Coffe%20Shop/Coffe_01_fagpi4.png">   
+</div>
+<div align="center">
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277466/Coffe%20Shop/Coffe_02_fmfg24.png">   
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277463/Coffe%20Shop/Coffe_03_eiyyud.png">
+</div>
+<div align="center">
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277465/Coffe%20Shop/Coffe_04_pobn9o.png">   
+    <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277464/Coffe%20Shop/Coffe_05_iymcrn.png">
+</div>
+<div align="center">
+    <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277467/Coffe%20Shop/Coffe_06_kqiofr.png">   
+    <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277463/Coffe%20Shop/Coffe_07_vyhl51.png">
+    <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277464/Coffe%20Shop/Coffe_08_fnwh1d.png">
 </div>
 
 ## Our Team
