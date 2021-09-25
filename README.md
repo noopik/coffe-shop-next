@@ -145,7 +145,7 @@ npm run dev
       </td>
       <td align="center">
         <a href="https://github.com/Chandra-Kurnia">
-          <img width="100" src="https://media-exp1.licdn.com/dms/image/C4D03AQHU2BSd6ZVvrg/profile-displayphoto-shrink_800_800/0/1631861838918?e=1637193600&v=beta&t=bodYo3TW177wycvbnItqp7OtoElOOBMWd_D0JgPzoGg" alt="Chandra Kurniawan"><br/>
+          <img width="100" src="https://avatars.githubusercontent.com/u/75248269?v=4" alt="Chandra Kurniawan"><br/>
           <sub><b>Chandra Kurniawan</b></sub> <br/>
           <sub>Full Stack Web Developer</sub>
         </a>
