@@ -167,6 +167,7 @@ const CartsPage = () => {
       <div className="pagination">
         {/* <Pagination className="page" count={10} page={page} onChange={handlePagination} /> */}
         <Button
+          disabled={cart_multi?.length  > 0 ? false : true}
           className="button-action"
           onClick={() => router.push('/orders')}
         >
