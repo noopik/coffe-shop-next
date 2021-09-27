@@ -105,26 +105,36 @@ const StyledOrderDetail = styled.div`
     }
 
     .table-wrapper {
-      overflow: auto;
+      overflow-x: auto;
       padding: 50px 30px 50px 30px;
     }
 
     table {
-      width: 1130px;
+      table-layout: auto;
+      border-collapse: collapse;
+      width: 100%;
       tbody {
         tr {
+          td {
+            max-width: 100%;
+            white-space: -o-pre-wrap;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+            white-space: -pre-wrap;
+          }
           .property {
             vertical-align: text-top;
             font-weight: bold;
           }
-          span{
+          span {
             font-weight: bold;
           }
           td {
             border: 1px solid gray;
             padding: 15px;
           }
-          button{
+          button {
             width: 80px;
             height: 50px;
             background-color: #ffba33;
