@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image from 'next/image';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { ICBank, ICCars, ICHall } from '../../src/assets';
 import { CardWraper, Button, CardOrder } from '../../src/components/atoms';
@@ -10,12 +11,12 @@ import SimpleReactValidator from 'simple-react-validator';
 import { createOrder } from '../../src/redux/action/orderAction';
 import router from 'next/router';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const OrdersPage = ({ user, auth }) => {
   const dispatch = useDispatch();
-  const validator = useRef(
-    new SimpleReactValidator({ className: 'text-validator' })
-  );
+  const [forceUpdate, setForceUpdate] = useState(false);
+  const validator = useRef(new SimpleReactValidator({ className: 'text-validator', autoForceUpdate: forceUpdate }));
   const [formOrder, setFormOrder] = useState({
     address: user.address,
     phone_number: user.phone_number,
@@ -36,6 +37,11 @@ const OrdersPage = ({ user, auth }) => {
     return price;
   };
   const formatter = new Intl.NumberFormat(['ban', 'id']);
+  useEffect(() => {
+    if (!totalPrice(cart_multi) > 0) {
+      router.push('/carts');
+    }
+  }, []);
   return (
     <StyledHistoryPage>
       <div className="container">
@@ -58,9 +64,7 @@ const OrdersPage = ({ user, auth }) => {
             <div className="divider" />
             <div className="total">
               <p className="text-bold">TOTAL</p>
-              <p className="text-bold">
-                IDR {formatter.format(totalPrice(cart_multi))}
-              </p>
+              <p className="text-bold">IDR {formatter.format(totalPrice(cart_multi))}</p>
             </div>
           </CardWraper>
         </div>
@@ -76,30 +80,20 @@ const OrdersPage = ({ user, auth }) => {
                   <textarea
                     onChange={formOrderHandler}
                     onFocus={() => validator.current.showMessageFor('address')}
-                    value={formOrder.address}
+                    value={formOrder.address || ''}
                     name="address"
                     placeholder="Address"
                   ></textarea>
-                  {validator.current.message(
-                    'address',
-                    formOrder.address,
-                    'required|min:10'
-                  )}
+                  {validator.current.message('address', formOrder.address, 'required|min:10')}
                   <input
                     onChange={formOrderHandler}
-                    onFocus={() =>
-                      validator.current.showMessageFor(`phone_number`)
-                    }
+                    onFocus={() => validator.current.showMessageFor(`phone_number`)}
                     type="text"
                     name="phone_number"
-                    value={formOrder.phone_number}
+                    value={formOrder.phone_number || ''}
                     placeholder="Your phone number"
                   />
-                  {validator.current.message(
-                    'phone_number',
-                    formOrder.phone_number,
-                    'required|numeric|min:11|max:13'
-                  )}
+                  {validator.current.message('phone_number', formOrder.phone_number, 'required|numeric|min:11|max:13')}
                 </CardWraper>
               </div>
             </div>
@@ -110,13 +104,7 @@ const OrdersPage = ({ user, auth }) => {
               <div className="body-section-row">
                 <CardWraper className="method-wrapper">
                   <label htmlFor="card">
-                    <input
-                      type="radio"
-                      onChange={formOrderHandler}
-                      name="payment"
-                      value="credit_card"
-                      id="card"
-                    />
+                    <input type="radio" onChange={formOrderHandler} name="payment" value="credit_card" id="card" />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
@@ -124,13 +112,7 @@ const OrdersPage = ({ user, auth }) => {
                     <p>Card</p>
                   </label>
                   <label htmlFor="bankAccount">
-                    <input
-                      type="radio"
-                      onChange={formOrderHandler}
-                      name="payment"
-                      value="bank"
-                      id="bankAccount"
-                    />
+                    <input type="radio" onChange={formOrderHandler} name="payment" value="bank" id="bankAccount" />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
@@ -138,42 +120,28 @@ const OrdersPage = ({ user, auth }) => {
                     <p>Bank account</p>
                   </label>
                   <label htmlFor="cod">
-                    <input
-                      type="radio"
-                      onChange={formOrderHandler}
-                      name="payment"
-                      value="delivery"
-                      id="cod"
-                    />
+                    <input type="radio" onChange={formOrderHandler} name="payment" value="delivery" id="cod" />
                     <span className="circle-wrapper">
                       <div className="circle" />
                     </span>
                     <Image src={ICCars} alt="bank" width={40} height={40} />
                     <p>Cash on delivery</p>
                   </label>
-                  {validator.current.message(
-                    'payment',
-                    formOrder.payment,
-                    'required'
-                  )}
+                  {validator.current.message('payment', formOrder.payment, 'required')}
                 </CardWraper>
                 <Button
                   type="button"
-                  onClick={() =>
-                    dispatch(
-                      createOrder(
-                        cart_multi,
-                        formOrder,
-                        totalPrice(cart_multi),
-                        router
-                      )
-                    )
-                  }
-                  disabled={
-                    validator.current.allValid() && totalPrice(cart_multi) > 0
-                      ? false
-                      : true
-                  }
+                  onClick={() => {
+                    if (validator.current.allValid() && totalPrice(cart_multi) > 0) {
+                      dispatch(createOrder(cart_multi, formOrder, totalPrice(cart_multi), router));
+                    } else if (!validator.current.allValid() || !totalPrice(cart_multi) > 0) {
+                      setForceUpdate(!forceUpdate);
+                      validator.current.showMessages();
+                      if (!totalPrice(cart_multi) > 0) {
+                        toast.warn('Empty order cart');
+                      }
+                    }
+                  }}
                   theme="brown"
                   className="button-pay"
                 >
