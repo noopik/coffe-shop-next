@@ -11,9 +11,6 @@ import {
   ICLocation,
   ICLove,
   IC_Search,
-  IMGDummyProduct1,
-  IMGDummyProduct2,
-  IMGDummyProduct3,
   IMGGLobe,
   IMGUser1,
   IMGUser2,
@@ -25,6 +22,9 @@ import {
   LogoReddit,
   LogoSpotify,
 } from '../src/assets';
+import product1 from '../src/assets/images/product_1.jpg'
+import product2 from '../src/assets/images/product_2.jpg';
+import product3 from '../src/assets/images/product_3.jpg';
 import { useState } from 'react';
 import router from 'next/router';
 
@@ -194,7 +194,7 @@ function Home() {
           <div className="menus">
             <div className="menu-item">
               <div className="image-product-wrapper">
-                <Image src={IMGDummyProduct1} alt="product" layout="fill" />
+                <Image src={product1} alt="product" layout="fill" />
               </div>
               <div className="description-product-wrapper">
                 <h5 className="product-name">Hazelnut Latte</h5>
@@ -249,7 +249,7 @@ function Home() {
             </div>
             <div className="menu-item">
               <div className="image-product-wrapper">
-                <Image src={IMGDummyProduct2} alt="product" layout="fill" />
+                <Image src={product2} alt="product" layout="fill" />
               </div>
               <div className="description-product-wrapper">
                 <h5 className="product-name">Pinky Promise</h5>
@@ -313,7 +313,7 @@ function Home() {
             </div>
             <div className="menu-item">
               <div className="image-product-wrapper">
-                <Image src={IMGDummyProduct3} alt="product" layout="fill" />
+                <Image src={product3} alt="product" layout="fill" />
               </div>
               <div className="description-product-wrapper">
                 <h5 className="product-name">Chicken Wings</h5>
