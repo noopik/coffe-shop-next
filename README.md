@@ -108,7 +108,7 @@ npm run dev
 ## Screenshots
 
 <div align="center">
-    <img width="700" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277469/Coffe%20Shop/Coffe_01_fagpi4.png">   
+    <img width="700" src="https://res.cloudinary.com/dnv-images/image/upload/v1632840183/Coffe%20Shop/screencapture-coffee-shop-next-vercel-app-2021-09-28-21_40_59_1_op4csc.jpg">   
 </div>
 <div align="center">
     <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277466/Coffe%20Shop/Coffe_02_fmfg24.png">   
@@ -122,6 +122,7 @@ npm run dev
     <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277467/Coffe%20Shop/Coffe_06_kqiofr.png">   
     <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277463/Coffe%20Shop/Coffe_07_vyhl51.png">
     <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277464/Coffe%20Shop/Coffe_08_fnwh1d.png">
+    <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632841001/Coffe%20Shop/screencapture-coffee-shop-next-vercel-app-admin-products-2021-09-28-21_56_13_1_hurixx.png">
 </div>
 
 ## Our Team
