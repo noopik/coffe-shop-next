@@ -56,7 +56,7 @@
 ## About The Project
 
 <p align="justify">
-<b>Coffee Shop</b> is a Foods & Beverages ordering application. This apps give you (customers) some features to order your favorite foods or beverages. The customers also have some opportunity to use some promo code before directly checkout to the payment page. In payment page you can pick your payments method so it's flexible what kind of money do you have. Also the customers will be able to edit their profile such as photo, username, address, and phone number if they have to change their identity. 
+<b>Coffee Shop</b> is a Foods & Beverages ordering application. This apps give you (customers) some features to order your favorite foods or beverages. The customers also have some opportunity to use some promo code before directly checkout to the payment page. In payment page you can pick your payments method so it's flexible what kind of payment do you have. Also the customers will be able to edit their profile such as photo, username, address, and phone number if they have to change their identity. 
 </p>
 
 ### Build With
