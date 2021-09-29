@@ -56,7 +56,7 @@
 ## About The Project
 
 <p align="justify">
-<b>Coffee Shop</b> is a Foods & Beverages ordering application. This apps give you (customers) some features to order your favorite foods or beverages. The customers also have some opportunity to use some promo code before directly checkout to the payment page. In payment page you can pick your payments method so it's flexible what kind of money do you have. Also the customers will be able to edit their profile such as photo, username, address, and phone number if they have to change their identity. 
+<b>Coffee Shop</b> is a Foods & Beverages ordering application. This apps give you (customers) some features to order your favorite foods or beverages. The customers also have some opportunity to use some promo code before directly checkout to the payment page. In payment page you can pick your payments method so it's flexible what kind of payment do you have. Also the customers will be able to edit their profile such as photo, username, address, and phone number if they have to change their identity. 
 </p>
 
 ### Build With
@@ -108,7 +108,7 @@ npm run dev
 ## Screenshots
 
 <div align="center">
-    <img width="700" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277469/Coffe%20Shop/Coffe_01_fagpi4.png">   
+    <img width="700" src="https://res.cloudinary.com/dnv-images/image/upload/v1632840183/Coffe%20Shop/screencapture-coffee-shop-next-vercel-app-2021-09-28-21_40_59_1_op4csc.jpg">   
 </div>
 <div align="center">
     <img width="350" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277466/Coffe%20Shop/Coffe_02_fmfg24.png">   
@@ -122,6 +122,7 @@ npm run dev
     <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277467/Coffe%20Shop/Coffe_06_kqiofr.png">   
     <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277463/Coffe%20Shop/Coffe_07_vyhl51.png">
     <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632277464/Coffe%20Shop/Coffe_08_fnwh1d.png">
+    <img width="232" src="https://res.cloudinary.com/dnv-images/image/upload/v1632841001/Coffe%20Shop/screencapture-coffee-shop-next-vercel-app-admin-products-2021-09-28-21_56_13_1_hurixx.png">
 </div>
 
 ## Our Team
